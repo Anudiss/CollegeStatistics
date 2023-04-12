@@ -1,0 +1,49 @@
+﻿<Window x:Class="CollegeStatictics.Windows.Notification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CollegeStatictics.Windows"
+        xmlns:svg="clr-namespace:SVGImage.SVG;assembly=SVGImage"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    
+    <Window.Style>
+        <Style TargetType="{x:Type local:Notification}">
+            <Style.Triggers>
+                <Trigger Property="NotificationIcon" Value="Notification">
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Source="{svg:SvgIcon Source=/Icons/info-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="NotificationIcon" Value="Error">
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Source="{svg:SvgIcon Source=/Icons/xmark-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="NotificationIcon" Value="Question">
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Source="{svg:SvgIcon Source=/Icons/question-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="NotificationIcon" Value="Warning">
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Source="{svg:SvgIcon Source=/Icons/triangle-exclamation-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Grid>
+        
+    </Grid>
+</Window>

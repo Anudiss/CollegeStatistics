@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CollegeStatictics.ViewModels;
+using CollegeStatictics.Windows;
 using System.Windows;
 
 namespace CollegeStatictics
@@ -13,5 +9,7 @@ namespace CollegeStatictics
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e) =>
+            new WindowViewModel(new AuthVM()).Show();
     }
 }
