@@ -2,7 +2,7 @@
 {
     public partial class DatabaseContext
     {
-        private static DatabaseContext _entities;
+        private static DatabaseContext _entities = null!;
         public static DatabaseContext Entities => _entities ??= new();
     }
 }

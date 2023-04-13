@@ -1,17 +1,21 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Base;
+using CollegeStatictics.Windows;
 using CollegeStatictics.Windows.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Windows;
 
 namespace CollegeStatictics.ViewModels
 {
     public partial class AuthVM : WindowViewModelBase
     {
+        #region [Properties]
+
         [NotifyDataErrorInfo]
         [NotifyCanExecuteChangedFor(nameof(AuthorizeCommand))]
         [Required(ErrorMessage = "Обязательное поле")]
@@ -24,6 +28,8 @@ namespace CollegeStatictics.ViewModels
         [ObservableProperty]
         private string _password;
 
+        #endregion
+
         #region [ Commands ]
 
         [RelayCommand(CanExecute = nameof(CanAuthorize))]
@@ -35,16 +41,21 @@ namespace CollegeStatictics.ViewModels
 
             var authorizatedUser = users.FirstOrDefault(user => user.Login == Login && user.Password == Password);
             if (authorizatedUser == null)
+            {
+                MessageBox.Show("Error");
+                //NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
                 return;
-                
+            }
+
+            App.Instance.CurrentUser = authorizatedUser;
+
+            new WindowViewModel(new MainVM()).Show();
+            CloseWindow();
+
         }
 
         private bool CanAuthorize() => !HasErrors;
-        #endregion
 
-        public AuthVM()
-        {
-            NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
-        }
+        #endregion
     }
 }
