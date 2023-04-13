@@ -1,7 +1,7 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Base;
-using CollegeStatictics.Windows;
+using CollegeStatictics.Windows.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace CollegeStatictics.ViewModels
 
         public AuthVM()
         {
-            Notification.Show("Хуй");
+            NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
         }
     }
 }

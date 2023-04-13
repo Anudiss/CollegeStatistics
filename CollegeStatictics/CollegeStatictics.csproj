@@ -7,16 +7,25 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Icons\info-solid.svg" />
-    <None Remove="Icons\question-solid.svg" />
-    <None Remove="Icons\triangle-exclamation-solid.svg" />
-    <None Remove="Icons\xmark-solid.svg" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0-preview2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Resource Include="Icons\info-solid.png">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Resource>
+    <Resource Include="Icons\question-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\triangle-exclamation-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\xmark-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

@@ -4,30 +4,41 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace CollegeStatictics.Windows
+namespace CollegeStatictics.Windows.Notification
 {
     /// <summary>
     /// Логика взаимодействия для Notification.xaml
     /// </summary>
-    public partial class Notification : Window
+    public partial class NotificationWindow : Window
     {
         public string Text { get; }
-        public NotificationButton Buttons { get; }
-        public NotificationIcon NotificationIcon { get; }
+
+        public NotificationButton Buttons
+        {
+            get => (NotificationButton)GetValue(NotificationButtonsProperty);
+            set => SetValue(NotificationButtonsProperty, value);
+        }
+
+        public NotificationIcon NotificationIcon
+        {
+            get => (NotificationIcon)GetValue(NotificationIconProperty);
+            set => SetValue(NotificationIconProperty, value);
+        }
+
         public NotificationResult NotificationResult { get; private set; }
 
-        private Notification(string text, string title, NotificationButton buttons, NotificationIcon icon)
+        private NotificationWindow(string text, string title, NotificationButton buttons, NotificationIcon icon)
         {
             Title = title;
-
-            InitializeComponent();
             Buttons = buttons;
             NotificationIcon = icon;
+
+            InitializeComponent();
         }
 
         public new static NotificationResult Show(string text, string title = "Уведомление", NotificationButton buttons = default, NotificationIcon icon = default)
         {
-            Notification notification = new(text, title, buttons, icon);
+            NotificationWindow notification = new(text, title, buttons, icon);
             notification.ShowDialog();
             return notification.NotificationResult;
         }
@@ -41,13 +52,12 @@ namespace CollegeStatictics.Windows
         Error
     }
 
-    [Flags]
     public enum NotificationButton
     {
-        Ok = 1 << 0,
-        Yes = 1 << 1,
-        No = 1 << 2,
-        Cancel = 1 << 3
+        Ok,
+        YesNo,
+        Cancel,
+        YesNoCancel
     }
 
     public enum NotificationResult
