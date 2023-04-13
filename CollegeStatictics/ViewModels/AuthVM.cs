@@ -51,7 +51,6 @@ namespace CollegeStatictics.ViewModels
 
             new WindowViewModel(new MainVM()).Show();
             CloseWindow();
-
         }
 
         private bool CanAuthorize() => !HasErrors;
