@@ -15,28 +15,28 @@
                 <Trigger Property="NotificationIcon" Value="Notification">
                     <Setter Property="Icon">
                         <Setter.Value>
-                            <Image Source="{svg:SvgIcon Source=/Icons/info-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                            <BitmapImage UriSource="/Icons/info-solid.png"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
                 <Trigger Property="NotificationIcon" Value="Error">
                     <Setter Property="Icon">
                         <Setter.Value>
-                            <Image Source="{svg:SvgIcon Source=/Icons/xmark-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                            <BitmapImage UriSource="/Icons/xmark-solid.png"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
                 <Trigger Property="NotificationIcon" Value="Question">
                     <Setter Property="Icon">
                         <Setter.Value>
-                            <Image Source="{svg:SvgIcon Source=/Icons/question-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                            <BitmapImage UriSource="/Icons/question-solid.png"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
                 <Trigger Property="NotificationIcon" Value="Warning">
                     <Setter Property="Icon">
                         <Setter.Value>
-                            <Image Source="{svg:SvgIcon Source=/Icons/triangle-exclamation-solid.svg, AppName=CollegeStatictics}" Stretch="Uniform"/>
+                            <BitmapImage UriSource="/Icons/triangle-exclamation-solid.png"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -44,6 +44,5 @@
         </Style>
     </Window.Style>
     <Grid>
-        
     </Grid>
 </Window>
