@@ -20,13 +20,13 @@ namespace CollegeStatictics.ViewModels
         [NotifyCanExecuteChangedFor(nameof(AuthorizeCommand))]
         [Required(ErrorMessage = "Обязательное поле")]
         [ObservableProperty]
-        private string _login;
+        private string _login = null!;
 
         [NotifyDataErrorInfo]
         [NotifyCanExecuteChangedFor(nameof(AuthorizeCommand))]
         [Required(ErrorMessage = "Обязательное поле")]
         [ObservableProperty]
-        private string _password;
+        private string _password = null!;
 
         #endregion
 
@@ -35,19 +35,19 @@ namespace CollegeStatictics.ViewModels
         [RelayCommand(CanExecute = nameof(CanAuthorize))]
         private void Authorize()
         {
-            IEnumerable<User> users = DatabaseContext.Entities.Teachers.Cast<User>().Concat(
-                                      DatabaseContext.Entities.CommisionCurators.Cast<User>()).Concat(
-                                      DatabaseContext.Entities.GroupLeaders.Cast<User>());
+            //IEnumerable<User> users = DatabaseContext.Entities.Teachers.Cast<User>().Concat(
+            //                          DatabaseContext.Entities.CommisionCurators.Cast<User>()).Concat(
+            //                          DatabaseContext.Entities.GroupLeaders.Cast<User>());
 
-            var authorizatedUser = users.FirstOrDefault(user => user.Login == Login && user.Password == Password);
-            if (authorizatedUser == null)
-            {
-                MessageBox.Show("Error");
+            //var authorizatedUser = users.FirstOrDefault(user => user.Login == Login && user.Password == Password);
+            //if (authorizatedUser == null)
+            //{
+            //    MessageBox.Show("Error");
                 //NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
-                return;
-            }
+            //    return;
+            //}
 
-            App.Instance.CurrentUser = authorizatedUser;
+            //App.Instance.CurrentUser = authorizatedUser;
 
             new WindowViewModel(new MainVM()).Show();
             CloseWindow();
@@ -56,5 +56,8 @@ namespace CollegeStatictics.ViewModels
         private bool CanAuthorize() => !HasErrors;
 
         #endregion
+
+        public AuthVM()
+            => Title = "Авторизация";
     }
 }

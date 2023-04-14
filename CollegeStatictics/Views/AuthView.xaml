@@ -4,48 +4,52 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vm:AuthVM}">
+
+    <Grid Width="300" Margin="20">
+        <StackPanel Margin="10">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Setter Property="Margin" Value="0 0 0 20"/>
+                    <Setter Property="Validation.ErrorTemplate">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <StackPanel Orientation="Vertical">
+                                    <AdornedElementPlaceholder Name="Placeholder"/>
+                                    <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
+                                               Foreground="Red"/>
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </StackPanel.Resources>
+
+            <Label Content="Логин"
+                   Target="{Binding ElementName=LoginBox}"
+                   Margin="0 0 0 5"/>
+            <TextBox x:Name="LoginBox"
+                     Text="{Binding Login, Mode=TwoWay,
+                                    UpdateSourceTrigger=PropertyChanged,
+                                    ValidatesOnNotifyDataErrors=True}"
+                     ui:ControlHelper.PlaceholderText="Логин"/>
+
+            <Label Content="Пароль"
+                   Target="{Binding ElementName=PasswordBox}"
+                   Margin="0 5 0 5"/>
+            <TextBox x:Name="PasswordBox"
+                     Text="{Binding Password, Mode=TwoWay,
+                     UpdateSourceTrigger=PropertyChanged,
+                     ValidatesOnNotifyDataErrors=True}"
+                     ui:ControlHelper.PlaceholderText="Пароль"/>
+
+            <Button Content="Войти"
+                    HorizontalAlignment="Right"
+                    Command="{Binding AuthorizeCommand}"/>
+
+        </StackPanel>
+    </Grid>
     
-    <StackPanel Width="300">
-        <StackPanel.Resources>
-            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-                <Setter Property="Validation.ErrorTemplate">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <StackPanel Orientation="Vertical">
-                                <AdornedElementPlaceholder Name="Placeholder"/>
-                                <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
-                                           Foreground="Red"/>
-                            </StackPanel>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </StackPanel.Resources>
-
-        <Label Content="Логин"
-               Target="{Binding ElementName=LoginBox}"
-               Margin="0 0 0 5"/>
-        <TextBox x:Name="LoginBox"
-                 Text="{Binding Login, Mode=TwoWay,
-                                UpdateSourceTrigger=PropertyChanged,
-                                ValidatesOnNotifyDataErrors=True}"
-                 Margin="0 0 0 10"/>
-
-        <Label Content="Пароль"
-               Target="{Binding ElementName=PasswordBox}"
-               Margin="0 0 0 5"/>
-        <TextBox x:Name="PasswordBox"
-                 Text="{Binding Password, Mode=TwoWay,
-                 UpdateSourceTrigger=PropertyChanged,
-                 ValidatesOnNotifyDataErrors=True}"
-                 Margin="0 0 0 10"/>
-
-        
-        <Button Content="Войти"
-                HorizontalAlignment="Right"
-                Command="{Binding AuthorizeCommand}"/>
-
-    </StackPanel>
 </UserControl>

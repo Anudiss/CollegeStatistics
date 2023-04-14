@@ -7,9 +7,12 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Title="{Binding Title}"
         d:DataContext="{d:DesignInstance vm:WindowViewModelBase}"
         ui:WindowHelper.UseModernWindowStyle="True">
 
-<ContentControl Content="{Binding .}"/>
+    <ContentControl Content="{Binding .}"/>
     
 </Window>

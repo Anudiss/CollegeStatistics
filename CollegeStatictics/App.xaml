@@ -18,6 +18,10 @@
                      <DataTemplate DataType="{x:Type vm:AuthVM}">
                          <views:AuthView/>
                      </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:MainVM}">
+                        <views:MainVIew/>
+                    </DataTemplate>
                      
                  </ResourceDictionary>
 

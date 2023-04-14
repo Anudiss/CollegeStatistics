@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
              mc:Ignorable="d"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              d:DataContext="{d:DesignInstance vm:MainVM}">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -12,9 +13,31 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0">
-            <RadioButton Content="" />
-        </StackPanel>
+        <ui:NavigationView Header="Header" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem>
+                    <TextBlock Text="Footer item"/>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem>
+                    <TextBlock Text="First item"/>
+                </ui:NavigationViewItem>
+
+                <!--<ui:NavigationViewItemSeparator/>-->
+
+                <ui:NavigationViewItem>
+                    <TextBlock Text="First item"/>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem>
+                    <TextBlock Text="First item"/>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem>
+                    <TextBlock Text="Fourth item"/>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+        </ui:NavigationView>
         
     </Grid>
 </UserControl>
