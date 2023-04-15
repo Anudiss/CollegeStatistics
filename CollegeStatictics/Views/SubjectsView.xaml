@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="CollegeStatictics.Views.SubjectsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:SubjectsVM}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ui:SimpleStackPanel Orientation="Horizontal"
+                             Margin="10"
+                             Spacing="10">
+            <Button Content="Создать" 
+                    Command="{Binding OpenEditAddSubjectWindowCommand}"
+                    CommandParameter="{x:Null}"/>
+            
+            <ui:AutoSuggestBox Text="{Binding Subjects.SearchingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               QueryIcon="Find"
+                               PlaceholderText="Поиск" 
+                               Width="200" />
+        </ui:SimpleStackPanel>
+        
+        <DataGrid ItemsSource="{Binding Subjects.View}"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True"
+                  Name="SubjectsContainer">
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick"
+                              Command="{Binding OpenEditAddSubjectWindowCommand}"
+                              CommandParameter="{Binding ElementName=SubjectsContainer, Path=SelectedItem}"/>
+            </DataGrid.InputBindings>
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    Width="Auto" />
+                
+                <DataGridTextColumn Header="Название"
+                                    Binding="{Binding Name}"
+                                    Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+    
+</UserControl>

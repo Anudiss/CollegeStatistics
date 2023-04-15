@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
-             mc:Ignorable="d"
              xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:MainVM}">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -13,7 +13,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:NavigationView Header="Header" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+        <ui:NavigationView Header="Header" IsSettingsVisible="False" IsBackButtonVisible="Collapsed"
+                           SelectionChanged="NavigationView_SelectionChanged">
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem>
                     <TextBlock Text="Footer item"/>
@@ -21,9 +22,8 @@
             </ui:NavigationView.FooterMenuItems>
 
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem>
-                    <TextBlock Text="First item"/>
-                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Предметы"
+                                       Tag="{x:Type vm:SubjectsVM}" />
 
                 <!--<ui:NavigationViewItemSeparator/>-->
 
@@ -37,7 +37,11 @@
                     <TextBlock Text="Fourth item"/>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
+            
         </ui:NavigationView>
+        
+        <ContentControl Content="{Binding CurrentView}"
+                        Grid.Column="1"/>
         
     </Grid>
 </UserControl>

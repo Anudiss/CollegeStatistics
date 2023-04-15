@@ -11,7 +11,8 @@
         WindowStyle="None"
         Title="{Binding Title}"
         d:DataContext="{d:DesignInstance vm:WindowViewModelBase}"
-        ui:WindowHelper.UseModernWindowStyle="True">
+        ui:WindowHelper.UseModernWindowStyle="True"
+        WindowStartupLocation="CenterScreen">
 
     <ContentControl Content="{Binding .}"/>
     

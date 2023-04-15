@@ -10,7 +10,7 @@
                  
                 <!--#region [ MVVM bindings ] -->
                  
-                 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                      xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
                                      xmlns:views="clr-namespace:CollegeStatictics.Views">
@@ -22,8 +22,16 @@
                     <DataTemplate DataType="{x:Type vm:MainVM}">
                         <views:MainVIew/>
                     </DataTemplate>
-                     
-                 </ResourceDictionary>
+                    
+                    <DataTemplate DataType="{x:Type vm:SubjectsVM}">
+                        <views:SubjectsView />
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:EditAddSubjectVM}">
+                        <views:EditAddSubjectView />
+                    </DataTemplate>
+    
+                </ResourceDictionary>
 
                 <ui:ThemeResources RequestedTheme="Light"/>
                 <ui:XamlControlsResources />

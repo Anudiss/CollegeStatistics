@@ -11,6 +11,6 @@ namespace CollegeStatictics.ViewModels.Base
         public Action? CloseWindowMethod;
 
         public void CloseWindow() => CloseWindowMethod?.Invoke();
-        public bool OnClosing() => true;
+        public virtual bool OnClosing() => true;
     }
 }

@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CollegeStatictics.ViewModels;
+using ModernWpf.Controls;
+using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CollegeStatictics.Views
 {
@@ -23,6 +15,16 @@ namespace CollegeStatictics.Views
         public MainVIew()
         {
             InitializeComponent();
+        }
+
+        private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            var type = (args.SelectedItem as NavigationViewItem)?.Tag as Type;
+            var constructor = type?.GetConstructor(Type.EmptyTypes);
+            if (constructor == null)
+                return;
+
+            ((MainVM)DataContext).CurrentView = constructor.Invoke(Type.EmptyTypes);
         }
     }
 }

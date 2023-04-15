@@ -5,6 +5,7 @@ using CollegeStatictics.Windows;
 using CollegeStatictics.Windows.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ModernWpf.Controls;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace CollegeStatictics.ViewModels
         #region [ Commands ]
 
         [RelayCommand(CanExecute = nameof(CanAuthorize))]
-        private void Authorize()
+        private async void Authorize()
         {
             //IEnumerable<User> users = DatabaseContext.Entities.Teachers.Cast<User>().Concat(
             //                          DatabaseContext.Entities.CommisionCurators.Cast<User>()).Concat(
@@ -43,11 +44,31 @@ namespace CollegeStatictics.ViewModels
             //if (authorizatedUser == null)
             //{
             //    MessageBox.Show("Error");
-                //NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
+            //NotificationWindow.Show("Хуй", icon: NotificationIcon.Question, title: "Хуйхыфвцв");
             //    return;
             //}
 
             //App.Instance.CurrentUser = authorizatedUser;
+
+
+
+
+            #region [ Это диалоговое окно Ильназ посмотри ]
+
+            var result = await new ContentDialog()
+            {
+                Content = "Ошибка: неверный логин или пароль",
+                PrimaryButtonText = "Ок",
+                SecondaryButtonText = "Отмена",
+                DefaultButton = ContentDialogButton.Primary
+            }.ShowAsync();
+
+            if (result != ContentDialogResult.Primary)
+                return;
+            #endregion
+
+
+
 
             new WindowViewModel(new MainVM()).Show();
             CloseWindow();
