@@ -37,6 +37,24 @@ namespace CollegeStatictics.ViewModels
 
             contentDialog.ShowAsync();
         }
+
+        [RelayCommand]
+        private async void RemoveSubject(Subject subject)
+        {
+            var dialog = new ContentDialog()
+            {
+                Title = "Уведомление",
+                Content = $"Вы действительно хотите удалить {subject.Name}",
+
+                PrimaryButtonText = "Да",
+
+                SecondaryButtonText = "Нет"
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+                MessageBox.Show($"{subject.Name} удалён (Нихуя)");
+        }
         #endregion
 
         public FilteredObservableCollection<Subject> Subjects { get; set; }

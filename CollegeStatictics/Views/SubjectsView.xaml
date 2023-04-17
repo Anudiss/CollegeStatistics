@@ -28,12 +28,24 @@
         </ui:SimpleStackPanel>
         
         <DataGrid ItemsSource="{Binding Subjects.View}"
+                  VerticalAlignment="Top"
                   Grid.Row="1"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
+                  SelectionMode="Single"
                   IsReadOnly="True"
                   Name="SubjectsContainer">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Открыть"
+                              Command="{Binding OpenEditAddSubjectWindowCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    <MenuItem Header="Удалить"
+                              Command="{Binding RemoveSubjectCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick"
                               Command="{Binding OpenEditAddSubjectWindowCommand}"

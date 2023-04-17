@@ -27,5 +27,13 @@ namespace CollegeStatictics.Utilities
                 value.CanExecuteChanged += delegate { IsSecondaryButtonEnabled = value.CanExecute(SecondaryButtonCommandParameter); };
             }
         }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+                return;
+
+            base.OnKeyDown(e);
+        }
     }
 }

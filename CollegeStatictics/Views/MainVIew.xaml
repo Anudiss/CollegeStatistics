@@ -13,8 +13,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:NavigationView Header="Header" IsSettingsVisible="False" IsBackButtonVisible="Collapsed"
-                           SelectionChanged="NavigationView_SelectionChanged">
+        <ui:NavigationView Header="Header" IsSettingsVisible="False"
+                           SelectionChanged="NavigationView_SelectionChanged"
+                           IsPaneToggleButtonVisible="False"
+                           IsBackButtonVisible="Collapsed"
+                           PaneDisplayMode="Left">
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem>
                     <TextBlock Text="Footer item"/>
