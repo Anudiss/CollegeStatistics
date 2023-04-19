@@ -27,6 +27,12 @@
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Предметы"
                                        Tag="{x:Type vm:SubjectsVM}" />
+                
+                <ui:NavigationViewItem Content="Отделы"
+                                       Tag="{x:Type vm:DepartmentsVM}" />
+                
+                <ui:NavigationViewItem Content="Специальности"
+                                       Tag="{x:Type vm:SpecialitiesVM}" />
 
                 <!--<ui:NavigationViewItemSeparator/>-->
 

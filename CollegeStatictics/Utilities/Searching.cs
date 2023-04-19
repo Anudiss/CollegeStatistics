@@ -9,6 +9,6 @@ namespace CollegeStatictics.Utilities
         public Searching(Func<T, string> propertyGetter) =>
             this.propertyGetter = propertyGetter;
 
-        public bool IsAccepted(T item, string textToSearch) => propertyGetter(item)!.ToLower().Contains(textToSearch.ToLower()) != false;
+        public bool IsAccepted(T item, string textToSearch) => propertyGetter(item)!.Trim().ToLower().Contains(textToSearch.Trim().ToLower()) != false;
     }
 }

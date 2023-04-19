@@ -32,6 +32,9 @@ namespace CollegeStatictics.Utilities
 
             View = CollectionViewSource.GetDefaultView(sourceCollection);
 
+            foreach (var filter in filters)
+                filter.SelectedValuesChanged += Refresh;
+
             View.Filter = IsAccepted;
         }
 

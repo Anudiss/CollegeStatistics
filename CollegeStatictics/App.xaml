@@ -11,10 +11,12 @@
                 <!--#region [ MVVM bindings ] -->
                  
                 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                                     xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
-                                     xmlns:views="clr-namespace:CollegeStatictics.Views">
-                     
+                                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                    xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
+                                    xmlns:views="clr-namespace:CollegeStatictics.Views"
+                                    xmlns:utils="clr-namespace:CollegeStatictics.Utilities"
+                                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+                                         
                      <DataTemplate DataType="{x:Type vm:AuthVM}">
                          <views:AuthView/>
                      </DataTemplate>
@@ -30,7 +32,52 @@
                     <DataTemplate DataType="{x:Type vm:EditAddSubjectVM}">
                         <views:EditAddSubjectView />
                     </DataTemplate>
-    
+                    
+                    <DataTemplate DataType="{x:Type vm:DepartmentsVM}">
+                        <views:DepartmentsView />
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:EditAddDepartmentVM}">
+                        <views:EditAddDepartmentView />
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:SpecialitiesVM}">
+                        <views:SpecialitiesView />
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:EditAddSpecialityVM}">
+                        <views:EditAddSpecialityView />
+                    </DataTemplate>
+
+                    <DataTemplate x:Key="FilterTemplate">
+                        
+                        <MenuItem Header="{Binding Path=Name}"
+                                  Name="Root"
+                                  ItemsSource="{Binding Path=PossibleValues}"
+                                  IsSubmenuOpen="False"
+                                  StaysOpenOnClick="True">
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Name}"
+                                               Margin="5"/>
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                            
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="{x:Type MenuItem}">
+                                    <Setter Property="IsCheckable" Value="True"/>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                            
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding ElementName=Root, Path=DataContext.AddCommand}" CommandParameter="{Binding Path=.}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                    </DataTemplate>
+                    
                 </ResourceDictionary>
 
                 <ui:ThemeResources RequestedTheme="Light"/>

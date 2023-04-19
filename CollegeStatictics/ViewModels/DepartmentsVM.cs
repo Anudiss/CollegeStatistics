@@ -1,27 +1,25 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.Utilities;
-using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf;
 using ModernWpf.Controls;
 using System.Windows;
-using System.Windows.Data;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class SubjectsVM : ObservableObject
+    public partial class DepartmentsVM : ObservableObject
     {
         #region [ Commands ]
         [RelayCommand]
-        private void OpenEditAddSubjectWindow(Subject? subject)
+        private void OpenEditAddDepartmentWindow(Department? department)
         {
-            EditAddSubjectVM vm = new(subject);
+            EditAddDepartmentVM vm = new(department);
             var contentDialog = new RichContentDialog()
             {
-                Title = subject == null ? "Добавление" : "Редактирование",
+                Title = department == null ? "Добавление" : "Редактирование",
                 Content = vm,
 
                 PrimaryButtonText = "Сохранить",
@@ -31,7 +29,7 @@ namespace CollegeStatictics.ViewModels
 
                 DefaultButton = ContentDialogButton.Primary
             };
-            var refreshSubjects = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) => { Subjects.Refresh(); DatabaseContext.CancelChanges(); });
+            var refreshSubjects = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) => { Departments.Refresh(); DatabaseContext.CancelChanges(); });
 
             contentDialog.Closing += refreshSubjects;
 
@@ -39,12 +37,12 @@ namespace CollegeStatictics.ViewModels
         }
 
         [RelayCommand]
-        private async void RemoveSubject(Subject subject)
+        private async void RemoveDepartment(Department department)
         {
             var dialog = new ContentDialog()
             {
                 Title = "Уведомление",
-                Content = $"Вы действительно хотите удалить {subject.Name}",
+                Content = $"Вы действительно хотите удалить {department.Name}",
 
                 PrimaryButtonText = "Да",
 
@@ -53,24 +51,24 @@ namespace CollegeStatictics.ViewModels
 
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
-                MessageBox.Show($"{subject.Name} удалён (Нихуя)");
+                MessageBox.Show($"{department.Name} удалён (Нихуя)");
         }
         #endregion
 
-        public FilteredObservableCollection<Subject> Subjects { get; set; }
+        public FilteredObservableCollection<Department> Departments { get; set; }
 
-        public SubjectsVM()
+        public DepartmentsVM()
         {
             RefreshSubjects();
         }
 
         private void RefreshSubjects()
         {
-            DatabaseContext.Entities.Subjects.Load();
-            Subjects = new FilteredObservableCollectionBuilder<Subject>(DatabaseContext.Entities.Subjects.Local.ToObservableCollection())
-                       .AddSearching(new Searching<Subject>(subject => subject.Name))
-                       .AddSearching(new Searching<Subject>(subject => $"{subject.Id}"))
-                       .Build();
+            DatabaseContext.Entities.Departments.Load();
+            Departments = new FilteredObservableCollectionBuilder<Department>(DatabaseContext.Entities.Departments.Local.ToObservableCollection())
+                          .AddSearching(new Searching<Department>(department => department.Name))
+                          .AddSearching(new Searching<Department>(department => $"{department.Id}"))
+                          .Build();
         }
     }
 }
