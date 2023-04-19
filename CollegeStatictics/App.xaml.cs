@@ -21,7 +21,7 @@ namespace CollegeStatictics
 
         #region [Event handlers]
         private void Application_Startup(object sender, StartupEventArgs e) =>
-            new WindowViewModel(new AuthVM()).Show();
+            new WindowViewModel(new AuthVM()) { ResizeMode = ResizeMode.NoResize }.Show();
 
         #endregion
 

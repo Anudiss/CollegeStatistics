@@ -33,18 +33,11 @@
                 
                 <ui:NavigationViewItem Content="Специальности"
                                        Tag="{x:Type vm:SpecialitiesVM}" />
+                
+                <ui:NavigationViewItem Content="Предподаватели"
+                                       Tag="{x:Type vm:TeachersVM}" />
 
                 <!--<ui:NavigationViewItemSeparator/>-->
-
-                <ui:NavigationViewItem>
-                    <TextBlock Text="First item"/>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem>
-                    <TextBlock Text="First item"/>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem>
-                    <TextBlock Text="Fourth item"/>
-                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             
         </ui:NavigationView>

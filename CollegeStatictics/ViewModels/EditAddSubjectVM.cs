@@ -1,15 +1,13 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
-using CollegeStatictics.ViewModels.Base;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Windows.Input;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class EditAddSubjectVM : WindowViewModelBase
+    public partial class EditAddSubjectVM : Base.WindowViewModelBase
     {
         #region [ Commands ]
         [RelayCommand(CanExecute = nameof(CanSave))]

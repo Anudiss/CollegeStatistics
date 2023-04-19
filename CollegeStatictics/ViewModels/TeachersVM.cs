@@ -10,16 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class SpecialitiesVM : ObservableObject
+    public partial class TeachersVM : ObservableObject
     {
         #region [ Commands ]
         [RelayCommand]
-        private void OpenEditAddSpecialityWindow(Speciality? speciality)
+        private void OpenEditAddTeacherWindow(Teacher? teacher)
         {
-            EditAddSpecialityVM vm = new(speciality);
+            EditAddTeacherVM vm = new(teacher);
             var contentDialog = new RichContentDialog()
             {
-                Title = speciality == null ? "Добавление" : "Редактирование",
+                Title = teacher == null ? "Добавление" : "Редактирование",
                 Content = vm,
 
                 PrimaryButtonText = "Сохранить",
@@ -37,8 +37,8 @@ namespace CollegeStatictics.ViewModels
                     return;
                 }
 
-                Specialities.Refresh();
-                DatabaseContext.CancelChanges();
+                Teachers.Refresh();
+                DatabaseContext.CancelChanges(); 
             });
 
             contentDialog.Closing += refreshSubjects;
@@ -47,12 +47,12 @@ namespace CollegeStatictics.ViewModels
         }
 
         [RelayCommand]
-        private async void RemoveSpeciality(Speciality speciality)
+        private async void RemoveTeacher(Subject subject)
         {
             var dialog = new ContentDialog()
             {
                 Title = "Уведомление",
-                Content = $"Вы действительно хотите удалить {speciality.Name}",
+                Content = $"Вы действительно хотите удалить {subject.Name}",
 
                 PrimaryButtonText = "Да",
 
@@ -61,28 +61,26 @@ namespace CollegeStatictics.ViewModels
 
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
-                MessageBox.Show($"{speciality.Name} удалён (Нихуя)");
+                MessageBox.Show($"{subject.Name} удалён (Нихуя)");
         }
         #endregion
 
-        public FilteredObservableCollection<Speciality> Specialities { get; set; }
+        public FilteredObservableCollection<Teacher> Teachers { get; set; }
 
-        public SpecialitiesVM()
+        public TeachersVM()
         {
-            RefreshSubjects();
+            RefreshTeachers();
         }
 
-        private void RefreshSubjects()
+        private void RefreshTeachers()
         {
-            DatabaseContext.Entities.Specialities.Load();
-            DatabaseContext.Entities.Departments.Load();
-
-            Specialities = new FilteredObservableCollectionBuilder<Speciality>(DatabaseContext.Entities.Specialities.Local.ToObservableCollection())
-                           .AddSearching(new Searching<Speciality>(speciality => speciality.Name))
-                           .AddSearching(new Searching<Speciality>(speciality => $"{speciality.Id}"))
-                           .AddSearching(new Searching<Speciality>(speciality => speciality.Department.Name))
-                           .AddFilter(new Filter<Speciality, Department>("Отделение", speciality => speciality.Department))
-                           .Build();
+            DatabaseContext.Entities.Teachers.Load();
+            Teachers = new FilteredObservableCollectionBuilder<Teacher>(DatabaseContext.Entities.Teachers.Local.ToObservableCollection())
+                       .AddSearching(new Searching<Teacher>(teacher => teacher.Surname))
+                       .AddSearching(new Searching<Teacher>(teacher => teacher.Name))
+                       .AddSearching(new Searching<Teacher>(teacher => teacher.Patronymic))
+                       .AddSearching(new Searching<Teacher>(teacher => $"{teacher.Id}"))
+                       .Build();
         }
     }
 }

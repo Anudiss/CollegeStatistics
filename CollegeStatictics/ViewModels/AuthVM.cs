@@ -5,6 +5,7 @@ using CollegeStatictics.Windows;
 using CollegeStatictics.Windows.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -50,7 +51,7 @@ namespace CollegeStatictics.ViewModels
 
             //App.Instance.CurrentUser = authorizatedUser;
 
-
+            DatabaseContext.Entities.SaveChanges();
 
 
             #region [ Это диалоговое окно Ильназ посмотри ]
@@ -70,7 +71,11 @@ namespace CollegeStatictics.ViewModels
 
 
 
-            new WindowViewModel(new MainVM()).Show();
+            new WindowViewModel(new MainVM())
+            {
+                SizeToContent = SizeToContent.Manual,
+                WindowState = WindowState.Maximized
+            }.Show();
             CloseWindow();
         }
 

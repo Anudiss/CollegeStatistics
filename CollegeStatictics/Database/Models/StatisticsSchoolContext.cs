@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using CollegeStatictics.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CollegeStatictics.Database;
+namespace CollegeStatictics.Database.Models;
 
-public partial class DatabaseContext : DbContext
+public partial class StatisticsSchoolContext : DbContext
 {
-    public DatabaseContext()
+    public StatisticsSchoolContext()
     {
     }
 
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public StatisticsSchoolContext(DbContextOptions<StatisticsSchoolContext> options)
         : base(options)
     {
     }

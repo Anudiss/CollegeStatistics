@@ -31,7 +31,17 @@ namespace CollegeStatictics.ViewModels
 
                 DefaultButton = ContentDialogButton.Primary
             };
-            var refreshSubjects = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) => { Subjects.Refresh(); DatabaseContext.CancelChanges(); });
+            var refreshSubjects = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) =>
+            {
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                    return;
+                }
+
+                Subjects.Refresh();
+                DatabaseContext.CancelChanges();
+            });
 
             contentDialog.Closing += refreshSubjects;
 

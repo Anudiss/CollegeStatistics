@@ -54,27 +54,17 @@ namespace CollegeStatictics.Utilities
             => LoadPossibleValues().Select(v =>
             {
                 dynamic objWithName = v!;
-                return new MenuItem { Header = objWithName.Name };
+                MenuItem menuItem = new() { Header = objWithName.Name };
+
+                menuItem.Checked += (_, _) => Add(objWithName);
+                menuItem.Unchecked += (_, _) => Remove(objWithName);
+
+                return menuItem;
             });
 
         public bool IsAccepted(T item) =>
             !SelectedValues.Any() || SelectedValues.Contains(PropertyGetter(item));
 
-        [RelayCommand]
-        public void ToggleValue(object value)
-        {
-            if (value is not R r)
-                return;
-
-            if (SelectedValues.Contains(r))
-                SelectedValues.Remove(r);
-            else
-                SelectedValues.Add(r);
-
-            SelectedValuesChanged?.Invoke();
-        }
-
-        [RelayCommand]
         public void Add(object value)
         {
             if (value is R r)
@@ -85,7 +75,7 @@ namespace CollegeStatictics.Utilities
         public void Remove(object value)
         {
             if (value is R r)
-                SelectedValues.Add(r);
+                SelectedValues.Remove(r);
             SelectedValuesChanged?.Invoke();
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CollegeStatictics.Database.Models;
 
@@ -10,7 +9,6 @@ public partial class Speciality
 
     public string Name { get; set; } = null!;
 
-    [ForeignKey(nameof(Department))]
     public int DepartmentId { get; set; }
 
     public virtual Department Department { get; set; } = null!;
