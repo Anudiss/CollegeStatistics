@@ -50,25 +50,11 @@
                     </DataTemplate>
 
                     <DataTemplate x:Key="FilterTemplate">
-                        
+
                         <MenuItem Header="{Binding Path=Name}"
                                   Name="Root"
-                                  ItemsSource="{Binding Path=PossibleValues}"
-                                  IsSubmenuOpen="False"
-                                  StaysOpenOnClick="True">
-                            <MenuItem.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Path=Name}"
-                                               Margin="5"/>
-                                </DataTemplate>
-                            </MenuItem.ItemTemplate>
-                            
-                            <MenuItem.ItemContainerStyle>
-                                <Style TargetType="{x:Type MenuItem}">
-                                    <Setter Property="IsCheckable" Value="True"/>
-                                </Style>
-                            </MenuItem.ItemContainerStyle>
-                            
+                                  ItemsSource="{Binding Path=MenuItems}">
+
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Checked">
                                     <i:InvokeCommandAction Command="{Binding ElementName=Root, Path=DataContext.AddCommand}" CommandParameter="{Binding Path=.}"/>
@@ -77,7 +63,7 @@
                         </MenuItem>
 
                     </DataTemplate>
-                    
+
                 </ResourceDictionary>
 
                 <ui:ThemeResources RequestedTheme="Light"/>

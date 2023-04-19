@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
              xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:utils="clr-namespace:CollegeStatictics.Utilities"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:SpecialitiesVM}">
     
@@ -26,9 +28,38 @@
                                QueryIcon="Find"
                                PlaceholderText="Поиск" 
                                Width="200" />
-            
-            <Menu ItemsSource="{Binding Specialities.Filters}"
-                  ItemTemplate="{StaticResource FilterTemplate}"/>
+
+            <Menu ItemsSource="{Binding Specialities.Filters}">
+                <!--<Menu.ItemTemplate>
+                    <DataTemplate>
+                        --><!--<MenuItem Header="{Binding Path=Name}" ItemsSource="{Binding Menu}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>--><!--
+                        
+                    </DataTemplate>
+                </Menu.ItemTemplate>-->
+                <Menu.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="StaysOpenOnClick" Value="True"/>
+                        <Setter Property="Header" Value="{Binding Name}"/>
+                        <Setter Property="ItemsSource" Value="{Binding MenuItems}"/>
+                        <Style.Triggers>
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter Property="ItemsSource" Value="{x:Null}"/>
+                                <Setter Property="IsCheckable" Value="True"/>
+                            </Trigger>
+                            <Trigger Property="Role" Value="SubmenuItem">
+                                <Setter Property="ItemsSource" Value="{x:Null}"/>
+                                <Setter Property="IsCheckable" Value="True"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Menu.ItemContainerStyle>
+            </Menu>
 
         </ui:SimpleStackPanel>
         

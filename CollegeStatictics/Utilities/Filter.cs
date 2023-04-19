@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace CollegeStatictics.Utilities
 {
@@ -26,6 +27,7 @@ namespace CollegeStatictics.Utilities
         public string Name { get; set; }
         public ObservableCollection<R> SelectedValues { get; }
         public IEnumerable PossibleValues => LoadPossibleValues();
+        public IEnumerable MenuItems => LoadMenuItems();
 
         public Func<T, R> PropertyGetter;
         public event Action SelectedValuesChanged;
@@ -47,6 +49,13 @@ namespace CollegeStatictics.Utilities
             
             return values.Local.Select(entity => PropertyGetter(entity)).Distinct();
         }
+
+        private IEnumerable LoadMenuItems()
+            => LoadPossibleValues().Select(v =>
+            {
+                dynamic objWithName = v!;
+                return new MenuItem { Header = objWithName.Name };
+            });
 
         public bool IsAccepted(T item) =>
             !SelectedValues.Any() || SelectedValues.Contains(PropertyGetter(item));
