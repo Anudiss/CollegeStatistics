@@ -1,14 +1,12 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.Utilities;
-using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf;
 using ModernWpf.Controls;
 using System.Windows;
-using System.Windows.Data;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -81,6 +79,8 @@ namespace CollegeStatictics.ViewModels
                        .AddSearching(new Searching<Group>(group => group.EducationForm.Name))
                        .AddSearching(new Searching<Group>(group => group.Curator.SurnameAndInitials))
                        .AddSearching(new Searching<Group>(group => group.Speciality.Name))
+                       .AddFilter(new Filter<Group, EducationForm>("Форма обучения", group => group.EducationForm))
+                       .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
                        .Build();
         }
     }

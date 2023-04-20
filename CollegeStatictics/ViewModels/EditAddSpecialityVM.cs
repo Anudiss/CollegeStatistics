@@ -76,7 +76,10 @@ namespace CollegeStatictics.ViewModels
             DatabaseContext.Entities.Specialities.Load();
             DatabaseContext.Entities.Departments.Load();
 
-            _speciality = speciality ?? new();
+            _speciality = speciality ?? new()
+            {
+                Department = DatabaseContext.Entities.Departments.Local.FirstOrDefault()
+            };
         }
     }
 }
