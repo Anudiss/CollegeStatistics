@@ -2,8 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CollegeStatictics.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vm:GroupsVM}">
     <Grid>
@@ -34,7 +34,7 @@
                   CanUserDeleteRows="False"
                   SelectionMode="Single"
                   IsReadOnly="True"
-                  Name="GroupssContainer">
+                  Name="GroupsContainer">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Открыть"
@@ -54,27 +54,20 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding Id}"
-                                    Width="Auto" />
+                                    Width="Auto"/>
 
                 <DataGridTextColumn Header="Год создания"
                                     Binding="{Binding CreationYear}"
-                                    Width="*" />
+                                    Width="*"/>
 
                 <DataGridTextColumn Header="Форма обучени"
-                                    Binding="{Binding EducationFormю.Name}"
-                                    Width="*" />
+                                    Binding="{Binding EducationForm.Name}"
+                                    Width="*"/>
 
                 <DataGridTextColumn Header="Преподаватель"
-                                    Width="*">
-                    <DataGridTextColumn.Binding>
-                        <MultiBinding StringFormat="{}{0} {1} {2}">
-                            <Binding Path="Teacher.Surname"/>
-                            <Binding Path="Teacher.Name"/>
-                            <Binding Path="Teacher.Patronymic"/>
-                        </MultiBinding>
-                    </DataGridTextColumn.Binding>
-                </DataGridTextColumn>
-                
+                                    Binding="{Binding Curator.SurnameAndInitials}"
+                                    Width="*"/>
+
                 <DataGridTextColumn Header="Специальность"
                                     Binding="{Binding Speciality.Name}"
                                     Width="*"/>

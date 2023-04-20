@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="CollegeStatictics.Views.EditAddGroupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:db="clr-namespace:CollegeStatictics.Database"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:EditAddGroupVM}">
+    
+    <StackPanel Orientation="Vertical"
+                Width="300">
+        <StackPanel.Resources>
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="Margin" Value="0 0 0 20"/>
+                <Setter Property="Validation.ErrorTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <AdornedElementPlaceholder Name="Placeholder"/>
+                                <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
+                                           Foreground="Red"/>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </StackPanel.Resources>
+        
+        <TextBox Text="{Binding Id, Mode=OneWay}"
+                 IsReadOnly="True"/>
+
+        <ui:NumberBox Text="{Binding CreationYear, Mode=TwoWay, 
+                                     UpdateSourceTrigger=PropertyChanged, 
+                                     ValidatesOnNotifyDataErrors=True}"/>
+
+        <ComboBox ItemsSource="{Binding EducationForms}"
+                  DisplayMemberPath="Name"
+                  SelectedItem="{Binding EducationForm, Mode=TwoWay, 
+                                         UpdateSourceTrigger=PropertyChanged, 
+                                         ValidatesOnNotifyDataErrors=True}"/>
+
+        <ui:RadioButtons Header="Форма обучения">
+            <RadioButton Content="Бюджет"
+                         IsChecked="True"
+                         Command="{Binding SelectEducationFormCommand}"
+                         CommandParameter="{Binding RelativeSource={RelativeSource Self},
+                                                    Path=Tag}">
+                <RadioButton.Tag>
+                    <sys:Int32>
+                        1
+                    </sys:Int32>
+                </RadioButton.Tag>
+            </RadioButton>
+
+            <RadioButton Content="Коммерция"
+                         Command="{Binding SelectEducationFormCommand}"
+                         CommandParameter="{Binding RelativeSource={RelativeSource Self},
+                                                    Path=Tag}">
+                <RadioButton.Tag>
+                    <sys:Int32>
+                        2
+                    </sys:Int32>
+                </RadioButton.Tag>
+            </RadioButton>
+        </ui:RadioButtons>
+        
+        <!-- Custom text box with selector -->
+
+    </StackPanel>
+    
+</UserControl>

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d"
@@ -33,7 +34,7 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
-                  SelectionMode="Single"
+                  SelectionMode="Extended"
                   IsReadOnly="True"
                   Name="DepartmentsContainer">
             <DataGrid.ContextMenu>
@@ -51,6 +52,14 @@
                               Command="{Binding OpenEditAddDepartmentWindowCommand}"
                               CommandParameter="{Binding ElementName=DepartmentsContainer, Path=SelectedItem}"/>
             </DataGrid.InputBindings>
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SetSelectedItemsCommand}"
+                                           CommandParameter="{Binding Path=SelectedItems,
+                                                                      ElementName=DepartmentsContainer}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"

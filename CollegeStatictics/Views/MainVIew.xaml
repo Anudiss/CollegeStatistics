@@ -37,6 +37,9 @@
                 <ui:NavigationViewItem Content="Предподаватели"
                                        Tag="{x:Type vm:TeachersVM}" />
 
+                <ui:NavigationViewItem Content="Группы"
+                                       Tag="{x:Type vm:GroupsVM}" />
+
                 <!--<ui:NavigationViewItemSeparator/>-->
             </ui:NavigationView.MenuItems>
             

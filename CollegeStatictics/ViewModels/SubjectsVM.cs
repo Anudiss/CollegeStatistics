@@ -1,5 +1,6 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes;
 using CollegeStatictics.Utilities;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,12 +8,14 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf;
 using ModernWpf.Controls;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class SubjectsVM : ObservableObject
+    public partial class SubjectsVM : ObservableObject, IPage<Subject>
     {
         #region [ Commands ]
         [RelayCommand]
@@ -67,7 +70,13 @@ namespace CollegeStatictics.ViewModels
         }
         #endregion
 
-        public FilteredObservableCollection<Subject> Subjects { get; set; }
+        #region [ Properties ]
+
+        public FilteredObservableCollection<Subject> Subjects { get; set; } = null!;
+
+        IEnumerable<Subject> IPage<Subject>.SelectedItems { get; set; } = Enumerable.Empty<Subject>();
+
+        #endregion
 
         public SubjectsVM()
         {

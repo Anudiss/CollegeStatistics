@@ -15,6 +15,10 @@
                                     xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
                                     xmlns:views="clr-namespace:CollegeStatictics.Views"
                                     xmlns:utils="clr-namespace:CollegeStatictics.Utilities">
+
+                    <DataTemplate DataType="{x:Type vm:EntitySelectorVM`1}">
+                        <views:EntitySelectorView/>
+                    </DataTemplate>
                                          
                      <DataTemplate DataType="{x:Type vm:AuthVM}">
                          <views:AuthView/>
@@ -54,6 +58,14 @@
                     
                     <DataTemplate DataType="{x:Type vm:EditAddTeacherVM}">
                         <views:EditAddTeacherView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:GroupsVM}">
+                        <views:GroupsView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:EditAddGroupVM}">
+                        <views:EditAddGroupView />
                     </DataTemplate>
 
                 </ResourceDictionary>
