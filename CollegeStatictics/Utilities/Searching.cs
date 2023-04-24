@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CollegeStatictics.Utilities
 {
@@ -9,6 +11,8 @@ namespace CollegeStatictics.Utilities
         public Searching(Func<T, string> propertyGetter) =>
             this.propertyGetter = propertyGetter;
 
-        public bool IsAccepted(T item, string textToSearch) => propertyGetter(item)!.Trim().ToLower().Contains(textToSearch.Trim().ToLower()) != false;
+
+        public bool IsAccepted(T item, string textToSearch) =>
+            Regex.Split(textToSearch.Trim().ToLower(), @"\s+").Any(text => propertyGetter(item)!.Trim().ToLower().Contains(text) != false);
     }
 }

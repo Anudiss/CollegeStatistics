@@ -2,10 +2,8 @@
 
 namespace CollegeStatictics.Database.Models
 {
-    public class User : ITable
+    public partial class Attendance : ITable
     {
         public int Id { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
     }
 }

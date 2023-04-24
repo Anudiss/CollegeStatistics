@@ -7,6 +7,10 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ViewModels\EntitySelectorBox.cs~RFb596e0a.TMP" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0-preview2" />

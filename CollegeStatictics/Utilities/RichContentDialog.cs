@@ -1,4 +1,5 @@
 ﻿using ModernWpf.Controls;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -6,28 +7,6 @@ namespace CollegeStatictics.Utilities
 {
     public class RichContentDialog : ContentDialog
     {
-        public new ICommand PrimaryButtonCommand
-        {
-            get => (ICommand)GetValue(PrimaryButtonCommandProperty);
-            set
-            {
-                SetValue(PrimaryButtonCommandProperty, value);
-
-                value.CanExecuteChanged += delegate { IsPrimaryButtonEnabled = value.CanExecute(PrimaryButtonCommandParameter); };
-            }
-        }
-
-        public new ICommand SecondaryButtonCommand
-        {
-            get => (ICommand)GetValue(SecondaryButtonCommandProperty);
-            set
-            {
-                SetValue(SecondaryButtonCommandProperty, value);
-
-                value.CanExecuteChanged += delegate { IsSecondaryButtonEnabled = value.CanExecute(SecondaryButtonCommandParameter); };
-            }
-        }
-
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -36,4 +15,32 @@ namespace CollegeStatictics.Utilities
             base.OnKeyDown(e);
         }
     }
+
+    public static class ContentDialogMaker
+    {
+        public static async void CreateContentDialog(RichContentDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
+        public static async Task CreateContentDialogAsync(RichContentDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
+
+        static async Task CreateDialog(RichContentDialog Dialog, bool awaitPreviousDialog)
+        {
+            if (ActiveDialog != null)
+            {
+                if (awaitPreviousDialog)
+                {
+                    await DialogAwaiter.Task;
+                    DialogAwaiter = new TaskCompletionSource<bool>();
+                }
+                else ActiveDialog.Hide();
+            }
+            ActiveDialog = Dialog;
+            ActiveDialog.Closed += ActiveDialog_Closed;
+            await ActiveDialog.ShowAsync();
+            ActiveDialog.Closed -= ActiveDialog_Closed;
+        }
+
+        public static RichContentDialog ActiveDialog;
+        static TaskCompletionSource<bool> DialogAwaiter = new TaskCompletionSource<bool>();
+        private static void ActiveDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args) { DialogAwaiter.SetResult(true); }
+    }
+
 }

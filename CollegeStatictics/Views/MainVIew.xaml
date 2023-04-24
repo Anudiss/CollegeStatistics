@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
              xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:collections="clr-namespace:System.Collections.Generic;assembly=mscorlib"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:MainVM}">
     <Grid>
@@ -17,35 +18,18 @@
                            SelectionChanged="NavigationView_SelectionChanged"
                            IsPaneToggleButtonVisible="False"
                            IsBackButtonVisible="Collapsed"
-                           PaneDisplayMode="Left">
+                           PaneDisplayMode="Left"
+                           MenuItemsSource="{x:Static vm:MainVM.NavigationItems}">
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem>
                     <TextBlock Text="Footer item"/>
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
 
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Предметы"
-                                       Tag="{x:Type vm:SubjectsVM}" />
-                
-                <ui:NavigationViewItem Content="Отделы"
-                                       Tag="{x:Type vm:DepartmentsVM}" />
-                
-                <ui:NavigationViewItem Content="Специальности"
-                                       Tag="{x:Type vm:SpecialitiesVM}" />
-                
-                <ui:NavigationViewItem Content="Предподаватели"
-                                       Tag="{x:Type vm:TeachersVM}" />
-
-                <ui:NavigationViewItem Content="Группы"
-                                       Tag="{x:Type vm:GroupsVM}" />
-
-                <!--<ui:NavigationViewItemSeparator/>-->
-            </ui:NavigationView.MenuItems>
-            
         </ui:NavigationView>
         
         <ContentControl Content="{Binding CurrentView}"
+                        ContentTemplate="{StaticResource ItemsContainerTemplate}"
                         Grid.Column="1"/>
         
     </Grid>

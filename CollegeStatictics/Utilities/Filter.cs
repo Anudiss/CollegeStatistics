@@ -53,14 +53,20 @@ namespace CollegeStatictics.Utilities
         private IEnumerable LoadMenuItems()
             => LoadPossibleValues().Select(v =>
             {
-                dynamic objWithName = v!;
-                MenuItem menuItem = new() { Header = objWithName.Name };
+                MenuItem menuItem = new() { Header = GetDynamicName(v!) };
 
-                menuItem.Checked += (_, _) => Add(objWithName);
-                menuItem.Unchecked += (_, _) => Remove(objWithName);
+                menuItem.Checked += (_, _) => Add(v!);
+                menuItem.Unchecked += (_, _) => Remove(v!);
 
                 return menuItem;
             });
+
+        private static string GetDynamicName(object v)
+        {
+            if (v.GetType().GetProperty("Name") == null)
+                return v!.ToString()!;
+            return (string)v!.GetType()!.GetProperty("Name")!.GetValue(v)!;
+        }
 
         public bool IsAccepted(T item) =>
             !SelectedValues.Any() || SelectedValues.Contains(PropertyGetter(item));

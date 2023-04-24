@@ -6,7 +6,7 @@ namespace CollegeStatictics.ViewModels.Base
     public partial class WindowViewModelBase : ObservableValidator
     {
         [ObservableProperty]
-        private string? _title;
+        private string? title;
 
         public Action? CloseWindowMethod;
 

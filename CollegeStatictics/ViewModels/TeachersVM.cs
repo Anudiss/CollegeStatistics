@@ -1,12 +1,12 @@
-﻿using CollegeStatictics.Database.Models;
-using CollegeStatictics.Database;
+﻿using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
 using CollegeStatictics.Utilities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ModernWpf.Controls;
-using ModernWpf;
-using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using ModernWpf;
+using ModernWpf.Controls;
+using System.Windows;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -38,7 +38,7 @@ namespace CollegeStatictics.ViewModels
                 }
 
                 Teachers.Refresh();
-                DatabaseContext.CancelChanges(); 
+                DatabaseContext.CancelChanges();
             });
 
             contentDialog.Closing += refreshSubjects;
