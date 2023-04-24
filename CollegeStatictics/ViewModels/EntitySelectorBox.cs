@@ -17,7 +17,7 @@ namespace CollegeStatictics.ViewModels
         [RelayCommand]
         private async void OpenSelectorDialog()
         {
-            SelectedItems = await OpenSelectorDialog(MainVM.Pages[_itemContainerName]());
+            SelectedItems = OpenSelectorDialog(MainVM.Pages[_itemContainerName]());
         }
 
         [ObservableProperty]
@@ -33,7 +33,7 @@ namespace CollegeStatictics.ViewModels
             _itemContainerName = itemContainerName;
         }
 
-        public static async Task<IEnumerable<T>> OpenSelectorDialog(ItemsContainer<T> itemsContainer)
+        public static IEnumerable<T> OpenSelectorDialog(ItemsContainer<T> itemsContainer)
         {
             var contentDialog = new RichContentDialog()
             {
@@ -46,7 +46,7 @@ namespace CollegeStatictics.ViewModels
                 SecondaryButtonText = "Отмена"
             };
 
-            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, false);
+            ContentDialogMaker.CreateContentDialog(contentDialog, false);
 
             return itemsContainer.SelectedItems?.Cast<T>() ?? Enumerable.Empty<T>();
         }

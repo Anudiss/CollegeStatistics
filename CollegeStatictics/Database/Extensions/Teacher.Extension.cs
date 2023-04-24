@@ -2,6 +2,6 @@
 {
     public partial class Teacher : User
     {
-        public string SurnameAndInitials => $"{Surname} {Name?[1]} {Patronymic?[1]}";
+        public override string ToString() => $"{Surname} {Name} {Patronymic}";
     }
 }

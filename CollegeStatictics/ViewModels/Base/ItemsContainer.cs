@@ -29,7 +29,7 @@ namespace CollegeStatictics.ViewModels.Base
         public ObservableCollection<DataGridColumn> columns;
 
         [RelayCommand]
-        private async void OpenDialog(T? item)
+        private void OpenDialog(T? item)
         {
             var contentDialog = new RichContentDialog()
             {
@@ -45,7 +45,7 @@ namespace CollegeStatictics.ViewModels.Base
                 SecondaryButtonText = "Отмена"
             };
 
-            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, false);
+            ContentDialogMaker.CreateContentDialog(contentDialog, false);
 
             Items.Refresh();
         }

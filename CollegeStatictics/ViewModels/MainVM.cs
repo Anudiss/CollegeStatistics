@@ -16,7 +16,7 @@ namespace CollegeStatictics.ViewModels
     {
         public static readonly Dictionary<string, Func<dynamic>> Pages = new()
         {
-            { "Преподаватели", new ItemsContainerBuilder<Teacher, TeacherView>()
+            { "Преподаватели", () => new ItemsContainerBuilder<Teacher, TeacherView>()
 
                                .AddColumn(nameof(Teacher.Id), "Id")
                                .AddColumn(nameof(Teacher.Surname), "Фамилия")
@@ -25,16 +25,16 @@ namespace CollegeStatictics.ViewModels
 
                                .AddSearching(new Searching<Teacher>(teacher => $"{teacher.Surname} {teacher.Name} {teacher.Patronymic}"))
                                
-                               .Build
+                               .Build()
             },
-            { "Предметы", new ItemsContainerBuilder<Subject, SubjectView>()
+            { "Предметы", () => new ItemsContainerBuilder<Subject, SubjectView>()
                           .AddColumn(nameof(Subject.Id), "Id")
                           .AddColumn(nameof(Subject.Name), "Название")
 
                           .AddSearching(new Searching<Subject>(subject => subject.Name))
-                          .Build
+                          .Build()
             },
-            { "Специальности", new ItemsContainerBuilder<Speciality, SpecialityView>()
+            { "Специальности", () => new ItemsContainerBuilder<Speciality, SpecialityView>()
 
                                .AddColumn(nameof(Speciality.Id), "Id")
                                .AddColumn(nameof(Speciality.Name), "Название")
@@ -45,16 +45,16 @@ namespace CollegeStatictics.ViewModels
 
                                .AddFilter(new Filter<Speciality, Department>("Подразделение", speciality => speciality.Department))
 
-                               .Build
+                               .Build()
             },
-            { "Подразделения", new ItemsContainerBuilder<Department, DepartmentView>()
+            { "Подразделения", () => new ItemsContainerBuilder<Department, DepartmentView>()
             
                                .AddColumn(nameof(Department.Id), "Id")
                                .AddColumn(nameof(Department.Name), "Название")
 
                                .AddSearching(new Searching<Department>(department => department.Name))
 
-                               .Build
+                               .Build()
             }
         };
 
