@@ -7,6 +7,7 @@ using ModernWpf.Controls;
 using ModernWpf;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using CollegeStatictics.Windows;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -17,7 +18,7 @@ namespace CollegeStatictics.ViewModels
         private void OpenEditAddSpecialityWindow(Speciality? speciality)
         {
             EditAddSpecialityVM vm = new(speciality);
-            var contentDialog = new RichContentDialog()
+            var contentDialog = new DialogWindow()
             {
                 Title = speciality == null ? "Добавление" : "Редактирование",
                 Content = vm,
@@ -27,7 +28,7 @@ namespace CollegeStatictics.ViewModels
 
                 SecondaryButtonText = "Отмена",
 
-                DefaultButton = ContentDialogButton.Primary
+                //DefaultButton = ContentDialogButton.Primary
             };
             var refreshSubjects = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) =>
             {
@@ -41,9 +42,9 @@ namespace CollegeStatictics.ViewModels
                 DatabaseContext.CancelChanges();
             });
 
-            contentDialog.Closing += refreshSubjects;
+            //contentDialog.Closing += refreshSubjects;
 
-            contentDialog.ShowAsync();
+            contentDialog.Show();
         }
 
         [RelayCommand]

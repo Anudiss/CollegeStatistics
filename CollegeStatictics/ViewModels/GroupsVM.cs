@@ -1,6 +1,7 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.Utilities;
+using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace CollegeStatictics.ViewModels
         private void OpenEditAddGroupWindow(Group? group)
         {
             EditAddGroupVM vm = new(group);
-            var contentDialog = new RichContentDialog()
+            var contentDialog = new DialogWindow()
             {
                 Title = group == null ? "Добавление" : "Редактирование",
                 Content = vm,
@@ -28,7 +29,7 @@ namespace CollegeStatictics.ViewModels
 
                 SecondaryButtonText = "Отмена",
 
-                DefaultButton = ContentDialogButton.Primary
+                //DefaultButton = ContentDialogButton.Primary
             };
             var refreshGroups = new TypedEventHandler<ContentDialog, ContentDialogClosingEventArgs>((_, args) =>
             {
@@ -42,9 +43,9 @@ namespace CollegeStatictics.ViewModels
                 DatabaseContext.CancelChanges();
             });
 
-            contentDialog.Closing += refreshGroups;
+            //contentDialog.Closing += refreshGroups;
 
-            contentDialog.ShowAsync();
+            contentDialog.Show();
         }
 
         [RelayCommand]

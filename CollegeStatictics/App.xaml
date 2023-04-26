@@ -175,7 +175,7 @@
                          <ItemsControl ItemsSource="{Binding ViewElements}">
                              <ItemsControl.ItemsPanel>
                                  <ItemsPanelTemplate>
-                                     <ui:SimpleStackPanel Spacing="12"
+                                     <ui:SimpleStackPanel Spacing="24"
                                                           Orientation="Vertical"/>
                                  </ItemsPanelTemplate>
                              </ItemsControl.ItemsPanel>

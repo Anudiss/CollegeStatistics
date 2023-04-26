@@ -31,21 +31,22 @@ namespace CollegeStatictics.ViewModels.Base
         [RelayCommand]
         private void OpenDialog(T? item)
         {
-            var contentDialog = new RichContentDialog()
+            var contentDialog = new DialogWindow()
             {
                 Content = Activator.CreateInstance(_itemDialogType, new[] { item }),
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
 
-                DefaultButton = ContentDialogButton.Primary,
+                //DefaultButton = ContentDialogButton.Primary,
 
-                IsPrimaryButtonEnabled = false,
+                //IsPrimaryButtonEnabled = false,
                 PrimaryButtonText = "Сохранить",
+                //PrimaryButtonCommand = 
 
-                IsSecondaryButtonEnabled = true,
-                SecondaryButtonText = "Отмена"
+                //IsSecondaryButtonEnabled = true,
+                SecondaryButtonText = "Отмена",
             };
 
-            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, true);
+            contentDialog.Show();
 
             Items.Refresh();
         }

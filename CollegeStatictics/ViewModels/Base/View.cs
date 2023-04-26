@@ -48,7 +48,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         private IEnumerable<FrameworkElement> CreateViewElements()
         {
-            var formElements = from property in GetType().GetProperties()
+            var formElements = from property in GetType().GetProperties().Reverse()
                                let attribute = property.GetCustomAttribute<FormElementAttribute>()
                                where attribute != null
                                select (property, attribute);

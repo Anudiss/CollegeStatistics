@@ -1,6 +1,7 @@
 ﻿using CollegeStatictics.DataTypes;
 using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Base;
+using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ModernWpf.Controls;
@@ -35,18 +36,18 @@ namespace CollegeStatictics.ViewModels
 
         public static IEnumerable<T> OpenSelectorDialog(ItemsContainer<T> itemsContainer)
         {
-            var contentDialog = new RichContentDialog()
+            var contentDialog = new DialogWindow()
             {
                 Content = itemsContainer,
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemsContainerTemplate"),
 
                 PrimaryButtonText = "Выбрать",
-                DefaultButton = ContentDialogButton.Primary,
+                //DefaultButton = ContentDialogButton.Primary,
 
-                SecondaryButtonText = "Отмена"
+                SecondaryButtonText = "Отмена",
             };
 
-            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, true);
+            contentDialog.Show();
 
             return itemsContainer.SelectedItems?.Cast<T>() ?? Enumerable.Empty<T>();
         }
