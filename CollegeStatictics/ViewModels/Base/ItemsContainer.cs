@@ -45,7 +45,7 @@ namespace CollegeStatictics.ViewModels.Base
                 SecondaryButtonText = "Отмена"
             };
 
-            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, false);
+            await ContentDialogMaker.CreateContentDialogAsync(contentDialog, true);
 
             Items.Refresh();
         }

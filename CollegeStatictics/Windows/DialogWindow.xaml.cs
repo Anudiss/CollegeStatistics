@@ -1,6 +1,4 @@
-﻿using CollegeStatictics.ViewModels.Base;
-using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace CollegeStatictics.Windows
@@ -10,14 +8,14 @@ namespace CollegeStatictics.Windows
     /// </summary>
     public partial class DialogWindow : Window
     {
-        public static readonly DependencyProperty ThirdButtonTextProperty =
-            DependencyProperty.Register(nameof(ThirdButtonText), typeof(string), typeof(DialogWindow));
+        public static readonly DependencyProperty PrimaryButtonTextProperty =
+            DependencyProperty.Register(nameof(PrimaryButtonText), typeof(string), typeof(DialogWindow));
 
         public static readonly DependencyProperty SecondaryButtonTextProperty =
             DependencyProperty.Register(nameof(SecondaryButtonText), typeof(string), typeof(DialogWindow));
 
-        public static readonly DependencyProperty PrimaryButtonTextProperty =
-            DependencyProperty.Register(nameof(PrimaryButtonText), typeof(string), typeof(DialogWindow));
+        public static readonly DependencyProperty TertiaryButtonTextProperty =
+            DependencyProperty.Register(nameof(TertiaryButtonText), typeof(string), typeof(DialogWindow));
 
         public static readonly DependencyProperty PrimaryButtonCommandProperty =
             DependencyProperty.Register(nameof(PrimaryButtonCommand), typeof(ICommand), typeof(DialogWindow));
@@ -25,8 +23,8 @@ namespace CollegeStatictics.Windows
         public static readonly DependencyProperty SecondaryButtonCommandProperty =
             DependencyProperty.Register(nameof(SecondaryButtonCommand), typeof(ICommand), typeof(DialogWindow));
 
-        public static readonly DependencyProperty ThirdButtonCommandProperty =
-            DependencyProperty.Register(nameof(ThirdButtonCommand), typeof(ICommand), typeof(DialogWindow));
+        public static readonly DependencyProperty TertiaryButtonCommandProperty =
+            DependencyProperty.Register(nameof(TertiaryButtonCommand), typeof(ICommand), typeof(DialogWindow));
 
         public ICommand PrimaryButtonCommand
         {
@@ -40,10 +38,10 @@ namespace CollegeStatictics.Windows
             set { SetValue(SecondaryButtonCommandProperty, value); }
         }
 
-        public ICommand ThirdButtonCommand
+        public ICommand TertiaryButtonCommand
         {
-            get { return (ICommand)GetValue(ThirdButtonCommandProperty); }
-            set { SetValue(ThirdButtonCommandProperty, value); }
+            get { return (ICommand)GetValue(TertiaryButtonCommandProperty); }
+            set { SetValue(TertiaryButtonCommandProperty, value); }
         }
 
         public string PrimaryButtonText
@@ -58,17 +56,23 @@ namespace CollegeStatictics.Windows
             set { SetValue(SecondaryButtonTextProperty, value); }
         }
 
-        public string ThirdButtonText
+        public string TertiaryButtonText
         {
-            get { return (string)GetValue(ThirdButtonTextProperty); }
-            set { SetValue(ThirdButtonTextProperty, value); }
+            get { return (string)GetValue(TertiaryButtonTextProperty); }
+            set { SetValue(TertiaryButtonTextProperty, value); }
         }
-
-        public DialogViewModelBase ViewModel { get; }
 
         public DialogWindow()
         {
             InitializeComponent();
         }
+    }
+
+    public enum DialogButton
+    {
+        None,
+        Primary,
+        Secondary,
+        Tertiary
     }
 }

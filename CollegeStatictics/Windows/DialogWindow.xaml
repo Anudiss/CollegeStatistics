@@ -3,14 +3,37 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:CollegeStatictics.ViewModels.Base"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
         WindowStyle="None"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     
-    <ContentControl Content="{Binding}"
-                    ContentTemplate="{StaticResource ItemsContainerTemplate}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <ContentControl Content="{Binding Content}"
+                        ContentTemplate="{Binding ContentTemplate}"
+                        Grid.Row="0"/>
+        
+        <ItemsControl>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ui:SimpleStackPanel Orientation="Horizontal"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Center"
+                                         Spacing="10"
+                                         Margin="5"
+                                         Grid.Row="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+    </Grid>
     
 </Window>

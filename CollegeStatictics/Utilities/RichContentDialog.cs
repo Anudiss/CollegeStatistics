@@ -1,6 +1,7 @@
 ﻿using ModernWpf.Controls;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace CollegeStatictics.Utilities
@@ -21,7 +22,7 @@ namespace CollegeStatictics.Utilities
         public static async void CreateContentDialog(RichContentDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
         public static async Task CreateContentDialogAsync(RichContentDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
 
-        static async Task CreateDialog(RichContentDialog Dialog, bool awaitPreviousDialog)
+        static async Task CreateDialog(RichContentDialog dialog, bool awaitPreviousDialog)
         {
             if (ActiveDialog != null)
             {
@@ -30,16 +31,23 @@ namespace CollegeStatictics.Utilities
                     await DialogAwaiter.Task;
                     DialogAwaiter = new TaskCompletionSource<bool>();
                 }
-                else ActiveDialog.Hide();
+                else
+                {
+                    ActiveDialog.Hide();
+                    ActiveDialogs.Pop();
+                }
             }
-            ActiveDialog = Dialog;
+
+            ActiveDialogs.Push(dialog);
             ActiveDialog.Closed += ActiveDialog_Closed;
             await ActiveDialog.ShowAsync();
             ActiveDialog.Closed -= ActiveDialog_Closed;
         }
 
-        public static RichContentDialog ActiveDialog;
-        static TaskCompletionSource<bool> DialogAwaiter = new TaskCompletionSource<bool>();
+        public static Stack<RichContentDialog> ActiveDialogs = new();
+        public static RichContentDialog ActiveDialog => ActiveDialogs.Any() ? ActiveDialogs.Peek() : null!;
+
+        static TaskCompletionSource<bool> DialogAwaiter = new();
         private static void ActiveDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args) { DialogAwaiter.SetResult(true); }
     }
 
