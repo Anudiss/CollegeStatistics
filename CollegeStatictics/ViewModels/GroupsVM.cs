@@ -76,9 +76,9 @@ namespace CollegeStatictics.ViewModels
             Groups = new FilteredObservableCollectionBuilder<Group>(DatabaseContext.Entities.Groups.Local.ToObservableCollection())
                        .AddSearching(new Searching<Group>(group => $"{group.Id}"))
                        .AddSearching(new Searching<Group>(group => $"{group.CreationYear}"))
-                       .AddSearching(new Searching<Group>(group => group.EducationForm.Name))
-                       .AddSearching(new Searching<Group>(group => group.Curator.SurnameAndInitials))
-                       .AddSearching(new Searching<Group>(group => group.Speciality.Name))
+                       .AddSearching(new Searching<Group>(group => $"{group.EducationForm}"))
+                       .AddSearching(new Searching<Group>(group => $"{group.Curator}"))
+                       .AddSearching(new Searching<Group>(group => $"{group.Speciality}"))
                        .AddFilter(new Filter<Group, EducationForm>("Форма обучения", group => group.EducationForm))
                        .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
                        .Build();

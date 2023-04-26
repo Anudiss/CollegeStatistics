@@ -1,5 +1,6 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace CollegeStatictics.Utilities
 {
-    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class
+    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable where R : class, ITable
     {
         // Properties:
         //  + Possible values collection
@@ -44,29 +46,24 @@ namespace CollegeStatictics.Utilities
 
         private IEnumerable<R> LoadPossibleValues()
         {
+            DatabaseContext.Entities.Set<R>().Load();
+
             var values = DatabaseContext.Entities.Set<T>();
             values.Load();
-            
+
             return values.Local.Select(entity => PropertyGetter(entity)).Distinct();
         }
 
         private IEnumerable LoadMenuItems()
             => LoadPossibleValues().Select(v =>
             {
-                MenuItem menuItem = new() { Header = GetDynamicName(v!) };
+                MenuItem menuItem = new() { Header = v!.ToString() };
 
                 menuItem.Checked += (_, _) => Add(v!);
                 menuItem.Unchecked += (_, _) => Remove(v!);
 
                 return menuItem;
             });
-
-        private static string GetDynamicName(object v)
-        {
-            if (v.GetType().GetProperty("Name") == null)
-                return v!.ToString()!;
-            return (string)v!.GetType()!.GetProperty("Name")!.GetValue(v)!;
-        }
 
         public bool IsAccepted(T item) =>
             !SelectedValues.Any() || SelectedValues.Contains(PropertyGetter(item));
