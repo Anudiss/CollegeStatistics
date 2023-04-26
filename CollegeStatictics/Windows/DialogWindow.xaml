@@ -15,7 +15,8 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         AllowsTransparency="True"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Closing="Window_Closing">
 
     <Border Margin="20"
             Padding="24 0 24 24"
@@ -57,15 +58,15 @@
                 </UniformGrid.Resources>
 
                 <Button Content="{Binding PrimaryButtonText}"
-                        Command="{Binding PrimaryButtonCommand}"
                         Background="#073B4C"
-                        Foreground="White"/>
+                        Foreground="White"
+                        Click="PrimaryButton_Click"/>
 
                 <Button Content="{Binding SecondaryButtonText}"
-                        Command="{Binding SecondaryButtonCommand}"/>
+                        Click="SecondaryButton_Click"/>
 
                 <Button Content="{Binding TertiaryButtonText}"
-                        Command="{Binding TertiaryButtonCommand}"/>
+                        Click="TertiaryButton_Click"/>
             </UniformGrid>
         </Grid>
 

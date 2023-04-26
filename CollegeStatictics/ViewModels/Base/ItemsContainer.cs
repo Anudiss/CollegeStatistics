@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.Utilities;
 using CollegeStatictics.Windows;
@@ -10,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,7 +19,7 @@ using ITable = CollegeStatictics.DataTypes.ITable;
 
 namespace CollegeStatictics.ViewModels.Base
 {
-    public partial class ItemsContainer<T> : ObservableObject, IItemSelector<T> where T : class, ITable
+    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable
     {
         [ObservableProperty]
         private FilteredObservableCollection<T> items;
@@ -31,22 +33,28 @@ namespace CollegeStatictics.ViewModels.Base
         [RelayCommand]
         private void OpenDialog(T? item)
         {
-            var contentDialog = new DialogWindow()
+            ItemDialog<T> itemDialog = (ItemDialog<T>)Activator.CreateInstance(_itemDialogType, new[] { item })!;
+            var contentDialog = new DialogWindow
             {
-                Content = Activator.CreateInstance(_itemDialogType, new[] { item }),
+                Content = itemDialog,
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
 
                 //DefaultButton = ContentDialogButton.Primary,
 
                 //IsPrimaryButtonEnabled = false,
                 PrimaryButtonText = "Сохранить",
-                //PrimaryButtonCommand = 
+                PrimaryButtonCommand = itemDialog.SaveCommand,
 
                 //IsSecondaryButtonEnabled = true,
                 SecondaryButtonText = "Отмена",
+                SecondaryButtonCommand = itemDialog.CancelCommand,
+
+                CanClose = () => !DatabaseContext.Entities.ChangeTracker.HasChanges()
             };
 
+            contentDialog.Closing += ContentDialogClosingHandler;
             contentDialog.Show();
+            contentDialog.Closing -= ContentDialogClosingHandler;
 
             Items.Refresh();
         }
@@ -58,6 +66,30 @@ namespace CollegeStatictics.ViewModels.Base
             Items = items;
             Columns = columns;
             _itemDialogType = itemDialogType;
+        }
+
+        private void ContentDialogClosingHandler(object? sender, CancelEventArgs e)
+        {
+            if (DatabaseContext.Entities.ChangeTracker.HasChanges() && (sender as DialogWindow)!.Result == DialogResult.None)
+            {
+                var acceptDialog = new DialogWindow
+                {
+                    Content = "Сохранить изменения?",
+                    PrimaryButtonText = "Да",
+                    SecondaryButtonText = "Нет",
+                    TertiaryButtonText = "Отмена",
+                };
+
+                e.Cancel = false;
+                acceptDialog.Show();
+
+                if (acceptDialog.Result == DialogResult.Primary)
+                    DatabaseContext.Entities.SaveChanges();
+                else if (acceptDialog.Result == DialogResult.Secondary)
+                    DatabaseContext.CancelChanges();
+                else
+                    e.Cancel = true;
+            }
         }
     }
 

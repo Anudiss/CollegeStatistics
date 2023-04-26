@@ -1,9 +1,4 @@
-﻿using ModernWpf.Controls;
-using System.Collections;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace CollegeStatictics.Windows
@@ -11,8 +6,13 @@ namespace CollegeStatictics.Windows
     /// <summary>
     /// Логика взаимодействия для DialogWindow.xaml
     /// </summary>
+
+    public delegate bool CanDialogWindowCloseDeterminant();
+
     public partial class DialogWindow : Window
     {
+        public CanDialogWindowCloseDeterminant? CanClose { get; set; }
+
         public static readonly DependencyProperty ContentsProperty =
             DependencyProperty.Register(nameof(Content), typeof(object), typeof(DialogWindow));
 
@@ -85,6 +85,8 @@ namespace CollegeStatictics.Windows
             set { SetValue(ContentsTemplateProperty, value); }
         }
 
+        public DialogResult Result { get; private set; }
+
         public DialogWindow()
         {
             InitializeComponent();
@@ -97,9 +99,53 @@ namespace CollegeStatictics.Windows
             if (e.LeftButton == MouseButtonState.Pressed)
                 DragMove();
         }
+
+        private void PrimaryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PrimaryButtonCommand?.CanExecute(null) != false)
+                PrimaryButtonCommand?.Execute(null);
+
+            if (CanClose?.Invoke() != false)
+            {
+                Result = Windows.DialogResult.Primary;
+                Close();
+            }
+        }
+
+        private void SecondaryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SecondaryButtonCommand?.CanExecute(null) != false)
+                SecondaryButtonCommand?.Execute(null);
+
+            if (CanClose?.Invoke() != false)
+            {
+                Result = Windows.DialogResult.Secondary;
+                Close();
+            }
+        }
+
+        private void TertiaryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (TertiaryButtonCommand?.CanExecute(null) != false)
+                TertiaryButtonCommand?.Execute(null);
+
+            if (CanClose?.Invoke() != false)
+            {
+                Result = Windows.DialogResult.Tertiary;
+                Close();
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Result != Windows.DialogResult.None)
+                return;
+
+            e.Cancel = !CanClose?.Invoke() ?? false;
+        }
     }
 
-    public enum DialogButton
+    public enum DialogResult
     {
         None,
         Primary,

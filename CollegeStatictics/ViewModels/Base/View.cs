@@ -1,7 +1,9 @@
 ﻿using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.ViewModels.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,28 @@ namespace CollegeStatictics.ViewModels.Base
 {
     public abstract partial class ItemDialog<T> : ObservableValidator where T : class, ITable
     {
+        #region [ Commands ]
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        public void Save()
+        {
+            ValidateAllProperties();
+            if (HasErrors)
+                return;
+
+            if (_item.Id == 0)
+                DatabaseContext.Entities.Set<T>().Local.Add(_item);
+
+            DatabaseContext.Entities.SaveChanges();
+        }
+        
+        private bool CanSave() => !HasErrors;
+
+        [RelayCommand]
+        private void Cancel() => DatabaseContext.CancelChanges();
+
+        #endregion
+
         protected readonly T _item;
 
         /*
