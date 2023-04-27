@@ -35,55 +35,10 @@
                                     Command="{Binding OpenSelectorDialogWindowCommand}"/>
                         </Grid>
                     </DataTemplate>-->
-                                         
-                     <DataTemplate DataType="{x:Type vm:AuthVM}">
-                         <views:AuthView/>
-                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type vm:MainVM}">
                         <views:MainVIew/>
                     </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:SubjectsVM}">
-                        <views:SubjectsView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:EditAddSubjectVM}">
-                        <views:EditAddSubjectView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:DepartmentsVM}">
-                        <views:DepartmentsView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:EditAddDepartmentVM}">
-                        <views:EditAddDepartmentView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:SpecialitiesVM}">
-                        <views:SpecialitiesView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:EditAddSpecialityVM}">
-                        <views:EditAddSpecialityView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:TeachersVM}">
-                        <views:TeachersView />
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:EditAddTeacherVM}">
-                        <views:EditAddTeacherView />
-                    </DataTemplate>
-
-                    <DataTemplate DataType="{x:Type vm:GroupsVM}">
-                        <views:GroupsView />
-                    </DataTemplate>
-
-                    <DataTemplate DataType="{x:Type vm:EditAddGroupVM}">
-                        <views:EditAddGroupView />
-                    </DataTemplate>
-
                 </ResourceDictionary>
 
                 <ui:ThemeResources RequestedTheme="Light" AccentColor="#073b4c"/>
@@ -149,7 +104,7 @@
                         
                              <controls:ExtendedDataGrid ItemsSource="{Binding Path=Items.View}"
                                                         x:Name="ItemsContainer"
-                                                        SelectionMode="Extended"
+                                                        SelectionMode="{Binding Path=SelectionMode}"
                                                         SelectedItems="{Binding Path=SelectedItems, Mode=OneWayToSource}"
                                                         Columns="{Binding Path=Columns, Mode=OneWay}"
                                                         Style="{StaticResource {x:Type DataGrid}}"
@@ -191,7 +146,7 @@
                                  <ColumnDefinition Width="Auto"/>
                              </Grid.ColumnDefinitions>
                              
-                             <TextBox Text="{Binding Path=SelectedItems, Converter={StaticResource JoinConverter}}"/>
+                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"/>
                              
                              <Button Content="^"
                                      Command="{Binding OpenSelectorDialogCommand}"

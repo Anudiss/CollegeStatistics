@@ -28,6 +28,9 @@ namespace CollegeStatictics.ViewModels.Base
         private IList selectedItems;
 
         [ObservableProperty]
+        private DataGridSelectionMode selectionMode = DataGridSelectionMode.Single;
+
+        [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns;
 
         [RelayCommand]

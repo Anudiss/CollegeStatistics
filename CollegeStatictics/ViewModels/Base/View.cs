@@ -105,7 +105,7 @@ namespace CollegeStatictics.ViewModels.Base
             return textBox;
         }
 
-        private static ContentControl CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private ContentControl CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
             EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.attribute;
 
@@ -113,6 +113,13 @@ namespace CollegeStatictics.ViewModels.Base
                                             .MakeGenericType(formElement.property.PropertyType);
 
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
+            DependencyProperty dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox); ;
+
+            ((Control)entitySelectorBox).SetBinding(dp, new Binding(formElement.property.Name)
+            {
+                Mode = BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
 
             return new ContentControl()
             {

@@ -18,6 +18,16 @@ namespace CollegeStatictics.Windows
             ViewModel.CloseWindowMethod = Close;
 
             InitializeComponent();
+
+            Loaded += OnLoaded;
+
+        }
+
+        private void OnLoaded(object? sender, RoutedEventArgs args)
+        {
+            Padding = new(0);
+
+            Loaded -= OnLoaded;
         }
 
         protected override void OnClosing(CancelEventArgs e) =>

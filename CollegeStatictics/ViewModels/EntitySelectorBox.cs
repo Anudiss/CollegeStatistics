@@ -1,28 +1,32 @@
 ﻿using CollegeStatictics.DataTypes;
-using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ModernWpf.Controls;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class EntitySelectorBox<T> : ObservableObject where T : class, ITable
+    [ObservableObject]
+    public partial class EntitySelectorBox<T> : Control where T : class, ITable
     {
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));
+
         [RelayCommand]
         private async void OpenSelectorDialog()
         {
-            SelectedItems = OpenSelectorDialog(MainVM.Pages[_itemContainerName]());
+            SelectedItem = OpenSelectorItemDialog(MainVM.Pages[_itemContainerName]());
         }
 
-        [ObservableProperty]
-        private IEnumerable<T> selectedItems;
+        public T SelectedItem
+        {
+            get => (T)GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
+        }
 
         private string _itemContainerName;
 
@@ -34,7 +38,7 @@ namespace CollegeStatictics.ViewModels
             _itemContainerName = itemContainerName;
         }
 
-        public static IEnumerable<T> OpenSelectorDialog(ItemsContainer<T> itemsContainer)
+        public static T OpenSelectorItemDialog(ItemsContainer<T> itemsContainer)
         {
             var contentDialog = new DialogWindow()
             {
@@ -44,12 +48,14 @@ namespace CollegeStatictics.ViewModels
                 PrimaryButtonText = "Выбрать",
                 //DefaultButton = ContentDialogButton.Primary,
 
-                SecondaryButtonText = "Отмена",
+                SecondaryButtonText = "Отмена"
             };
+
+            itemsContainer.SelectionMode = DataGridSelectionMode.Single;
 
             contentDialog.Show();
 
-            return itemsContainer.SelectedItems?.Cast<T>() ?? Enumerable.Empty<T>();
+            return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? default(T);
         }
     }
 }
