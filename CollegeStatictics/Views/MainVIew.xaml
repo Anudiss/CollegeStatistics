@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
              xmlns:ui="http://schemas.modernwpf.com/2019"
-             xmlns:collections="clr-namespace:System.Collections.Generic;assembly=mscorlib"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:MainVM}">
     <Grid>

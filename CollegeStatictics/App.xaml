@@ -148,9 +148,10 @@
                              
                              <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"/>
                              
-                             <Button Content="^"
+                             <Button Content="&gt;"
                                      Command="{Binding OpenSelectorDialogCommand}"
-                                     Grid.Column="1"/>
+                                     Grid.Column="1"
+                                     Width="32"/>
                          </Grid>
                      
                      </DataTemplate>
