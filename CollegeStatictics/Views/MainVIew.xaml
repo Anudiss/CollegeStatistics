@@ -7,29 +7,17 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:MainVM}">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <ui:NavigationView Header="Header" IsSettingsVisible="False"
-                           SelectionChanged="NavigationView_SelectionChanged"
-                           IsPaneToggleButtonVisible="False"
-                           IsBackButtonVisible="Collapsed"
-                           PaneDisplayMode="Left"
-                           MenuItemsSource="{x:Static vm:MainVM.NavigationItems}">
-            <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem>
-                    <TextBlock Text="Footer item"/>
-                </ui:NavigationViewItem>
-            </ui:NavigationView.FooterMenuItems>
-
-        </ui:NavigationView>
-        
-        <ContentControl Content="{Binding CurrentView}"
-                        ContentTemplate="{StaticResource ItemsContainerTemplate}"
-                        Grid.Column="1"/>
-        
-    </Grid>
+    <ui:NavigationView Header="{Binding CurrentViewHeader}"
+                       IsSettingsVisible="False"
+                       SelectionChanged="NavigationView_SelectionChanged"
+                       IsPaneToggleButtonVisible="False"
+                       IsBackButtonVisible="Collapsed"
+                       PaneDisplayMode="LeftCompact"
+                       CompactPaneLength="200"
+                       MenuItemsSource="{x:Static vm:MainVM.NavigationItems}">
+        <ui:NavigationView.Content>
+            <ContentControl Content="{Binding CurrentView}"
+                            ContentTemplate="{StaticResource ItemsContainerTemplate}"/>
+        </ui:NavigationView.Content>
+    </ui:NavigationView>
 </UserControl>

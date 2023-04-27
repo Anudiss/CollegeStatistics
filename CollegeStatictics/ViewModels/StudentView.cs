@@ -6,6 +6,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class StudentView : ItemDialog<Student>
     {
+        [Label("Фамилия")]
         [FormElement]
         public string Surname
         {
@@ -18,6 +19,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Имя")]
         [FormElement]
         public string Name
         {
@@ -30,6 +32,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Отчество")]
         [FormElement]
         public string Patronymic
         {
@@ -42,7 +45,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
-        [EntitySelectorFormElement("Студенты")]
+        [EntitySelectorFormElement("Групп_?")]
         public Group Group
         {
             get => _item.Group;

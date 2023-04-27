@@ -6,6 +6,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class SpecialityView : ItemDialog<Speciality>
     {
+        [Label("Название")]
         [FormElement]
         public string Name
         {

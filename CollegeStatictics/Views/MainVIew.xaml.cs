@@ -16,9 +16,13 @@ namespace CollegeStatictics.Views
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            dynamic tag = (args.SelectedItem as NavigationViewItem)!.Tag;
+            var navItem = (NavigationViewItem)args.SelectedItem;
 
-            ((MainVM)DataContext).CurrentView = tag();
+            var pageHeader = (string)navItem.Content;
+            dynamic pageBuilder = navItem.Tag;
+
+            ((MainVM)DataContext).CurrentViewHeader = pageHeader;
+            ((MainVM)DataContext).CurrentView = pageBuilder();
         }
     }
 }

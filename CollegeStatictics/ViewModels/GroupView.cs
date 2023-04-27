@@ -6,6 +6,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class GroupView : ItemDialog<Group>
     {
+        [Label("Номер")]
         [FormElement]
         public int Number
         {
@@ -18,6 +19,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Форма обучения")]
         [RadioButtonFormElement]
         public EducationForm EducationForm
         {

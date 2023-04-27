@@ -23,19 +23,4 @@
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
   </ItemGroup>
 
-  <ItemGroup>
-	<Resource Include="Icons\info-solid.png">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Resource>
-    <Resource Include="Icons\question-solid.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Icons\triangle-exclamation-solid.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Icons\xmark-solid.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
 </Project>

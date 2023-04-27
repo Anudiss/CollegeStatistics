@@ -1,14 +1,11 @@
-﻿using CollegeStatictics.Database;
-using CollegeStatictics.Database.Models;
+﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Base;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -82,16 +79,20 @@ namespace CollegeStatictics.ViewModels
             Pages.Select(pair => new NavigationViewItem()
             {
                 Content = pair.Key,
-                Tag = pair.Value
+                Tag = pair.Value,
             });
 
         [ObservableProperty]
-        private object? currentView;
+        private object? _currentView;
+
+        [ObservableProperty]
+        private string _currentViewHeader;
 
         public MainVM()
         {
             Title = "Главная";
 
+            CurrentViewHeader = Pages.First().Key;
             CurrentView = Pages.First().Value();
         }
     }

@@ -39,6 +39,8 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
+        #region [ Properties ]
+
         protected readonly T _item;
 
         /*
@@ -57,7 +59,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
 
-        [Label("Идентификатор")]
+        [Label("Id")]
         [FormElement(IsReadOnly = true)]
         public int Id
         {
@@ -67,10 +69,18 @@ namespace CollegeStatictics.ViewModels.Base
             }
         }
 
+        #endregion
+
+        #region [ Initializing ]
+
         public ItemDialog(T? item)
         {
             _item = item ?? CreateDefaultItem();
         }
+
+        #endregion
+
+        #region [ Private methods ]
 
         private IEnumerable<FrameworkElement> CreateViewElements()
         {
@@ -95,7 +105,7 @@ namespace CollegeStatictics.ViewModels.Base
         {
             var stackPanel = new StackPanel();
 
-            var textBox = new TextBox()
+            var textBox = new TextBox
             {
                 IsReadOnly = formElement.attribute.IsReadOnly
             };
@@ -107,6 +117,7 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     Content = labelAttribute.Label,
                     Target = textBox,
+                    Margin = new Thickness(0, 0, 0, 10)
                 };
                 stackPanel.Children.Add(label);
             }
@@ -131,7 +142,7 @@ namespace CollegeStatictics.ViewModels.Base
                                             .MakeGenericType(formElement.property.PropertyType);
 
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
-            DependencyProperty dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox);
+            var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox);
 
             ((Control)entitySelectorBox).SetBinding(dp, new Binding(formElement.property.Name)
             {
@@ -141,7 +152,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             var stackPanel = new StackPanel();
 
-            var entitySelectorBoxContainer = new ContentControl()
+            var entitySelectorBoxContainer = new ContentControl
             {
                 Content = entitySelectorBox,
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate")
@@ -154,6 +165,7 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     Content = labelAttribute.Label,
                     Target = entitySelectorBoxContainer,
+                    Margin = new Thickness(0, 0, 0, 10)
                 };
                 stackPanel.Children.Add(label);
             }
@@ -216,5 +228,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             return itemInstance;
         }
+
+        #endregion
     }
 }

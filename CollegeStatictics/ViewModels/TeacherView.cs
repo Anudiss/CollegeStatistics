@@ -6,7 +6,8 @@ namespace CollegeStatictics.ViewModels
 {
     public class TeacherView : ItemDialog<Teacher>
     {
-        [FormElement(IsReadOnly = true)]
+        [Label("Фамилия")]
+        [FormElement]
         public string Surname
         {
             get => _item.Surname;
@@ -18,6 +19,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Имя")]
         [FormElement]
         public string Name
         {
@@ -30,6 +32,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Отчество")]
         [FormElement]
         public string Patronymic
         {
