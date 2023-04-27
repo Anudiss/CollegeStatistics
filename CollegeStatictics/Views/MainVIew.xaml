@@ -17,7 +17,8 @@
                        MenuItemsSource="{x:Static vm:MainVM.NavigationItems}">
         <ui:NavigationView.Content>
             <ContentControl Content="{Binding CurrentView}"
-                            ContentTemplate="{StaticResource ItemsContainerTemplate}"/>
+                            ContentTemplate="{StaticResource ItemsContainerTemplate}"
+                            Margin="15 0 15 15"/>
         </ui:NavigationView.Content>
     </ui:NavigationView>
 </UserControl>

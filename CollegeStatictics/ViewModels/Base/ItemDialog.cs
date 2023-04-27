@@ -59,7 +59,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
 
-        [Label("Id")]
+        [Label("Уникальный идентификатор")]
         [FormElement(IsReadOnly = true)]
         public int Id
         {

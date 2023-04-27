@@ -21,6 +21,8 @@ namespace CollegeStatictics.ViewModels.Base
 {
     public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable
     {
+        #region [ Properties ]
+
         [ObservableProperty]
         private FilteredObservableCollection<T> items;
 
@@ -32,6 +34,10 @@ namespace CollegeStatictics.ViewModels.Base
 
         [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns;
+
+        #endregion
+
+        #region [ Commands ]
 
         [RelayCommand]
         private void OpenDialog(T? item)
@@ -62,7 +68,15 @@ namespace CollegeStatictics.ViewModels.Base
             Items.Refresh();
         }
 
+        #endregion
+
+        #region [ Fields ]
+
         private Type _itemDialogType;
+
+        #endregion
+
+        #region [ Initializing ]
 
         public ItemsContainer(FilteredObservableCollection<T> items, ObservableCollection<DataGridColumn> columns, Type itemDialogType)
         {
@@ -70,6 +84,10 @@ namespace CollegeStatictics.ViewModels.Base
             Columns = columns;
             _itemDialogType = itemDialogType;
         }
+
+        #endregion
+
+        #region [ Private methods ]
 
         private void ContentDialogClosingHandler(object? sender, CancelEventArgs e)
         {
@@ -94,7 +112,11 @@ namespace CollegeStatictics.ViewModels.Base
                     e.Cancel = true;
             }
         }
+
+        #endregion
     }
+
+    #region [ Data types ]
 
     public class ItemsContainerBuilder<T, R> where T : class, ITable
                                              where R : ItemDialog<T>
@@ -153,4 +175,6 @@ namespace CollegeStatictics.ViewModels.Base
         public ItemsContainer<T> Build() =>
             new(new(_sourceCollection, _filters, _searchings), _columns, typeof(R));
     }
+
+    #endregion
 }

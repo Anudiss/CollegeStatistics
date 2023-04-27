@@ -82,15 +82,8 @@
                                  <RowDefinition Height="*"/>
                              </Grid.RowDefinitions>
                              
-                             <ui:SimpleStackPanel Orientation="Horizontal"
-                                                  VerticalAlignment="Center"
-                                                  Spacing="12"
-                                                  Margin="10 5">
-                                 <Button Content="Создать"
-                                         VerticalAlignment="Center"
-                                         Command="{Binding OpenDialogCommand}"
-                                         CommandParameter="{x:Null}"/>
-                                 
+                             <DockPanel VerticalAlignment="Center"
+                                        Margin="0 0 0 10">
                                  <ui:AutoSuggestBox Text="{Binding Path=Items.SearchingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                     QueryIcon="Find"
                                                     PlaceholderText="Поиск"
@@ -100,27 +93,36 @@
                                  <Menu ItemsSource="{Binding Path=Items.Filters}"
                                        ItemContainerStyle="{StaticResource FilterMenuItemStyle}"
                                        VerticalAlignment="Center"/>
-                             </ui:SimpleStackPanel>
-                        
-                             <controls:ExtendedDataGrid ItemsSource="{Binding Path=Items.View}"
-                                                        x:Name="ItemsContainer"
-                                                        SelectionMode="{Binding Path=SelectionMode}"
-                                                        SelectedItems="{Binding Path=SelectedItems, Mode=OneWayToSource}"
-                                                        Columns="{Binding Path=Columns, Mode=OneWay}"
-                                                        Style="{StaticResource {x:Type DataGrid}}"
-                                                        IsReadOnly="True"
-                                                        AutoGenerateColumns="False"
-                                                        CanUserAddRows="False"
-                                                        CanUserDeleteRows="False"
-                                                        Grid.Row="1"
-                                                        MinHeight="400"
-                                                        Margin="10 0">
-                                 <controls:ExtendedDataGrid.InputBindings>
-                                     <MouseBinding Gesture="LeftDoubleClick"
-                                                   Command="{Binding OpenDialogCommand}"
-                                                   CommandParameter="{Binding ElementName=ItemsContainer, Path=SelectedItem}"/>
-                                 </controls:ExtendedDataGrid.InputBindings>
-                             </controls:ExtendedDataGrid>
+
+                                 <Button Content="Создать"
+                                         VerticalAlignment="Center"
+                                         DockPanel.Dock="Right"
+                                         HorizontalAlignment="Right"
+                                         Command="{Binding OpenDialogCommand}"
+                                         CommandParameter="{x:Null}"/>
+                             </DockPanel>
+
+                            <Border BorderBrush="LightGray"
+                                    BorderThickness="1"
+                                    Grid.Row="1">
+                                 <controls:ExtendedDataGrid ItemsSource="{Binding Path=Items.View}"
+                                                            Style="{StaticResource {x:Type DataGrid}}"
+                                                            Columns="{Binding Path=Columns, Mode=OneWay}"
+                                                            SelectionMode="{Binding Path=SelectionMode}"
+                                                            SelectedItems="{Binding Path=SelectedItems, Mode=OneWayToSource}"
+                                                            x:Name="ItemsContainer"
+                                                            IsReadOnly="True"
+                                                            AutoGenerateColumns="False"
+                                                            CanUserAddRows="False"
+                                                            CanUserDeleteRows="False"
+                                                            Margin="10">
+                                     <controls:ExtendedDataGrid.InputBindings>
+                                         <MouseBinding Gesture="LeftDoubleClick"
+                                                       Command="{Binding OpenDialogCommand}"
+                                                       CommandParameter="{Binding ElementName=ItemsContainer, Path=SelectedItem}"/>
+                                     </controls:ExtendedDataGrid.InputBindings>
+                                 </controls:ExtendedDataGrid>
+                            </Border>
                         
                          </Grid>
                              

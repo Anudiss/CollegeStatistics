@@ -45,7 +45,8 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
-        [EntitySelectorFormElement("Групп_?")]
+        [Label("Группа")]
+        [EntitySelectorFormElement("Группы")]
         public Group Group
         {
             get => _item.Group;

@@ -19,6 +19,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Label("Подразделение")]
         [EntitySelectorFormElement("Подразделения")]
         public Department Department
         {
