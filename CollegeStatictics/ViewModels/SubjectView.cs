@@ -7,6 +7,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class SubjectView : ItemDialog<Subject>
     {
+        [MaxLength(150)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Название")]
         [FormElement]

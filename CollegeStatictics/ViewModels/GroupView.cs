@@ -49,6 +49,8 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        // students list should be here
+
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]
         [EntitySelectorFormElement("Преподаватели")]

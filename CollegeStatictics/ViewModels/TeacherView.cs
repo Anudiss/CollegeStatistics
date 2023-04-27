@@ -7,6 +7,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class TeacherView : ItemDialog<Teacher>
     {
+        [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Фамилия")]
         [FormElement]
@@ -21,6 +22,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Имя")]
         [FormElement]
@@ -35,6 +37,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Отчество")]
         [FormElement]
