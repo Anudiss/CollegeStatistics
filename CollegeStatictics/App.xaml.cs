@@ -9,16 +9,8 @@ namespace CollegeStatictics
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    [ObservableObject]
     public partial class App : Application
     {
-        #region [Properties]
-
-        [ObservableProperty]
-        private static User? _currentUser;
-
-        #endregion
-
         #region [Event handlers]
         private void Application_Startup(object sender, StartupEventArgs e) =>
             new WindowViewModel(new MainVM()).Show();

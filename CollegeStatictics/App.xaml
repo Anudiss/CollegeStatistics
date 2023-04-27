@@ -113,7 +113,8 @@
                                                         CanUserAddRows="False"
                                                         CanUserDeleteRows="False"
                                                         Grid.Row="1"
-                                                        MinHeight="400">
+                                                        MinHeight="400"
+                                                        Margin="10 0">
                                  <controls:ExtendedDataGrid.InputBindings>
                                      <MouseBinding Gesture="LeftDoubleClick"
                                                    Command="{Binding OpenDialogCommand}"
@@ -146,7 +147,10 @@
                                  <ColumnDefinition Width="Auto"/>
                              </Grid.ColumnDefinitions>
                              
-                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"/>
+                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"
+                                      Margin="0 0 3 0"
+                                      IsReadOnly="True"
+                                      ui:TextBoxHelper.IsDeleteButtonVisible="False"/>
                              
                              <Button Content="&gt;"
                                      Command="{Binding OpenSelectorDialogCommand}"

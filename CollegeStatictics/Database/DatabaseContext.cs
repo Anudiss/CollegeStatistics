@@ -55,8 +55,8 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<Timetable> Timetables { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //=> optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=StatisticsSchool;Trusted_Connection=True;Encrypt=False");
-        => optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=StatisticsSchool;Trusted_Connection=True;Encrypt=False");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDb;Database=StatisticsSchool;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,9 +79,7 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("CommisionCurator");
 
-            entity.Property(e => e.Login).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Patronymic).HasMaxLength(50);
             entity.Property(e => e.Surname).HasMaxLength(50);
 
@@ -141,8 +139,6 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("GroupLeader");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Login).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Homework>(entity =>
@@ -283,9 +279,7 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Teacher");
 
-            entity.Property(e => e.Login).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Patronymic).HasMaxLength(50);
             entity.Property(e => e.Surname).HasMaxLength(50);
         });

@@ -5,6 +5,8 @@ namespace CollegeStatictics.Database.Models;
 
 public partial class Department
 {
+    public int Id { get; set; }
+
     public string Name { get; set; } = null!;
 
     public virtual ICollection<CommisionCurator> CommisionCurators { get; set; } = new List<CommisionCurator>();

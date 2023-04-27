@@ -4,8 +4,6 @@ namespace CollegeStatictics.Database.Models
 {
     public partial class Department : ITable
     {
-        public int Id { get; set; }
-
         public override string ToString() => Name;
     }
 }

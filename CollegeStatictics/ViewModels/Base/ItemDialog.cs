@@ -4,6 +4,7 @@ using CollegeStatictics.DataTypes;
 using CollegeStatictics.ViewModels.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
 
+        [Label("Идентификатор")]
         [FormElement(IsReadOnly = true)]
         public int Id
         {
@@ -83,17 +85,33 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     ElementType.TextBox => CreateTextBox(formElement),
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
+                    ElementType.RadioButton => CreateRadioButtonList(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
             }
         }
 
-        private static TextBox CreateTextBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private static FrameworkElement CreateTextBox((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
+            var stackPanel = new StackPanel();
+
             var textBox = new TextBox()
             {
                 IsReadOnly = formElement.attribute.IsReadOnly
             };
+
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+            {
+                var label = new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = textBox,
+                };
+                stackPanel.Children.Add(label);
+            }
+
+            stackPanel.Children.Add(textBox);
 
             textBox.SetBinding(TextBox.TextProperty, new Binding(formElement.property.Name)
             {
@@ -102,10 +120,10 @@ namespace CollegeStatictics.ViewModels.Base
                 ValidatesOnNotifyDataErrors = true
             });
 
-            return textBox;
+            return stackPanel;
         }
 
-        private ContentControl CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private static FrameworkElement CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
             EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.attribute;
 
@@ -113,7 +131,7 @@ namespace CollegeStatictics.ViewModels.Base
                                             .MakeGenericType(formElement.property.PropertyType);
 
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
-            DependencyProperty dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox); ;
+            DependencyProperty dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox);
 
             ((Control)entitySelectorBox).SetBinding(dp, new Binding(formElement.property.Name)
             {
@@ -121,11 +139,62 @@ namespace CollegeStatictics.ViewModels.Base
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
 
-            return new ContentControl()
+            var stackPanel = new StackPanel();
+
+            var entitySelectorBoxContainer = new ContentControl()
             {
                 Content = entitySelectorBox,
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate")
             };
+
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+            {
+                var label = new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = entitySelectorBoxContainer,
+                };
+                stackPanel.Children.Add(label);
+            }
+
+            stackPanel.Children.Add(entitySelectorBoxContainer);
+
+            return stackPanel;
+        }
+
+        private FrameworkElement CreateRadioButtonList((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
+            MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType);
+
+            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
+            values!.Load();
+
+            var groupBox = new GroupBox();
+            
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+                groupBox.Header = labelAttribute.Label;
+
+            var stackPanel = new StackPanel();
+            groupBox.Content = stackPanel;
+
+            if (formElement.property.GetValue(this) == null)
+                formElement.property.SetValue(this, values.Local.FirstOrDefault());
+
+            foreach (var value in values.Local)
+            {
+                var radioButton = new RadioButton
+                {
+                    Content = value,
+                    IsChecked = formElement.property.GetValue(this) == value
+                };
+                radioButton.Click += delegate { formElement.property.SetValue(this, value); };
+                stackPanel.Children.Add(radioButton);
+            }
+
+            return groupBox;
         }
 
         private T CreateDefaultItem()

@@ -5,6 +5,8 @@ namespace CollegeStatictics.Database.Models;
 
 public partial class Teacher
 {
+    public int Id { get; set; }
+
     public string Surname { get; set; } = null!;
 
     public string Name { get; set; } = null!;

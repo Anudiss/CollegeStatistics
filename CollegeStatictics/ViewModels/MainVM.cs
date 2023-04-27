@@ -55,6 +55,26 @@ namespace CollegeStatictics.ViewModels
                                .AddSearching(new Searching<Department>(department => department.Name))
 
                                .Build()
+            },
+            { "Студенты", () => new ItemsContainerBuilder<Student, StudentView>()
+                                
+                                .AddColumn(nameof(Student.Id), "Id")
+                                .AddColumn(nameof(Student.Surname), "Фамилия")
+                                .AddColumn(nameof(Student.Name), "Имя")
+                                .AddColumn(nameof(Student.Patronymic), "Отчество")
+                                .AddColumn(nameof(Student.Group), "Группа")
+
+                                .AddSearching(new Searching<Student>(student => $"{student.Surname} {student.Name} {student.Patronymic}"))
+                                
+                                .AddFilter(new Filter<Student, Group>("Группа", student => student.Group))
+
+                                .Build()
+            },
+            { "Группы" , () => new ItemsContainerBuilder<Group, GroupView>()
+                               
+                               .AddColumn(nameof(Group.EducationForm), "Форма обучения")
+                                
+                               .Build()
             }
         };
 

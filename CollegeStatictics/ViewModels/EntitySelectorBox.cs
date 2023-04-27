@@ -38,7 +38,7 @@ namespace CollegeStatictics.ViewModels
             _itemContainerName = itemContainerName;
         }
 
-        public static T OpenSelectorItemDialog(ItemsContainer<T> itemsContainer)
+        public T OpenSelectorItemDialog(ItemsContainer<T> itemsContainer)
         {
             var contentDialog = new DialogWindow()
             {
@@ -54,6 +54,9 @@ namespace CollegeStatictics.ViewModels
             itemsContainer.SelectionMode = DataGridSelectionMode.Single;
 
             contentDialog.Show();
+
+            if (contentDialog.Result == DialogResult.Secondary)
+                return SelectedItem;
 
             return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? default(T);
         }

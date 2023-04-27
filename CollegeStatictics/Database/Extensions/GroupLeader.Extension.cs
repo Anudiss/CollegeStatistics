@@ -1,6 +1,8 @@
-﻿namespace CollegeStatictics.Database.Models
+﻿using CollegeStatictics.DataTypes;
+
+namespace CollegeStatictics.Database.Models
 {
-    public partial class GroupLeader : User
+    public partial class GroupLeader : ITable
     {
     }
 }

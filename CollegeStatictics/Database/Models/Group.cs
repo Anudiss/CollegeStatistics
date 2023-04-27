@@ -7,6 +7,8 @@ public partial class Group
 {
     public int Id { get; set; }
 
+    public int Number { get; set; }
+
     public short CreationYear { get; set; }
 
     public int EducationFormId { get; set; }
