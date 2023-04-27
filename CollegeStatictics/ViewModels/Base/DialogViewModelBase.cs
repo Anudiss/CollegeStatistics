@@ -6,8 +6,6 @@ namespace CollegeStatictics.ViewModels.Base
     {
         [ObservableProperty]
         private object? content;
-
-
     }
 
     public enum DialogButton

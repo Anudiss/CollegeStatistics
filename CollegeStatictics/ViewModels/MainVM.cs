@@ -69,8 +69,15 @@ namespace CollegeStatictics.ViewModels
             },
             { "Группы" , () => new ItemsContainerBuilder<Group, GroupView>()
                                
+                               .AddColumn(nameof(Group.Id), "Id")
+                               .AddColumn(nameof(Group.Number), "Номер")
                                .AddColumn(nameof(Group.EducationForm), "Форма обучения")
-                                
+                               .AddColumn(nameof(Group.EducationForm), "Специальность")
+
+                               /* Here should be some sort of student list */
+
+                               .AddColumn(nameof(Group.EducationForm), "Куратор")
+
                                .Build()
             }
         };

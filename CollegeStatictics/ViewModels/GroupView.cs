@@ -1,11 +1,13 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
     public class GroupView : ItemDialog<Group>
     {
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Номер")]
         [FormElement]
         public int Number
@@ -19,6 +21,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Форма обучения")]
         [RadioButtonFormElement]
         public EducationForm EducationForm
@@ -27,6 +30,34 @@ namespace CollegeStatictics.ViewModels
             set
             {
                 _item.EducationForm = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
+            }
+        }
+
+        [Required(ErrorMessage = "Поле обязательно")]
+        [Label("Специальность")]
+        [RadioButtonFormElement]
+        public Speciality Speciality
+        {
+            get => _item.Speciality;
+            set
+            {
+                _item.Speciality = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
+            }
+        }
+
+        [Required(ErrorMessage = "Поле обязательно")]
+        [Label("Куратор")]
+        [EntitySelectorFormElement("Преподаватели")]
+        public Teacher Cuarator
+        {
+            get => _item.Curator;
+            set
+            {
+                _item.Curator = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

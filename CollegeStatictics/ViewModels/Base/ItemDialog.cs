@@ -5,6 +5,8 @@ using CollegeStatictics.ViewModels.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +130,7 @@ namespace CollegeStatictics.ViewModels.Base
             {
                 Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                ValidatesOnNotifyDataErrors = true
+                ValidatesOnNotifyDataErrors = true,
             });
 
             return stackPanel;

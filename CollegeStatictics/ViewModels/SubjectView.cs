@@ -1,11 +1,13 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
     public class SubjectView : ItemDialog<Subject>
     {
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Название")]
         [FormElement]
         public string Name

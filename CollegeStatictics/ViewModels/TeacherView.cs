@@ -1,11 +1,13 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
     public class TeacherView : ItemDialog<Teacher>
     {
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Фамилия")]
         [FormElement]
         public string Surname
@@ -19,6 +21,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Имя")]
         [FormElement]
         public string Name
@@ -32,6 +35,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
+        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Отчество")]
         [FormElement]
         public string Patronymic

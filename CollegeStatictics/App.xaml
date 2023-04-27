@@ -129,9 +129,24 @@
                     </DataTemplate>
                      
                      <DataTemplate x:Key="ItemDialogTemplate">
-                         
-                         <ItemsControl ItemsSource="{Binding ViewElements}">
-                             <ItemsControl.ItemsPanel>
+
+                        <ItemsControl ItemsSource="{Binding ViewElements}">
+                            <ItemsControl.Resources>
+                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                                    <Setter Property="Validation.ErrorTemplate">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <StackPanel Orientation="Vertical">
+                                                    <AdornedElementPlaceholder Name="Placeholder"/>
+                                                    <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
+                                                               Foreground="Red"/>
+                                                </StackPanel>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ItemsControl.Resources>
+                            <ItemsControl.ItemsPanel>
                                  <ItemsPanelTemplate>
                                      <ui:SimpleStackPanel Spacing="24"
                                                           Orientation="Vertical"/>
