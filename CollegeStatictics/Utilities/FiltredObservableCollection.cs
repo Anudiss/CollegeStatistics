@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CollegeStatictics.Database.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -22,13 +23,15 @@ namespace CollegeStatictics.Utilities
 
         public IEnumerable<IFilter<T>> Filters { get; }
         public IEnumerable<Searching<T>> Searchings { get; }
+        public IEnumerable<Grouping<T>> Groupings { get; }
 
         public ICollectionView View { get; }
 
-        public FilteredObservableCollection(IList<T> sourceCollection, IEnumerable<IFilter<T>> filters, IEnumerable<Searching<T>> searchings)
+        public FilteredObservableCollection(IList<T> sourceCollection, IEnumerable<IFilter<T>> filters, IEnumerable<Searching<T>> searchings, IEnumerable<Grouping<T>> groupings)
         {
             Filters = filters;
             Searchings = searchings;
+            Groupings = groupings;
 
             View = CollectionViewSource.GetDefaultView(sourceCollection);
 
@@ -36,6 +39,11 @@ namespace CollegeStatictics.Utilities
                 filter.SelectedValuesChanged += Refresh;
 
             View.Filter = IsAccepted;
+
+            View.GroupDescriptions.Clear();
+            groupings.ToList().ForEach(grouping => View.GroupDescriptions.Add(new PropertyGroupDescription(grouping.PropertyPath)));
+
+            Refresh();
         }
 
         public bool IsAccepted(object item) => item is T t && (!Filters.Any() || Filters.All(filter => filter.IsAccepted(t))) &&
@@ -53,12 +61,14 @@ namespace CollegeStatictics.Utilities
         private readonly IList<T> _sourceCollection;
         private readonly List<IFilter<T>> _filters;
         private readonly List<Searching<T>> _searchings;
+        private readonly List<Grouping<T>> _groupings;
 
         public FilteredObservableCollectionBuilder(IList<T> sourceCollection)
         {
             _sourceCollection = sourceCollection;
             _filters = new();
             _searchings = new();
+            _groupings = new();
         }
 
         public FilteredObservableCollectionBuilder<T> AddFilter(IFilter<T> filter)
@@ -73,6 +83,12 @@ namespace CollegeStatictics.Utilities
             return this;
         }
 
-        public FilteredObservableCollection<T> Build() => new(_sourceCollection, _filters, _searchings);
+        public FilteredObservableCollectionBuilder<T> AddGrouping(Grouping<T> grouping)
+        {
+            _groupings.Add(grouping);
+            return this;
+        }
+
+        public FilteredObservableCollection<T> Build() => new(_sourceCollection, _filters, _searchings, _groupings);
     }
 }

@@ -35,7 +35,7 @@ namespace CollegeStatictics.ViewModels
 
                                .AddColumn(nameof(Speciality.Id), "Id")
                                .AddColumn(nameof(Speciality.Name), "Название")
-                               .AddColumn("Department.Name", "Подразделение")
+                               .AddColumn(nameof(Speciality.Department), "Подразделение")
 
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Name))
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Department.Name))
@@ -72,12 +72,19 @@ namespace CollegeStatictics.ViewModels
                                .AddColumn(nameof(Group.Id), "Id")
                                .AddColumn(nameof(Group.Number), "Номер")
                                .AddColumn(nameof(Group.EducationForm), "Форма обучения")
-                               .AddColumn(nameof(Group.EducationForm), "Специальность")
+                               .AddColumn(nameof(Group.Speciality), "Специальность")
+                               .AddColumn(nameof(Group.Curator), "Куратор")
 
                                /* Here should be some sort of student list */
 
-                               .AddColumn(nameof(Group.EducationForm), "Куратор")
+                               .AddSearching(new Searching<Group>(group => $"{group.Number}"))
+                               .AddSearching(new Searching<Group>(group => $"{group.Curator.Surname} {group.Curator.Name} {group.Curator.Patronymic}"))
 
+                               .AddFilter(new Filter<Group, EducationForm>("Форма обучения", group => group.EducationForm))
+                               .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
+
+                               .AddGrouping(new Grouping<Group>("EducationForm"))
+            
                                .Build()
             }
         };

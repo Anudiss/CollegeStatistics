@@ -183,7 +183,7 @@ namespace CollegeStatictics.ViewModels.Base
             MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType);
 
             dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            values!.Load();
+            EntityFrameworkQueryableExtensions.Load(values);
 
             var groupBox = new GroupBox();
             
@@ -195,7 +195,7 @@ namespace CollegeStatictics.ViewModels.Base
             groupBox.Content = stackPanel;
 
             if (formElement.property.GetValue(this) == null)
-                formElement.property.SetValue(this, values.Local.FirstOrDefault());
+                formElement.property.SetValue(this, Enumerable.FirstOrDefault(values.Local));
 
             foreach (var value in values.Local)
             {

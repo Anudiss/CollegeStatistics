@@ -98,7 +98,7 @@
                                          VerticalAlignment="Center"
                                          DockPanel.Dock="Right"
                                          HorizontalAlignment="Right"
-                                         Command="{Binding OpenDialogCommand}"
+                                         Command="{Binding CreateDialogCommand}"
                                          CommandParameter="{x:Null}"/>
                              </DockPanel>
 
@@ -116,6 +116,17 @@
                                                             CanUserAddRows="False"
                                                             CanUserDeleteRows="False"
                                                             Margin="10">
+                                     <controls:ExtendedDataGrid.GroupStyle>
+                                         <GroupStyle>
+                                             <GroupStyle.HeaderTemplate>
+                                                 <DataTemplate>
+                                                     <TextBlock Text="{Binding Path=Name}"
+                                                                FontWeight="Normal"
+                                                                FontSize="12" />
+                                                </DataTemplate>
+                                             </GroupStyle.HeaderTemplate>
+                                         </GroupStyle>
+                                     </controls:ExtendedDataGrid.GroupStyle>
                                      <controls:ExtendedDataGrid.InputBindings>
                                          <MouseBinding Gesture="LeftDoubleClick"
                                                        Command="{Binding OpenDialogCommand}"

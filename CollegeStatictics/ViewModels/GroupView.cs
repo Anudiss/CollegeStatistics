@@ -37,7 +37,7 @@ namespace CollegeStatictics.ViewModels
 
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Специальность")]
-        [RadioButtonFormElement]
+        [EntitySelectorFormElement("Специальности")]
         public Speciality Speciality
         {
             get => _item.Speciality;

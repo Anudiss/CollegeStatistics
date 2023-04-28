@@ -40,9 +40,41 @@ namespace CollegeStatictics.ViewModels.Base
         #region [ Commands ]
 
         [RelayCommand]
-        private void OpenDialog(T? item)
+        private void OpenDialog(T item)
         {
+            if (item == null)
+                return;
+
             ItemDialog<T> itemDialog = (ItemDialog<T>)Activator.CreateInstance(_itemDialogType, new[] { item })!;
+            var contentDialog = new DialogWindow
+            {
+                Content = itemDialog,
+                ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
+
+                //DefaultButton = ContentDialogButton.Primary,
+
+                //IsPrimaryButtonEnabled = false,
+                PrimaryButtonText = "Сохранить",
+                PrimaryButtonCommand = itemDialog.SaveCommand,
+
+                //IsSecondaryButtonEnabled = true,
+                SecondaryButtonText = "Отмена",
+                SecondaryButtonCommand = itemDialog.CancelCommand,
+
+                CanClose = () => !DatabaseContext.Entities.ChangeTracker.HasChanges()
+            };
+
+            contentDialog.Closing += ContentDialogClosingHandler;
+            contentDialog.Show();
+            contentDialog.Closing -= ContentDialogClosingHandler;
+
+            Items.Refresh();
+        }
+
+        [RelayCommand]
+        private void CreateDialog()
+        {
+            ItemDialog<T> itemDialog = (ItemDialog<T>)Activator.CreateInstance(_itemDialogType, new object[] { null })!;
             var contentDialog = new DialogWindow
             {
                 Content = itemDialog,
@@ -124,6 +156,7 @@ namespace CollegeStatictics.ViewModels.Base
         private readonly ObservableCollection<T> _sourceCollection;
         private readonly List<IFilter<T>> _filters;
         private readonly List<Searching<T>> _searchings;
+        private readonly List<Grouping<T>> _groupings;
         private readonly ObservableCollection<DataGridColumn> _columns;
 
         public ItemsContainerBuilder(ObservableCollection<T> sourceCollection)
@@ -132,6 +165,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             _filters = new();
             _searchings = new();
+            _groupings = new();
             _columns = new();
         }
 
@@ -172,8 +206,14 @@ namespace CollegeStatictics.ViewModels.Base
             return this;
         }
 
+        public ItemsContainerBuilder<T, R> AddGrouping(Grouping<T> grouping)
+        {
+            _groupings.Add(grouping);
+            return this;
+        }
+
         public ItemsContainer<T> Build() =>
-            new(new(_sourceCollection, _filters, _searchings), _columns, typeof(R));
+            new(new(_sourceCollection, _filters, _searchings, _groupings), _columns, typeof(R));
     }
 
     #endregion
