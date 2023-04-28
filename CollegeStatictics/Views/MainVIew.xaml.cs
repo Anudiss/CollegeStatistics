@@ -4,12 +4,9 @@ using System.Windows.Controls;
 
 namespace CollegeStatictics.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для MainVIew.xaml
-    /// </summary>
-    public partial class MainVIew : UserControl
+    public partial class MainView : UserControl
     {
-        public MainVIew()
+        public MainView()
         {
             InitializeComponent();
         }
