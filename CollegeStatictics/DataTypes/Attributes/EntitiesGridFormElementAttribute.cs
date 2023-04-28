@@ -11,7 +11,7 @@ namespace CollegeStatictics.DataTypes.Attributes
         public EntitiesGridFormElementAttribute(string itemContainerName)
         {
             ItemContainerName = itemContainerName;
-            ElementType = ElementType.EntitySelectorBox;
+            ElementType = ElementType.EntitiesGrid;
         }
     }
 }

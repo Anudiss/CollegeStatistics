@@ -14,6 +14,7 @@ namespace CollegeStatictics.ViewModels.Attributes
     {
         TextBox,
         EntitySelectorBox,
+        EntitiesGrid,
         RadioButton
     }
 }
