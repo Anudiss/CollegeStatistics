@@ -15,11 +15,10 @@ namespace CollegeStatictics.Views
         {
             var navItem = (NavigationViewItem)args.SelectedItem;
 
-            var pageHeader = (string)navItem.Content;
-            dynamic pageBuilder = navItem.Tag;
+            var content = (string)navItem.Content;
 
-            ((MainVM)DataContext).CurrentViewHeader = pageHeader;
-            ((MainVM)DataContext).CurrentView = pageBuilder();
+            ((MainVM)DataContext).CurrentViewHeader = content;
+            ((MainVM)DataContext).CurrentView = MainVM.PageBuilders[content]();
         }
     }
 }

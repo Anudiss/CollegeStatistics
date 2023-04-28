@@ -6,7 +6,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         MinWidth="320"
-        MaxWidth="548"
+        MaxWidth="720"
         MinHeight="184"
         MaxHeight="756"
         WindowStyle="None"

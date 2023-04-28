@@ -9,14 +9,14 @@ namespace CollegeStatictics.ViewModels
     {
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
-        [Label("Фамилия")]
+        [Label("Отчество")]
         [FormElement]
-        public string Surname
+        public string Patronymic
         {
-            get => _item.Surname;
+            get => _item.Patronymic;
             set
             {
-                _item.Surname = value;
+                _item.Patronymic = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -39,14 +39,14 @@ namespace CollegeStatictics.ViewModels
 
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
-        [Label("Отчество")]
+        [Label("Фамилия")]
         [FormElement]
-        public string Patronymic
+        public string Surname
         {
-            get => _item.Patronymic;
+            get => _item.Surname;
             set
             {
-                _item.Patronymic = value;
+                _item.Surname = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

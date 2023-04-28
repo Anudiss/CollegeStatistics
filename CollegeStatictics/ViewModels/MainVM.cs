@@ -13,7 +13,7 @@ namespace CollegeStatictics.ViewModels
 {
     public partial class MainVM : WindowViewModelBase
     {
-        public static readonly Dictionary<string, Func<dynamic>> Pages = new()
+        public static readonly Dictionary<string, Func<dynamic>> PageBuilders = new()
         {
             { "Преподаватели", () => new ItemsContainerBuilder<Teacher, TeacherView>()
 
@@ -85,7 +85,7 @@ namespace CollegeStatictics.ViewModels
                                .AddFilter(new Filter<Group, EducationForm>("Форма обучения", group => group.EducationForm))
                                .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
 
-                               .AddGrouping(new Grouping<Group>("EducationForm"))
+                               //.AddGrouping(new Grouping<Group>("EducationForm"))
             
                                .Build()
             }
@@ -119,14 +119,6 @@ namespace CollegeStatictics.ViewModels
             }
         };
 
-        public static IEnumerable<NavigationViewItem> NavigationItems =>
-            Pages.Select(pair => new NavigationViewItem()
-            {
-                Content = pair.Key,
-                Tag = pair.Value,
-                Icon = GetPathIconFromPathString(PageIcons[pair.Key])
-            });
-
         [ObservableProperty]
         private object? _currentView;
 
@@ -137,19 +129,8 @@ namespace CollegeStatictics.ViewModels
         {
             Title = "Главная";
 
-            CurrentViewHeader = Pages.First().Key;
-            CurrentView = Pages.First().Value();
-        }
-
-        private static GeometryConverter _geomertyConverter = new();
-
-        private static PathIcon GetPathIconFromPathString(string path)
-        {
-            var pathIcon = new PathIcon
-            {
-                Data = _geomertyConverter.ConvertFromString(path) as Geometry
-            };
-            return pathIcon;
+            CurrentViewHeader = PageBuilders.First().Key;
+            CurrentView = PageBuilders.First().Value();
         }
     }
 }

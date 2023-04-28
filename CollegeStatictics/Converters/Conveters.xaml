@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CollegeStatictics.Converters">
-    
+
     <local:JoinConverter x:Key="JoinConverter"/>
+    <local:PathToIconConverter x:Key="PathToIconConverter"/>
     
 </ResourceDictionary>

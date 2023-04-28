@@ -185,7 +185,7 @@
                                      Grid.Column="1"
                                      Width="32"/>
                          </Grid>
-                     
+                         
                      </DataTemplate>
                      
                  </ResourceDictionary>

@@ -12,13 +12,29 @@
                        SelectionChanged="NavigationView_SelectionChanged"
                        IsPaneToggleButtonVisible="False"
                        IsBackButtonVisible="Collapsed"
-                       PaneDisplayMode="LeftCompact"
-                       CompactPaneLength="200"
-                       MenuItemsSource="{x:Static vm:MainVM.NavigationItems}">
+                       OpenPaneLength="200"
+                       PaneDisplayMode="Left">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Content="Преподаватели"/>
+            <ui:NavigationViewItem Content="Предметы"/>
+            <ui:NavigationViewItem Content="Специальности"/>
+            <ui:NavigationViewItem Content="Подразделения"/>
+            <ui:NavigationViewItem Content="Студенты"/>
+            <ui:NavigationViewItem Content="Группы"/>
+        </ui:NavigationView.MenuItems>
         <ui:NavigationView.Content>
             <ContentControl Content="{Binding CurrentView}"
                             ContentTemplate="{StaticResource ItemsContainerTemplate}"
                             Margin="15 0 15 15"/>
         </ui:NavigationView.Content>
+
+        <ui:NavigationView.Resources>
+            <Style TargetType="ui:NavigationViewItem"
+                   BasedOn="{StaticResource {x:Type ui:NavigationViewItem}}">
+                <Setter Property="Icon" Value="{Binding Path=Content,
+                                                        RelativeSource={RelativeSource Self}, 
+                                                        Converter={StaticResource PathToIconConverter}}"/>
+            </Style>
+        </ui:NavigationView.Resources>
     </ui:NavigationView>
 </UserControl>
