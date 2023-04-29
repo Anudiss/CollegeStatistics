@@ -1,6 +1,7 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,12 +9,15 @@ using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace CollegeStatictics.ViewModels.Base
 {
@@ -44,20 +48,6 @@ namespace CollegeStatictics.ViewModels.Base
         #region [ Properties ]
 
         protected readonly T _item;
-
-        /*
-         * [FormElement(DefaultValue = "Имя")]
-         * public string Name
-         * {
-         *     get => _item.Name;
-         *     set
-         *     {
-         *         _item.Name = value;
-         *         OnPropertyChanged();
-         *         ValidateProperty(value);
-         *     }
-         * }
-         */
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
 
@@ -98,9 +88,143 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.TextBox => CreateTextBox(formElement),
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
+                    ElementType.Subtable => CreateSubtableElement(formElement),
+                    ElementType.Timetable => CreateTimetableElement(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
             }
+        }
+
+        private FrameworkElement CreateTimetableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            var dataGrid = new DataGrid();
+
+            DatabaseContext.Entities.DayOfWeeks.Load();
+            foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local)
+            {
+                DataTemplate cellTemplate = new();
+
+                FrameworkElementFactory factory = new(typeof(CheckBox));
+
+                cellTemplate.VisualTree = factory;
+
+                dataGrid.Columns.Add(new DataGridTemplateColumn()
+                {
+                    Header = dayOfWeek,
+                    IsReadOnly = true,
+                    CellTemplate = cellTemplate
+                });
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                dataGrid.Items.Add(new DataGridRow()
+                {
+                    Header = i,
+                });
+            }
+
+            return dataGrid;
+        }
+
+        private FrameworkElement CreateSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
+            MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType.GetGenericArguments()[0]);
+
+            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
+            EntityFrameworkQueryableExtensions.Load(values);
+
+            var groupBox = new GroupBox
+            {
+                Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
+                BorderThickness = new(1),
+                BorderBrush = Brushes.Black
+            };
+
+            var grid = new StackPanel();
+/*
+            grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
+
+            #region Datagrid initialization
+            var columnAttributes = formElement.property.GetCustomAttributes<ColumnAttribute>();
+
+            var dataGrid = new DataGrid()
+            {
+                AutoGenerateColumns = false,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false,
+                CanUserResizeColumns = false,
+                IsReadOnly = true,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+
+            dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
+            dataGrid.SetValue(Grid.ColumnProperty, 1);
+
+            dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, formElement.property.Name);
+
+            foreach (var column in columnAttributes)
+                dataGrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = column.Header,
+                    Binding = new Binding(column.Path)
+                    {
+                        Mode = BindingMode.OneWay
+                    }
+                });
+
+            #endregion
+
+            var buttonsContainer = new SimpleStackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10
+            };
+
+            buttonsContainer.SetValue(Grid.ColumnProperty, 0);
+
+            var addButton = new Button
+            {
+                Content = "Добавить"
+            };
+
+            var removeButton = new Button
+            {
+                Content = "Удалить"
+            };
+
+            EntitiesGridFormElementAttribute attribute = (EntitiesGridFormElementAttribute)formElement.attribute;
+
+            var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitiesGrid`1")!
+                                            .MakeGenericType(formElement.property.PropertyType.GetGenericArguments()[0]);
+
+            addButton.Click += delegate
+            {
+                dynamic entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName })!;
+                entitySelectorBox.OpenSelectorDialog();
+
+                var addMethod = formElement.property.PropertyType.GetMethod("Add");
+
+                foreach (var selectedItem in entitySelectorBox.SelectedItems)
+                    addMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+            };
+
+            removeButton.Click += delegate
+            {
+
+            };
+
+            buttonsContainer.Children.Add(addButton);
+            buttonsContainer.Children.Add(removeButton);
+
+            grid.Children.Add(buttonsContainer);
+            grid.Children.Add(dataGrid);
+
+            groupBox.Content = grid;
+
+            return groupBox;
         }
 
         private static FrameworkElement CreateTextBox((PropertyInfo property, FormElementAttribute attribute) formElement)

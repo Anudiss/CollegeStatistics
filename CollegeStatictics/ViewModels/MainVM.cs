@@ -88,6 +88,15 @@ namespace CollegeStatictics.ViewModels
                                //.AddGrouping(new Grouping<Group>("EducationForm"))
             
                                .Build()
+            },
+            { "Расписание", () => new ItemsContainerBuilder<Timetable, TimetableView>()
+                            
+                                .AddColumn(nameof(Timetable.Id), "Id")
+                                .AddColumn(nameof(Timetable.Teacher), "Преподаватель")
+                                .AddColumn(nameof(Timetable.Subject), "Предмет")
+                                .AddColumn(nameof(Timetable.Group), "Группа")
+
+                                .Build()
             }
         };
 
@@ -115,6 +124,10 @@ namespace CollegeStatictics.ViewModels
             },
             {
                 "Группы",
+                ""
+            },
+            {
+                "Расписание",
                 ""
             }
         };

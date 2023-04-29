@@ -19,7 +19,7 @@ public partial class Student
 
     public virtual Group Group { get; set; } = null!;
 
-    public virtual GroupLeader GroupLeader { get; set; } = null!;
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
     public virtual ICollection<NoteToStudent> NoteToStudents { get; set; } = new List<NoteToStudent>();
 }

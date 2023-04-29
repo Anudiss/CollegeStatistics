@@ -14,6 +14,8 @@ namespace CollegeStatictics.ViewModels.Attributes
     {
         TextBox,
         EntitySelectorBox,
+        Subtable,
+        Timetable,
         RadioButton
     }
 }

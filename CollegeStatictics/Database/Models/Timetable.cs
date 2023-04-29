@@ -9,17 +9,15 @@ public partial class Timetable
 
     public int TeacherId { get; set; }
 
-    public int LessonTypeId { get; set; }
-
     public int SubjectId { get; set; }
 
     public int GroupId { get; set; }
 
-    public int DayOfWeekId { get; set; }
-
-    public TimeSpan Time { get; set; }
-
     public virtual Subject Subject { get; set; } = null!;
 
     public virtual Teacher Teacher { get; set; } = null!;
+
+    public virtual Group Group { get; set; } = null!;
+
+    public virtual ICollection<TimetableRecord> TimetableRecords { get; set; } = new List<TimetableRecord>();
 }

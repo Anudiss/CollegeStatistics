@@ -12,12 +12,17 @@ namespace CollegeStatictics.ViewModels
     public class GroupView : ItemDialog<Group>
     {
         [EntitiesGridFormElement("Студенты")]
+        [Column("Id", "Id")]
+        [Column("Surname", "Фамилия")]
+        [Column("Name", "Имя")]
+        [Column("Patronymic", "Отчество")]
+        [Label("Студенты")]
         public ICollection<Student> Students
         {
             get => _item.Students;
             set
             {
-                _item.Students = new List<Student>(value);
+                _item.Students = value;
                 OnPropertyChanged();
             }
         }
@@ -25,7 +30,7 @@ namespace CollegeStatictics.ViewModels
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]
         [EntitySelectorFormElement("Преподаватели")]
-        public Teacher Cuarator
+        public Teacher Curator
         {
             get => _item.Curator;
             set

@@ -74,6 +74,71 @@
                                      xmlns:controls="clr-namespace:CollegeStatictics.Controls.Extensions"
                                      xmlns:ui="http://schemas.modernwpf.com/2019">
                      
+                     <DataTemplate x:Key="SelectorItemsContainerTemplate">
+                         
+                         <Grid>
+                             <Grid.RowDefinitions>
+                                 <RowDefinition Height="Auto"/>
+                                 <RowDefinition Height="*"/>
+                             </Grid.RowDefinitions>
+                             
+                             <DockPanel VerticalAlignment="Center"
+                                        Margin="0 0 0 10">
+                                 <ui:AutoSuggestBox Text="{Binding Path=Items.SearchingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    QueryIcon="Find"
+                                                    PlaceholderText="Поиск"
+                                                    VerticalAlignment="Center"
+                                                    Width="300" />
+                                 
+                                 <Menu ItemsSource="{Binding Path=Items.Filters}"
+                                       ItemContainerStyle="{StaticResource FilterMenuItemStyle}"
+                                       VerticalAlignment="Center"/>
+
+                                 <Button Content="Создать"
+                                         VerticalAlignment="Center"
+                                         DockPanel.Dock="Right"
+                                         HorizontalAlignment="Right"
+                                         Command="{Binding CreateDialogCommand}"
+                                         CommandParameter="{x:Null}"/>
+                             </DockPanel>
+
+                            <Border BorderBrush="LightGray"
+                                    BorderThickness="1"
+                                    Grid.Row="1">
+                                 <controls:ExtendedDataGrid ItemsSource="{Binding Path=Items.View}"
+                                                            Style="{StaticResource {x:Type DataGrid}}"
+                                                            Columns="{Binding Path=Columns, Mode=OneWay}"
+                                                            SelectionMode="{Binding Path=SelectionMode}"
+                                                            SelectedItems="{Binding Path=SelectedItems, Mode=OneWayToSource}"
+                                                            x:Name="ItemsContainer"
+                                                            IsReadOnly="True"
+                                                            AutoGenerateColumns="False"
+                                                            CanUserAddRows="False"
+                                                            CanUserDeleteRows="False"
+                                                            Margin="10">
+                                     <controls:ExtendedDataGrid.GroupStyle>
+                                         <GroupStyle>
+                                             <GroupStyle.HeaderTemplate>
+                                                 <DataTemplate>
+                                                     <TextBlock Text="{Binding Path=Name}"
+                                                                FontWeight="Normal"
+                                                                FontSize="12" />
+                                                </DataTemplate>
+                                             </GroupStyle.HeaderTemplate>
+                                         </GroupStyle>
+                                     </controls:ExtendedDataGrid.GroupStyle>
+                                     <controls:ExtendedDataGrid.InputBindings>
+                                         <MouseBinding Gesture="LeftDoubleClick"
+                                                       Command="{Binding OpenDialogCommand}"
+                                                       CommandParameter="{Binding ElementName=ItemsContainer, Path=SelectedItem}"/>
+                                     </controls:ExtendedDataGrid.InputBindings>
+                                 </controls:ExtendedDataGrid>
+                            </Border>
+                        
+                         </Grid>
+                         
+                     </DataTemplate>
+                     
                      <DataTemplate x:Key="ItemsContainerTemplate">
                          
                          <Grid>
@@ -141,30 +206,34 @@
                      
                      <DataTemplate x:Key="ItemDialogTemplate">
 
-                        <ItemsControl ItemsSource="{Binding ViewElements}">
-                            <ItemsControl.Resources>
-                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-                                    <Setter Property="Validation.ErrorTemplate">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <StackPanel Orientation="Vertical">
-                                                    <AdornedElementPlaceholder Name="Placeholder"/>
-                                                    <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
-                                                               Foreground="Red"/>
-                                                </StackPanel>
-                                            </ControlTemplate>
+                         <ItemsControl ItemsSource="{Binding ViewElements}"
+                                       ScrollViewer.CanContentScroll="False"
+                                       ScrollViewer.VerticalScrollBarVisibility="Auto">
+                             <ItemsControl.Resources>
+                                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                                     <Setter Property="Validation.ErrorTemplate">
+                                         <Setter.Value>
+                                             <ControlTemplate>
+                                                 <StackPanel Orientation="Vertical">
+                                                     <AdornedElementPlaceholder Name="Placeholder"/>
+                                                     <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
+                                                                 Foreground="Red"/>
+                                                 </StackPanel>
+                                             </ControlTemplate>
                                         </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ItemsControl.Resources>
-                            <ItemsControl.ItemsPanel>
+                                     </Setter>
+                                 </Style>
+                             </ItemsControl.Resources>
+                             
+                         <!--<ItemsControl.ItemsPanel>
                                  <ItemsPanelTemplate>
-                                     <ui:SimpleStackPanel Spacing="24"
-                                                          Orientation="Vertical"/>
+                                     <UniformGrid Columns="1"/>
+                                     --><!--<ui:SimpleStackPanel Spacing="24"
+                                                         Orientation="Vertical"/>--><!--
                                  </ItemsPanelTemplate>
-                             </ItemsControl.ItemsPanel>
+                             </ItemsControl.ItemsPanel>-->
                          </ItemsControl>
-                         
+                             
                      </DataTemplate>
                      
                      <DataTemplate x:Key="EntitySelectorBoxTemplate">

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CollegeStatictics.Database.Models;
+﻿using CollegeStatictics.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CollegeStatictics.Database;
@@ -20,6 +18,8 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<CommisionCurator> CommisionCurators { get; set; }
 
+    public virtual DbSet<DayOfWeek> DayOfWeeks { get; set; }
+
     public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<EducationForm> EducationForms { get; set; }
@@ -27,8 +27,6 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<EmergencySituation> EmergencySituations { get; set; }
 
     public virtual DbSet<Group> Groups { get; set; }
-
-    public virtual DbSet<GroupLeader> GroupLeaders { get; set; }
 
     public virtual DbSet<Homework> Homeworks { get; set; }
 
@@ -54,8 +52,11 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<Timetable> Timetables { get; set; }
 
+    public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDb;Database=StatisticsSchool;Trusted_Connection=True;Encrypt=False");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=StatisticsSchool;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +87,13 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.DepartmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CommisionCurator_Department");
+        });
+
+        modelBuilder.Entity<DayOfWeek>(entity =>
+        {
+            entity.ToTable("DayOfWeek");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -122,6 +130,10 @@ public partial class DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Group_EducationForm");
 
+            entity.HasOne(d => d.GroupLeader).WithMany(p => p.Groups)
+                .HasForeignKey(d => d.GroupLeaderId)
+                .HasConstraintName("FK_Group_Student");
+
             entity.HasOne(d => d.Speciality).WithMany(p => p.Groups)
                 .HasForeignKey(d => d.SpecialityId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -131,13 +143,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.TeacherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Group_Teacher");
-        });
-
-        modelBuilder.Entity<GroupLeader>(entity =>
-        {
-            entity.ToTable("GroupLeader");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<Homework>(entity =>
@@ -227,7 +232,6 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Student");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Patronymic).HasMaxLength(50);
             entity.Property(e => e.Surname).HasMaxLength(50);
@@ -236,11 +240,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.GroupId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Student_Group");
-
-            entity.HasOne(d => d.GroupLeader).WithOne(p => p.Student)
-                .HasForeignKey<Student>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Student_GroupLeader");
         });
 
         modelBuilder.Entity<StudyPlan>(entity =>
@@ -287,8 +286,6 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Timetable");
 
-            entity.Property(e => e.Time).HasPrecision(0);
-
             entity.HasOne(d => d.Subject).WithMany(p => p.Timetables)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -298,6 +295,28 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.TeacherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Timetable_Teacher");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.Timetables)
+                .HasForeignKey(d => d.GroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Timetable_Group");
+        });
+
+        modelBuilder.Entity<TimetableRecord>(entity =>
+        {
+            entity.ToTable("TimetableRecord");
+
+            entity.Property(e => e.Time).HasPrecision(0);
+
+            entity.HasOne(d => d.DayOfWeek).WithMany(p => p.TimetableRecords)
+                .HasForeignKey(d => d.DayOfWeekId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TimetableRecord_DayOfWeek");
+
+            entity.HasOne(d => d.Timetable).WithMany(p => p.TimetableRecords)
+                .HasForeignKey(d => d.TimetableId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TimetableRecord_Timetable");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -58,7 +58,7 @@ namespace CollegeStatictics.ViewModels
             if (contentDialog.Result == DialogResult.Secondary)
                 return SelectedItem;
 
-            return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? default(T);
+            return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? SelectedItem;
         }
     }
 }

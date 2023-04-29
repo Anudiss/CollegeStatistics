@@ -6,6 +6,7 @@ using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using ModernWpf.Controls;
 using System;
 using System.Collections;
@@ -31,6 +32,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         [ObservableProperty]
         private DataGridSelectionMode selectionMode = DataGridSelectionMode.Single;
+
 
         [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns;
@@ -74,7 +76,7 @@ namespace CollegeStatictics.ViewModels.Base
         [RelayCommand]
         private void CreateDialog()
         {
-            ItemDialog<T> itemDialog = (ItemDialog<T>)Activator.CreateInstance(_itemDialogType, new object[] { null })!;
+            ItemDialog<T> itemDialog = (ItemDialog<T>)Activator.CreateInstance(_itemDialogType, new object[] { null! })!;
             var contentDialog = new DialogWindow
             {
                 Content = itemDialog,

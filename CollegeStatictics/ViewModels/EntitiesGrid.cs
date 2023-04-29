@@ -11,13 +11,13 @@ using System.Collections.ObjectModel;
 
 namespace CollegeStatictics.ViewModels
 {
-    public class EntitiesGrid<T> : Control where T : class, ITable
+    public partial class EntitiesGrid<T> : Control where T : class, ITable
     {
         public static readonly DependencyProperty SelectedItemsProperty =
             DependencyProperty.Register(nameof(SelectedItems), typeof(ICollection<T>), typeof(EntitiesGrid<T>));
 
         [RelayCommand]
-        private async void OpenSelectorDialog()
+        public async void OpenSelectorDialog()
         {
             SelectedItems = OpenSelectorItemDialog(MainVM.PageBuilders[_itemContainerName]());
         }
@@ -58,7 +58,7 @@ namespace CollegeStatictics.ViewModels
             if (contentDialog.Result == DialogResult.Secondary)
                 return SelectedItems;
 
-            return itemsContainer.SelectedItems?.Cast<T>().ToList() ?? new List<T>();
+            return itemsContainer.SelectedItems?.Cast<T>().ToList() ?? SelectedItems;
         }
     }
 }
