@@ -186,7 +186,7 @@
                                          <GroupStyle>
                                              <GroupStyle.HeaderTemplate>
                                                  <DataTemplate>
-                                                     <TextBlock Text="{Binding Path=Name}"
+                                                    <TextBlock Text="{Binding Path=Name}"
                                                                 FontWeight="Normal"
                                                                 FontSize="12" />
                                                 </DataTemplate>
@@ -211,13 +211,15 @@
                              <ItemsControl ItemsSource="{Binding ViewElements}">
                                  <ItemsControl.Resources>
                                      <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-                                         <Setter Property="Validation.ErrorTemplate">
-                                             <Setter.Value>
+                                        <Setter Property="Validation.ErrorTemplate">
+                                            <Setter.Value>
                                                  <ControlTemplate>
                                                      <StackPanel Orientation="Vertical">
-                                                         <AdornedElementPlaceholder Name="Placeholder"/>
+                                                         <AdornedElementPlaceholder Name="Placeholder"
+                                                                                    Validation.ValidationAdornerSite="{Binding ElementName=ErrorTextBlock}"/>
                                                          <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
-                                                                     Foreground="Red"/>
+                                                                    Name="ErrorTextBlock"
+                                                                    Foreground="Red"/>
                                                      </StackPanel>
                                                  </ControlTemplate>
                                             </Setter.Value>
