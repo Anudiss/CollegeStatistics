@@ -2,11 +2,8 @@
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 
 namespace CollegeStatictics.ViewModels
 {

@@ -8,7 +8,7 @@
         MinWidth="320"
         MaxWidth="640"
         MinHeight="184"
-        MaxHeight="756"
+        MaxHeight="800"
         WindowStyle="None"
         ResizeMode="NoResize"
         SizeToContent="Height"

@@ -13,11 +13,11 @@ public partial class Student
 
     public string Patronymic { get; set; } = null!;
 
-    public int GroupId { get; set; }
+    public int? GroupId { get; set; }
 
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
-    public virtual Group Group { get; set; } = null!;
+    public virtual Group? Group { get; set; } = null!;
 
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 

@@ -209,7 +209,7 @@
 
                          <ItemsControl ItemsSource="{Binding ViewElements}"
                                        ScrollViewer.CanContentScroll="False"
-                                       ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                       ScrollViewer.VerticalScrollBarVisibility="Visible">
                              <ItemsControl.Resources>
                                  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                                      <Setter Property="Validation.ErrorTemplate">
@@ -224,15 +224,26 @@
                                         </Setter.Value>
                                      </Setter>
                                  </Style>
+                                <Style TargetType="Label"
+                                       BasedOn="{StaticResource {x:Type Label}}">
+                                    <Setter Property="Margin" Value="0 0 0 12"/>
+                                </Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Padding" Value="10"/>
+                                    <Setter Property="BorderThickness" Value="0.5"/>
+                                    <Setter Property="BorderBrush" Value="LightGray"/>
+                                </Style>
+                                <Style TargetType="GroupBox"
+                                       BasedOn="{StaticResource {x:Type GroupBox}}">
+                                </Style>
                              </ItemsControl.Resources>
                              
-                         <!--<ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemsPanel>
                                  <ItemsPanelTemplate>
-                                     <UniformGrid Columns="1"/>
-                                     --><!--<ui:SimpleStackPanel Spacing="24"
-                                                         Orientation="Vertical"/>--><!--
+                                     <ui:SimpleStackPanel Spacing="12"
+                                                         Orientation="Vertical"/>
                                  </ItemsPanelTemplate>
-                             </ItemsControl.ItemsPanel>-->
+                             </ItemsControl.ItemsPanel>
                          </ItemsControl>
                              
                      </DataTemplate>

@@ -3,6 +3,7 @@ using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
+using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -50,16 +51,6 @@ namespace CollegeStatictics.ViewModels.Base
         protected readonly T _item;
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
-
-        [Label("Уникальный идентификатор")]
-        [FormElement(IsReadOnly = true)]
-        public int Id
-        {
-            get
-            {
-                return _item.Id != 0 ? _item.Id : ((DatabaseContext.Entities.Set<T>().Local.LastOrDefault()?.Id + 1) ?? 1);
-            }
-        }
 
         #endregion
 
@@ -138,8 +129,6 @@ namespace CollegeStatictics.ViewModels.Base
             var groupBox = new GroupBox
             {
                 Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
-                BorderThickness = new(1),
-                BorderBrush = Brushes.Black
             };
 
             var grid = new StackPanel();
@@ -157,13 +146,19 @@ namespace CollegeStatictics.ViewModels.Base
                 CanUserDeleteRows = false,
                 CanUserResizeColumns = false,
                 IsReadOnly = true,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Height = 160
+            };
+
+            var dataGridBorder = new Border
+            {
+                Child = dataGrid
             };
 
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, formElement.property.Name);
+            dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(formElement.property.Name));
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -180,7 +175,9 @@ namespace CollegeStatictics.ViewModels.Base
             var buttonsContainer = new SimpleStackPanel
             {
                 Orientation = Orientation.Horizontal,
-                Spacing = 10
+                Spacing = 10,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new(0, 0, 0, 10)
             };
 
             buttonsContainer.SetValue(Grid.ColumnProperty, 0);
@@ -207,20 +204,40 @@ namespace CollegeStatictics.ViewModels.Base
 
                 var addMethod = formElement.property.PropertyType.GetMethod("Add");
 
+                if (entitySelectorBox.SelectedItems == null)
+                    return;
+
                 foreach (var selectedItem in entitySelectorBox.SelectedItems)
                     addMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
             };
 
             removeButton.Click += delegate
             {
+                if (dataGrid.SelectedItems == null)
+                    return;
 
+                var dialogWindow = new DialogWindow
+                {
+                    Content = new Label { Content = "Действительно удалить выбранные элементы?" },
+                    PrimaryButtonText = "Да",
+                    SecondaryButtonText = "Нет"
+                };
+                dialogWindow.Show();
+
+                if (dialogWindow.Result != DialogResult.Primary)
+                    return;
+
+                var removeMethod = formElement.property.PropertyType.GetMethod("Remove");
+
+                foreach (var selectedItem in dataGrid.SelectedItems)
+                    removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
             };
 
             buttonsContainer.Children.Add(addButton);
             buttonsContainer.Children.Add(removeButton);
 
             grid.Children.Add(buttonsContainer);
-            grid.Children.Add(dataGrid);
+            grid.Children.Add(dataGridBorder);
 
             groupBox.Content = grid;
 
@@ -243,7 +260,6 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     Content = labelAttribute.Label,
                     Target = textBox,
-                    Margin = new Thickness(0, 0, 0, 10)
                 };
                 stackPanel.Children.Add(label);
             }
@@ -291,7 +307,6 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     Content = labelAttribute.Label,
                     Target = entitySelectorBoxContainer,
-                    Margin = new Thickness(0, 0, 0, 10)
                 };
                 stackPanel.Children.Add(label);
             }
@@ -309,14 +324,23 @@ namespace CollegeStatictics.ViewModels.Base
             dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
             EntityFrameworkQueryableExtensions.Load(values);
 
-            var groupBox = new GroupBox();
-            
+            var groupBox = new GroupBox
+            {
+                Padding = new(0, 0, 0, 0)
+            };
+
             var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
             if (labelAttribute != null)
                 groupBox.Header = labelAttribute.Label;
 
             var stackPanel = new StackPanel();
-            groupBox.Content = stackPanel;
+
+            var border = new Border
+            {
+                Child = stackPanel
+            };
+
+            groupBox.Content = border;
 
             if (formElement.property.GetValue(this) == null)
                 formElement.property.SetValue(this, Enumerable.FirstOrDefault(values.Local));

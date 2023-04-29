@@ -5,6 +5,6 @@ namespace CollegeStatictics.Database.Models
 {
     public partial class Group : ITable
     {
-        public override string ToString() => $"{Id}";
+        public override string ToString() => $"{Number}";
     }
 }

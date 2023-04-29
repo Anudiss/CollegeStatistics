@@ -55,7 +55,7 @@ namespace CollegeStatictics.Utilities
         }
 
         private IEnumerable LoadMenuItems()
-            => LoadPossibleValues().Select(v =>
+            => LoadPossibleValues().Where(v => v != null).Select(v =>
             {
                 MenuItem menuItem = new() { Header = v!.ToString() };
 
