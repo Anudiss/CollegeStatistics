@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -30,7 +31,7 @@ namespace CollegeStatictics.ViewModels
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]
         [EntitySelectorFormElement("Преподаватели")]
-        public Teacher Curator
+        public Teacher Cuarator
         {
             get => _item.Curator;
             set
