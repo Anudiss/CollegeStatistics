@@ -206,47 +206,46 @@
                     </DataTemplate>
                      
                      <DataTemplate x:Key="ItemDialogTemplate">
-
-                         <ItemsControl ItemsSource="{Binding ViewElements}"
-                                       ScrollViewer.CanContentScroll="False"
-                                       ScrollViewer.VerticalScrollBarVisibility="Visible">
-                             <ItemsControl.Resources>
-                                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-                                     <Setter Property="Validation.ErrorTemplate">
-                                         <Setter.Value>
-                                             <ControlTemplate>
-                                                 <StackPanel Orientation="Vertical">
-                                                     <AdornedElementPlaceholder Name="Placeholder"/>
-                                                     <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
-                                                                 Foreground="Red"/>
-                                                 </StackPanel>
-                                             </ControlTemplate>
-                                        </Setter.Value>
-                                     </Setter>
-                                 </Style>
-                                <Style TargetType="Label"
-                                       BasedOn="{StaticResource {x:Type Label}}">
-                                    <Setter Property="Margin" Value="0 0 0 12"/>
-                                </Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Padding" Value="10"/>
-                                    <Setter Property="BorderThickness" Value="0.5"/>
-                                    <Setter Property="BorderBrush" Value="LightGray"/>
-                                </Style>
-                                <Style TargetType="GroupBox"
-                                       BasedOn="{StaticResource {x:Type GroupBox}}">
-                                </Style>
-                             </ItemsControl.Resources>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      Padding="0 0 36 0">
+                             <ItemsControl ItemsSource="{Binding ViewElements}">
+                                 <ItemsControl.Resources>
+                                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                                         <Setter Property="Validation.ErrorTemplate">
+                                             <Setter.Value>
+                                                 <ControlTemplate>
+                                                     <StackPanel Orientation="Vertical">
+                                                         <AdornedElementPlaceholder Name="Placeholder"/>
+                                                         <TextBlock Text="{Binding ElementName=Placeholder, Path=AdornedElement.TemplatedParent.(Validation.Errors)/ErrorContent}"
+                                                                     Foreground="Red"/>
+                                                     </StackPanel>
+                                                 </ControlTemplate>
+                                            </Setter.Value>
+                                         </Setter>
+                                     </Style>
+                                    <Style TargetType="Label"
+                                           BasedOn="{StaticResource {x:Type Label}}">
+                                        <Setter Property="Margin" Value="0 0 0 12"/>
+                                    </Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Padding" Value="10"/>
+                                        <Setter Property="BorderThickness" Value="0.5"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                    <Style TargetType="GroupBox"
+                                           BasedOn="{StaticResource {x:Type GroupBox}}">
+                                    </Style>
+                                 </ItemsControl.Resources>
                              
-                            <ItemsControl.ItemsPanel>
-                                 <ItemsPanelTemplate>
-                                     <ui:SimpleStackPanel Spacing="12"
-                                                         Orientation="Vertical"/>
-                                 </ItemsPanelTemplate>
-                             </ItemsControl.ItemsPanel>
-                         </ItemsControl>
-                             
-                     </DataTemplate>
+                                <ItemsControl.ItemsPanel>
+                                     <ItemsPanelTemplate>
+                                         <ui:SimpleStackPanel Spacing="12"
+                                                              Orientation="Vertical"/>
+                                     </ItemsPanelTemplate>
+                                 </ItemsControl.ItemsPanel>
+                             </ItemsControl>
+                        </ScrollViewer>
+                    </DataTemplate>
                      
                      <DataTemplate x:Key="EntitySelectorBoxTemplate">
                      

@@ -158,7 +158,7 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(formElement.property.Name));
+            dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -209,6 +209,9 @@ namespace CollegeStatictics.ViewModels.Base
 
                 foreach (var selectedItem in entitySelectorBox.SelectedItems)
                     addMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
             };
 
             removeButton.Click += delegate
@@ -231,6 +234,9 @@ namespace CollegeStatictics.ViewModels.Base
 
                 foreach (var selectedItem in dataGrid.SelectedItems)
                     removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
             };
 
             buttonsContainer.Children.Add(addButton);
