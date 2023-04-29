@@ -7,6 +7,20 @@ namespace CollegeStatictics.ViewModels
 {
     public class SpecialityView : ItemDialog<Speciality>
     {
+        [Required(ErrorMessage = "Поле обязательно")]
+        [Label("Подразделение")]
+        [EntitySelectorFormElement("Подразделения")]
+        public Department Department
+        {
+            get => _item.Department;
+            set
+            {
+                _item.Department = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
+            }
+        }
+
         [MaxLength(150)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Название")]
@@ -17,20 +31,6 @@ namespace CollegeStatictics.ViewModels
             set
             {
                 _item.Name = value;
-                OnPropertyChanged();
-                ValidateProperty(value);
-            }
-        }
-
-        [Required(ErrorMessage = "Поле обязательно")]
-        [Label("Подразделение")]
-        [EntitySelectorFormElement("Подразделения")]
-        public Department Department
-        {
-            get => _item.Department;
-            set
-            {
-                _item.Department = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

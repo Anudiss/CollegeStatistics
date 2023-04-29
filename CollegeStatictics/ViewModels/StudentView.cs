@@ -21,20 +21,6 @@ namespace CollegeStatictics.ViewModels
                 ValidateProperty(value);
             }
         }
-        [MaxLength(50)]
-        [Required(ErrorMessage = "Поле обязательно")]
-        [Label("Фамилия")]
-        [FormElement]
-        public string Surname
-        {
-            get => _item.Surname;
-            set
-            {
-                _item.Surname = value;
-                OnPropertyChanged();
-                ValidateProperty(value);
-            }
-        }
 
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
@@ -46,6 +32,21 @@ namespace CollegeStatictics.ViewModels
             set
             {
                 _item.Name = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
+            }
+        }
+
+        [MaxLength(50)]
+        [Required(ErrorMessage = "Поле обязательно")]
+        [Label("Фамилия")]
+        [FormElement]
+        public string Surname
+        {
+            get => _item.Surname;
+            set
+            {
+                _item.Surname = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
