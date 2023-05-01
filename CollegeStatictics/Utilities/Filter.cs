@@ -1,20 +1,18 @@
 ﻿using CollegeStatictics.Database;
-using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace CollegeStatictics.Utilities
 {
-    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable where R : class, ITable
+    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable 
+                                                                     where R : class, ITable
     {
         // Properties:
         //  + Possible values collection
@@ -51,13 +49,23 @@ namespace CollegeStatictics.Utilities
             var values = DatabaseContext.Entities.Set<T>();
             values.Load();
 
-            return values.Local.Select(entity => PropertyGetter(entity)).Distinct();
+            var possibleValues = values.Local.Select(entity => PropertyGetter(entity)).Distinct();
+
+            foreach (var selectedValue in SelectedValues)
+                if (!possibleValues.Contains(selectedValue))
+                    Remove(selectedValue);
+
+            return possibleValues;
         }
 
         private IEnumerable LoadMenuItems()
             => LoadPossibleValues().Where(v => v != null).Select(v =>
             {
-                MenuItem menuItem = new() { Header = v!.ToString() };
+                MenuItem menuItem = new()
+                {
+                    Header = v!.ToString(),
+                    IsChecked = SelectedValues.Contains(v)
+                };
 
                 menuItem.Checked += (_, _) => Add(v!);
                 menuItem.Unchecked += (_, _) => Remove(v!);
@@ -70,9 +78,11 @@ namespace CollegeStatictics.Utilities
 
         public void Add(object value)
         {
-            if (value is R r)
+            if (value is R r && !SelectedValues.Contains(r))
+            {
                 SelectedValues.Add(r);
-            SelectedValuesChanged?.Invoke();
+                SelectedValuesChanged?.Invoke();
+            }
         }
 
         public void Remove(object value)
@@ -81,17 +91,39 @@ namespace CollegeStatictics.Utilities
                 SelectedValues.Remove(r);
             SelectedValuesChanged?.Invoke();
         }
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(MenuItems));
+
+
+        }
     }
 
-    public interface IFilter<T>
+    public interface IFilter<T> : ISelection<T>
     {
-        public string Name { get; set; }
         IEnumerable PossibleValues { get; }
 
         public event Action SelectedValuesChanged;
 
-        public bool IsAccepted(T item);
         public void Add(object value);
         public void Remove(object value);
+
+        public void Refresh();
+    }
+
+    public class Selection<T> : ISelection<T>
+    {
+        private Predicate<T> _selectionPredicate;
+
+        public Selection(Predicate<T> selectionPredicate) =>
+            _selectionPredicate = selectionPredicate;
+
+        public bool IsAccepted(T item) => _selectionPredicate?.Invoke(item) != false;
+    }
+
+    public interface ISelection<T>
+    {
+        public bool IsAccepted(T item);
     }
 }

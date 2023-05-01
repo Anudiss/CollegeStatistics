@@ -1,13 +1,12 @@
-﻿using CollegeStatictics.ViewModels.Base;
+﻿using CollegeStatictics.DataTypes;
+using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.Input;
-using System.Windows.Controls;
-using System.Windows;
 using System;
-using CollegeStatictics.DataTypes;
-using System.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace CollegeStatictics.ViewModels
 {

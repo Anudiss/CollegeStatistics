@@ -9,5 +9,7 @@ public partial class DayOfWeek
 
     public string Name { get; set; } = null!;
 
+    public string Reduction { get; set; } = null!;
+
     public virtual ICollection<TimetableRecord> TimetableRecords { get; set; } = new List<TimetableRecord>();
 }

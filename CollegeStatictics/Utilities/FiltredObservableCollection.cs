@@ -1,5 +1,4 @@
-﻿using CollegeStatictics.Database.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -21,21 +20,22 @@ namespace CollegeStatictics.Utilities
             }
         }
 
-        public IEnumerable<IFilter<T>> Filters { get; }
+        public IEnumerable<ISelection<T>> Selections { get; }
+        public IEnumerable<IFilter<T>> Filters => Selections.Where(selection => selection is IFilter<T>).Cast<IFilter<T>>();
         public IEnumerable<Searching<T>> Searchings { get; }
         public IEnumerable<Grouping<T>> Groupings { get; }
 
         public ICollectionView View { get; }
 
-        public FilteredObservableCollection(IList<T> sourceCollection, IEnumerable<IFilter<T>> filters, IEnumerable<Searching<T>> searchings, IEnumerable<Grouping<T>> groupings)
+        public FilteredObservableCollection(IList<T> sourceCollection, IEnumerable<ISelection<T>> selections, IEnumerable<Searching<T>> searchings, IEnumerable<Grouping<T>> groupings)
         {
-            Filters = filters;
+            Selections = selections;
             Searchings = searchings;
             Groupings = groupings;
 
             View = CollectionViewSource.GetDefaultView(sourceCollection);
 
-            foreach (var filter in filters)
+            foreach (var filter in Filters)
                 filter.SelectedValuesChanged += Refresh;
 
             View.Filter = IsAccepted;
@@ -46,8 +46,14 @@ namespace CollegeStatictics.Utilities
             Refresh();
         }
 
-        public bool IsAccepted(object item) => item is T t && (!Filters.Any() || Filters.All(filter => filter.IsAccepted(t))) &&
+        public bool IsAccepted(object item) => item is T t && (!Selections.Any() || Selections.All(filter => filter.IsAccepted(t))) &&
                                                               (!Searchings.Any() || Searchings.Any(searching => searching.IsAccepted(t, SearchingText)));
+
+        public void UpdateFilters()
+        {
+            foreach (var filter in Filters)
+                filter.Refresh();
+        }
 
         public void Refresh()
         {
@@ -59,7 +65,7 @@ namespace CollegeStatictics.Utilities
     public class FilteredObservableCollectionBuilder<T>
     {
         private readonly IList<T> _sourceCollection;
-        private readonly List<IFilter<T>> _filters;
+        private readonly List<ISelection<T>> _filters;
         private readonly List<Searching<T>> _searchings;
         private readonly List<Grouping<T>> _groupings;
 
@@ -71,7 +77,7 @@ namespace CollegeStatictics.Utilities
             _groupings = new();
         }
 
-        public FilteredObservableCollectionBuilder<T> AddFilter(IFilter<T> filter)
+        public FilteredObservableCollectionBuilder<T> AddFilter(ISelection<T> filter)
         {
             _filters.Add(filter);
             return this;

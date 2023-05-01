@@ -71,6 +71,7 @@ namespace CollegeStatictics.ViewModels.Base
             contentDialog.Closing -= ContentDialogClosingHandler;
 
             Items.Refresh();
+            Items.UpdateFilters();
         }
 
         [RelayCommand]
@@ -156,7 +157,7 @@ namespace CollegeStatictics.ViewModels.Base
                                              where R : ItemDialog<T>
     {
         private readonly ObservableCollection<T> _sourceCollection;
-        private readonly List<IFilter<T>> _filters;
+        private readonly List<ISelection<T>> _filters;
         private readonly List<Searching<T>> _searchings;
         private readonly List<Grouping<T>> _groupings;
         private readonly ObservableCollection<DataGridColumn> _columns;
@@ -182,7 +183,7 @@ namespace CollegeStatictics.ViewModels.Base
             return values.Local.ToObservableCollection();
         }
 
-        public ItemsContainerBuilder<T, R> AddFilter(IFilter<T> filter)
+        public ItemsContainerBuilder<T, R> AddFilter(ISelection<T> filter)
         {
             _filters.Add(filter);
             return this;

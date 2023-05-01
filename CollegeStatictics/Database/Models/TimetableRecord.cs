@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CollegeStatictics.Database.Models;
+﻿namespace CollegeStatictics.Database.Models;
 
 public partial class TimetableRecord
 {
     public int Id { get; set; }
 
-    public TimeSpan Time { get; set; }
+    public int Couple { get; set; }
 
     public int DayOfWeekId { get; set; }
 

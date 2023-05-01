@@ -2,15 +2,14 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
+using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
-using ModernWpf.Controls.Primitives;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace CollegeStatictics.ViewModels.Base
 {
@@ -88,34 +87,33 @@ namespace CollegeStatictics.ViewModels.Base
 
         private FrameworkElement CreateTimetableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
-            var dataGrid = new DataGrid();
+            var dataGrid = new DataGrid()
+            {
+                Style = (Style)Application.Current.FindResource("TimetableDataGridStyle"),
+                
+                ItemsSource = TimetableRecordElement.GetRecordElements(_item as Timetable)
+            };
 
             DatabaseContext.Entities.DayOfWeeks.Load();
-            foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local)
+            var systemDayOfWeeks = Enum.GetValues<System.DayOfWeek>();
+            foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local.Skip(1))
             {
-                DataTemplate cellTemplate = new();
-
-                FrameworkElementFactory factory = new(typeof(CheckBox));
-
-                cellTemplate.VisualTree = factory;
-
-                dataGrid.Columns.Add(new DataGridTemplateColumn()
+                dataGrid.Columns.Add(new DataGridCheckBoxColumn()
                 {
-                    Header = dayOfWeek,
-                    IsReadOnly = true,
-                    CellTemplate = cellTemplate
+                    Width = DataGridLength.SizeToCells,
+                    Header = dayOfWeek.Reduction,
+                    Binding = new Binding($"Is{systemDayOfWeeks[dayOfWeek.Id]}Checked")
+                    {
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                    }
                 });
             }
 
-            for (int i = 0; i < 8; i++)
+            return new Border()
             {
-                dataGrid.Items.Add(new DataGridRow()
-                {
-                    Header = i,
-                });
-            }
-
-            return dataGrid;
+                Child = dataGrid
+            };
         }
 
         private FrameworkElement CreateSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)

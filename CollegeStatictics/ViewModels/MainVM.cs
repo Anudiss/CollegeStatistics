@@ -27,11 +27,12 @@ namespace CollegeStatictics.ViewModels
                                .Build()
             },
             { "Предметы", () => new ItemsContainerBuilder<Subject, SubjectView>()
-                          .AddColumn(nameof(Subject.Id), "Id")
-                          .AddColumn(nameof(Subject.Name), "Название")
+                            .AddColumn(nameof(Subject.Id), "Id")
+                            .AddColumn(nameof(Subject.Name), "Название")
 
-                          .AddSearching(new Searching<Subject>(subject => subject.Name))
-                          .Build()
+                            .AddSearching(new Searching<Subject>(subject => subject.Name))
+
+                            .Build()
             },
             { "Специальности", () => new ItemsContainerBuilder<Speciality, SpecialityView>()
 
@@ -95,6 +96,10 @@ namespace CollegeStatictics.ViewModels
                                 .AddColumn(nameof(Timetable.Teacher), "Преподаватель")
                                 .AddColumn(nameof(Timetable.Subject), "Предмет")
                                 .AddColumn(nameof(Timetable.Group), "Группа")
+
+                                .AddFilter(new Filter<Timetable, Teacher>("Преподаватель", timetable => timetable.Teacher))
+                                .AddFilter(new Filter<Timetable, Group>("Группа", timetable => timetable.Group))
+                                .AddFilter(new Filter<Timetable, Subject>("Специальность", timetable => timetable.Subject))
 
                                 .Build()
             }

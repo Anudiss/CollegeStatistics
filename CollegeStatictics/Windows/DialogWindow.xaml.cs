@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using CollegeStatictics.DataTypes.Attributes;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CollegeStatictics.Windows
@@ -14,7 +16,7 @@ namespace CollegeStatictics.Windows
         public CanDialogWindowCloseDeterminant? CanClose { get; set; }
 
         public static readonly DependencyProperty ContentsProperty =
-            DependencyProperty.Register(nameof(Content), typeof(object), typeof(DialogWindow));
+            DependencyProperty.Register(nameof(Content), typeof(object), typeof(DialogWindow), new PropertyMetadata(OnContentChanged));
 
         public static readonly DependencyProperty ContentsTemplateProperty =
             DependencyProperty.Register(nameof(ContentTemplate), typeof(DataTemplate), typeof(DialogWindow));
@@ -75,7 +77,7 @@ namespace CollegeStatictics.Windows
 
         public new object Content
         {
-            get { return (object)GetValue(ContentsProperty); }
+            get { return GetValue(ContentsProperty); }
             set { SetValue(ContentsProperty, value); }
         }
 
@@ -90,6 +92,15 @@ namespace CollegeStatictics.Windows
         public DialogWindow()
         {
             InitializeComponent();
+        }
+
+        public static void OnContentChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        {
+            var dialogWindow = (DialogWindow)obj;
+            var minHeightAttribute = args.NewValue.GetType().GetCustomAttribute<MinHeightAttribute>();
+            if (minHeightAttribute != null)
+                dialogWindow.MinHeight = minHeightAttribute.Height;
+
         }
 
         public new void Show() => ShowDialog();

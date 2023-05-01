@@ -1,11 +1,26 @@
 ﻿using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using System.Collections.Generic;
 
 namespace CollegeStatictics.ViewModels
 {
+    [MinHeight(800)]
     public class TimetableView : ItemDialog<Timetable>
     {
+        [FormElement(ElementType = ElementType.Timetable)]
+        [Label("Расписание")]
+        public ICollection<TimetableRecord> Records
+        {
+            get => _item.TimetableRecords;
+            set
+            {
+                _item.TimetableRecords = value;
+                OnPropertyChanged();
+            }
+        }
+
         [EntitySelectorFormElement("Предметы")]
         [Label("Предмет")]
         public Subject Subject
