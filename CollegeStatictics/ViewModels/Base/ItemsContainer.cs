@@ -101,6 +101,7 @@ namespace CollegeStatictics.ViewModels.Base
             contentDialog.Closing -= ContentDialogClosingHandler;
 
             Items.Refresh();
+            Items.UpdateFilters();
         }
 
         #endregion
@@ -203,6 +204,21 @@ namespace CollegeStatictics.ViewModels.Base
                 Binding = new Binding(propertyPath)
                 {
                     Mode = BindingMode.OneWay
+                }
+            });
+
+            return this;
+        }
+
+        public ItemsContainerBuilder<T, R> AddColumn(string propertyPath, string header, string stringFormat)
+        {
+            _columns.Add(new DataGridTextColumn()
+            {
+                Header = header,
+                Binding = new Binding(propertyPath)
+                {
+                    Mode = BindingMode.OneWay,
+                    StringFormat = stringFormat
                 }
             });
 

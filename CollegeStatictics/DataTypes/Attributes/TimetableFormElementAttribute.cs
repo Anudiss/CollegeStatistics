@@ -6,6 +6,5 @@ namespace CollegeStatictics.DataTypes.Attributes
     {
         public TimetableFormElementAttribute() =>
             ElementType = ElementType.Timetable;
-        }
     }
 }

@@ -34,7 +34,7 @@ namespace CollegeStatictics.Views
         }
 
         [Label("Дата начала действия")]
-        [DatePickerFormElementAttribute]
+        [DatePickerFormElement]
         public DateTime StartDate
         {
             get => _item.StartDate;

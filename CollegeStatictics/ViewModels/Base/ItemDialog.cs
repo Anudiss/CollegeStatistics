@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 
 namespace CollegeStatictics.ViewModels.Base
@@ -370,14 +371,17 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private static FrameworkElement CreateDatePicker((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateDatePicker((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
             var stackPanel = new StackPanel();
 
+            DateTime selectedDate = (DateTime)formElement.property.GetValue(this)!;
+            if (selectedDate == DateTime.MinValue)
+                formElement.property.SetValue(this, DateTime.Now);
+
             var datePicker = new DatePicker
             {
-                IsEnabled = formElement.attribute.IsReadOnly == false,
-                SelectedDate = DateTime.Now
+                IsEnabled = formElement.attribute.IsReadOnly == false
             };
 
             var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
@@ -411,7 +415,7 @@ namespace CollegeStatictics.ViewModels.Base
                                             .MakeGenericType(formElement.property.PropertyType);
 
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
-            var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty").GetValue(entitySelectorBox);
+            var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
             ((Control)entitySelectorBox).SetBinding(dp, new Binding(formElement.property.Name)
             {

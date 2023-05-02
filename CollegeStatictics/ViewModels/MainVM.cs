@@ -108,8 +108,12 @@ namespace CollegeStatictics.ViewModels
                                     
                                     .AddColumn(nameof(StudyPlan.Id), "Id")
                                     .AddColumn(nameof(StudyPlan.Course), "Курс")
-                                    .AddColumn(nameof(StudyPlan.Speciality), "Спциальность")
+                                    .AddColumn(nameof(StudyPlan.StartDate), "Дата начала", @"dd-MM-yyyy")
+                                    .AddColumn(nameof(StudyPlan.Speciality), "Специальность")
                                     .AddColumn(nameof(StudyPlan.Subject), "Предмет")
+
+                                    .AddFilter(new Filter<StudyPlan, Speciality>("Специальность", studyPlan => studyPlan.Speciality))
+                                    .AddFilter(new Filter<StudyPlan, Subject>("Предмет", studyPlan => studyPlan.Subject))
 
                                     .Build()
             }
