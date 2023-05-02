@@ -220,11 +220,11 @@
                                        <Setter Property="BorderThickness" Value="0.5"/>
                                        <Setter Property="BorderBrush" Value="LightGray"/>
                                     </Style>
-                                     
-                                    <Style TargetType="GroupBox"
-                                           BasedOn="{StaticResource {x:Type GroupBox}}">
+
+                                    <Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
+                                        <Setter Property="Text" Value=""/>
                                     </Style>
-                                     
+
                                 </ItemsControl.Resources>
                              
                                 <ItemsControl.ItemsPanel>
@@ -249,7 +249,8 @@
                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"
                                      Margin="0 0 3 0"
                                      IsReadOnly="True"
-                                     ui:TextBoxHelper.IsDeleteButtonVisible="False"/>
+                                     ui:TextBoxHelper.IsDeleteButtonVisible="False"
+                                     Style="{StaticResource {x:Type TextBox}}"/>
                             
                             <Button Content="&gt;"
                                     Command="{Binding OpenSelectorDialogCommand}"
@@ -258,7 +259,7 @@
                         </Grid>
                         
                     </DataTemplate>
-                     
+
                     <Style x:Key="TimetableDataGridStyle"
                            TargetType="{x:Type DataGrid}"
                            BasedOn="{StaticResource {x:Type DataGrid}}">
@@ -271,28 +272,16 @@
                         <Setter Property="CanUserResizeColumns" Value="false" />
                         <Setter Property="CanUserSortColumns" Value="false" />
                         <Setter Property="CanUserResizeRows" Value="false"/>
-                         
+
                         <Setter Property="HeadersVisibility" Value="All"/>
-                         
-                        <Setter Property="RowHeaderStyle">
-                            <Setter.Value>
-                                <Style TargetType="{x:Type DataGridRowHeader}"
-                                       BasedOn="{StaticResource {x:Type DataGridRowHeader}}">
-                                    
-                                    <Setter Property="Content" Value="{Binding Couple, StringFormat='{}{0} пара'}"/>
-                                    
-                                </Style>
-                            </Setter.Value>
-                        </Setter>
-                        
+
                         <Setter Property="RowStyle">
                             <Setter.Value>
-                                <Style TargetType="{x:Type DataGridRow}"
-                                    BasedOn="{StaticResource {x:Type DataGridRow}}">
-                                    
+                                <Style TargetType="{x:Type DataGridRow}">
+
                                     <Setter Property="Background" Value="{x:Null}"/>
                                     <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                    
+
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Background" Value="White"/>
@@ -302,11 +291,10 @@
                                 </Style>
                             </Setter.Value>
                         </Setter>
-                        
+
                         <Setter Property="CellStyle">
                             <Setter.Value>
-                                <Style TargetType="{x:Type DataGridCell}"
-                                       BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Style TargetType="{x:Type DataGridCell}">
                                     
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">

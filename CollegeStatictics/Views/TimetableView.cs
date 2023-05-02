@@ -9,7 +9,7 @@ namespace CollegeStatictics.ViewModels
     [MinHeight(800)]
     public class TimetableView : ItemDialog<Timetable>
     {
-        [FormElement(ElementType = ElementType.Timetable)]
+        [TimetableFormElement]
         [Label("Расписание")]
         public ICollection<TimetableRecord> Records
         {
