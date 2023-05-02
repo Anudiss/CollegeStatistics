@@ -1,6 +1,6 @@
 USE [CollegeStatistics]
 GO
-/****** Object:  Table [dbo].[Attendance]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Attendance]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16,7 +16,7 @@ CREATE TABLE [dbo].[Attendance](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CommisionCurator]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[CommisionCurator]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -27,14 +27,14 @@ CREATE TABLE [dbo].[CommisionCurator](
 	[Name] [nvarchar](50) NOT NULL,
 	[Patronymic] [nvarchar](50) NOT NULL,
 	[DepartmentId] [int] NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_CommisionCurator] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DayOfWeek]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[DayOfWeek]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -49,7 +49,7 @@ CREATE TABLE [dbo].[DayOfWeek](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Department]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Department]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -57,14 +57,14 @@ GO
 CREATE TABLE [dbo].[Department](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](150) NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Department] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EducationForm]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[EducationForm]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -78,7 +78,7 @@ CREATE TABLE [dbo].[EducationForm](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EmergencySituation]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[EmergencySituation]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -87,14 +87,14 @@ CREATE TABLE [dbo].[EmergencySituation](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[LessonId] [int] NOT NULL,
 	[Description] [nvarchar](max) NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_EmergencySituation] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Group]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Group]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -107,14 +107,14 @@ CREATE TABLE [dbo].[Group](
 	[SpecialityId] [int] NOT NULL,
 	[Number] [int] NOT NULL,
 	[GroupLeaderId] [int] NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Group] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Homework]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Homework]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -133,7 +133,7 @@ CREATE TABLE [dbo].[Homework](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[HomeworkExecutionStatus]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[HomeworkExecutionStatus]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -147,7 +147,7 @@ CREATE TABLE [dbo].[HomeworkExecutionStatus](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Lesson]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Lesson]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -156,14 +156,14 @@ CREATE TABLE [dbo].[Lesson](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[TimetableId] [int] NOT NULL,
 	[Datetime] [smalldatetime] NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Lesson_1] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[LessonsStartTime]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[LessonsStartTime]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -178,7 +178,7 @@ CREATE TABLE [dbo].[LessonsStartTime](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[LessonType]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[LessonType]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -192,7 +192,7 @@ CREATE TABLE [dbo].[LessonType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[NoteToLesson]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[NoteToLesson]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -207,7 +207,7 @@ CREATE TABLE [dbo].[NoteToLesson](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[NoteToStudent]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[NoteToStudent]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -223,7 +223,7 @@ CREATE TABLE [dbo].[NoteToStudent](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Speciality]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Speciality]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -232,14 +232,14 @@ CREATE TABLE [dbo].[Speciality](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](200) NOT NULL,
 	[DepartmentId] [int] NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Speciality] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Student]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Student]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -250,14 +250,14 @@ CREATE TABLE [dbo].[Student](
 	[Name] [nvarchar](50) NOT NULL,
 	[Patronymic] [nvarchar](50) NOT NULL,
 	[GroupId] [int] NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Student] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[StudyPlan]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[StudyPlan]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -268,14 +268,14 @@ CREATE TABLE [dbo].[StudyPlan](
 	[SubjectId] [int] NOT NULL,
 	[Course] [tinyint] NOT NULL,
 	[StartDate] [date] NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_StudyPlan_1] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[StudyPlanRecord]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[StudyPlanRecord]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -293,7 +293,7 @@ CREATE TABLE [dbo].[StudyPlanRecord](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Subject]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Subject]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -301,14 +301,14 @@ GO
 CREATE TABLE [dbo].[Subject](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](150) NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Subject] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Teacher]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Teacher]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -318,14 +318,14 @@ CREATE TABLE [dbo].[Teacher](
 	[Surname] [nvarchar](50) NOT NULL,
 	[Name] [nvarchar](50) NOT NULL,
 	[Patronymic] [nvarchar](50) NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Teacher] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Timetable]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[Timetable]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -335,14 +335,14 @@ CREATE TABLE [dbo].[Timetable](
 	[TeacherId] [int] NOT NULL,
 	[SubjectId] [int] NOT NULL,
 	[GroupId] [int] NOT NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Timetable] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TimetableRecord]    Script Date: 02.05.2023 16:33:10 ******/
+/****** Object:  Table [dbo].[TimetableRecord]    Script Date: 02.05.2023 19:39:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -452,6 +452,11 @@ ALTER TABLE [dbo].[StudyPlanRecord]  WITH CHECK ADD  CONSTRAINT [FK_StudyPlanRec
 REFERENCES [dbo].[StudyPlan] ([Id])
 GO
 ALTER TABLE [dbo].[StudyPlanRecord] CHECK CONSTRAINT [FK_StudyPlanRecord_StudyPlan]
+GO
+ALTER TABLE [dbo].[Timetable]  WITH CHECK ADD  CONSTRAINT [FK_Timetable_Group] FOREIGN KEY([GroupId])
+REFERENCES [dbo].[Group] ([Id])
+GO
+ALTER TABLE [dbo].[Timetable] CHECK CONSTRAINT [FK_Timetable_Group]
 GO
 ALTER TABLE [dbo].[Timetable]  WITH CHECK ADD  CONSTRAINT [FK_Timetable_Subject] FOREIGN KEY([SubjectId])
 REFERENCES [dbo].[Subject] ([Id])
