@@ -8,8 +8,8 @@
         WindowStyle="None"
         MaxHeight="600"
         Width="600"
-        SizeToContent="Height"
         ResizeMode="NoResize"
+        SizeToContent="Height"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         AllowsTransparency="True"
@@ -28,7 +28,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
+            
             <Rectangle Grid.Row="0"
                        Height="24"
                        Fill="White"

@@ -2,7 +2,6 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
-using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,13 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Threading;
 
 namespace CollegeStatictics.ViewModels.Base
 {
@@ -80,6 +78,9 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
                     ElementType.Timetable => CreateTimetableElement(formElement),
+                    ElementType.NumberBox => CreateNumberBox(formElement),
+                    ElementType.SpinBox => CreateSpinBox(formElement),
+                    ElementType.DatePicker => CreateDatePicker(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
             }
@@ -90,8 +91,7 @@ namespace CollegeStatictics.ViewModels.Base
             var dataGrid = new DataGrid()
             {
                 Style = (Style)Application.Current.FindResource("TimetableDataGridStyle"),
-                
-                ItemsSource = TimetableRecordElement.GetRecordElements(_item as Timetable)
+                //ItemsSource = TimetableRecordElement.GetRecordElements(_item as Timetable)
             };
 
             DatabaseContext.Entities.DayOfWeeks.Load();
@@ -107,6 +107,15 @@ namespace CollegeStatictics.ViewModels.Base
                         Mode = BindingMode.TwoWay,
                         UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                     }
+                });
+            }
+
+            foreach (var record in TimetableRecordElement.GetRecordElements(_item as Timetable))
+            {
+                dataGrid.Items.Add(new DataGridRow()
+                {
+                    Item = record,
+                    Header = $"{record.Couple} пара"
                 });
             }
 
@@ -280,6 +289,120 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
+        private static FrameworkElement CreateNumberBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            var stackPanel = new StackPanel();
+
+            var textBox = new TextBox
+            {
+                IsReadOnly = formElement.attribute.IsReadOnly,
+                MaxLength = formElement.property.GetCustomAttribute<MaxLengthAttribute>()?.Length ?? int.MaxValue
+            };
+
+            textBox.PreviewTextInput += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(e.Text?.Trim()))
+                    return;
+
+                else if (int.TryParse(e.Text, out var _) == false)
+                    e.Handled = true;
+            };
+
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+            {
+                var label = new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = textBox,
+                };
+                stackPanel.Children.Add(label);
+            }
+
+            stackPanel.Children.Add(textBox);
+
+            textBox.SetBinding(TextBox.TextProperty, new Binding(formElement.property.Name)
+            {
+                Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                ValidatesOnNotifyDataErrors = true,
+            });
+
+            return stackPanel;
+        }
+
+        private static FrameworkElement CreateSpinBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            var stackPanel = new StackPanel();
+            
+            var spinBox = new NumberBox
+            {
+                IsEnabled = formElement.attribute.IsReadOnly == false,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            };
+
+            if (formElement.property.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
+            {
+                spinBox.Minimum = (int)rangeAttribute.Minimum;
+                spinBox.Maximum = (int)rangeAttribute.Maximum;
+            }
+
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+            {
+                var label = new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = spinBox,
+                };
+                stackPanel.Children.Add(label);
+            }
+
+            stackPanel.Children.Add(spinBox);
+
+            spinBox.SetBinding(NumberBox.TextProperty, new Binding(formElement.property.Name)
+            {
+                Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                ValidatesOnNotifyDataErrors = true,
+            });
+
+            return stackPanel;
+        }
+
+        private static FrameworkElement CreateDatePicker((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            var stackPanel = new StackPanel();
+
+            var datePicker = new DatePicker
+            {
+                IsEnabled = formElement.attribute.IsReadOnly == false,
+                SelectedDate = DateTime.Now
+            };
+
+            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            if (labelAttribute != null)
+            {
+                var label = new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = datePicker,
+                };
+                stackPanel.Children.Add(label);
+            }
+
+            stackPanel.Children.Add(datePicker);
+
+            datePicker.SetBinding(DatePicker.SelectedDateProperty, new Binding(formElement.property.Name)
+            {
+                Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                ValidatesOnNotifyDataErrors = true,
+            });
+
+            return stackPanel;
+        }
+
         private static FrameworkElement CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
             EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.attribute;
@@ -370,15 +493,6 @@ namespace CollegeStatictics.ViewModels.Base
             var itemType = typeof(T);
 
             T itemInstance = (T)itemType.GetConstructor(Type.EmptyTypes)!.Invoke(Array.Empty<object>());
-
-            foreach (var property in properties.Where(p => !string.IsNullOrEmpty(p.GetCustomAttribute<FormElementAttribute>()!.DefaultValue?.Trim())))
-            {
-                PropertyInfo? itemProperty = itemType.GetProperty(property.Name);
-                var defaultValuePath = property.GetCustomAttribute<FormElementAttribute>()!.DefaultValue;
-                if (itemProperty == null)
-                    throw new NotSupportedException($"Type {typeof(T).Name} must contains property '{property.Name}'");
-                itemProperty.SetValue(itemInstance, GetType()!.GetProperty(defaultValuePath)?.GetValue(this));
-            }
 
             return itemInstance;
         }

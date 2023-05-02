@@ -7,15 +7,18 @@ namespace CollegeStatictics.ViewModels.Attributes
     {
         public string DefaultValue { get; set; } = "";
         public bool IsReadOnly { get; set; } = false;
-        public ElementType ElementType { get; set; } = ElementType.TextBox;
+        public ElementType ElementType { get; protected set; } = ElementType.TextBox;
     }
 
     public enum ElementType
     {
         TextBox,
+        NumberBox,
+        SpinBox,
         EntitySelectorBox,
         Subtable,
         Timetable,
-        RadioButton
+        RadioButton,
+        DatePicker
     }
 }

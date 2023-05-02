@@ -36,6 +36,8 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<LessonType> LessonTypes { get; set; }
 
+    public virtual DbSet<LessonsStartTime> LessonsStartTimes { get; set; }
+
     public virtual DbSet<NoteToLesson> NoteToLessons { get; set; }
 
     public virtual DbSet<NoteToStudent> NoteToStudents { get; set; }
@@ -46,6 +48,8 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<StudyPlan> StudyPlans { get; set; }
 
+    public virtual DbSet<StudyPlanRecord> StudyPlanRecords { get; set; }
+
     public virtual DbSet<Subject> Subjects { get; set; }
 
     public virtual DbSet<Teacher> Teachers { get; set; }
@@ -55,6 +59,7 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -92,7 +97,9 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("DayOfWeek");
 
+            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Reduction).HasMaxLength(2);
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -186,8 +193,15 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("LessonType");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<LessonsStartTime>(entity =>
+        {
+            entity.ToTable("LessonsStartTime");
+
+            entity.Property(e => e.DayOfWeek).HasMaxLength(150);
+            entity.Property(e => e.Time).HasPrecision(0);
         });
 
         modelBuilder.Entity<NoteToLesson>(entity =>
@@ -237,22 +251,16 @@ public partial class DatabaseContext : DbContext
 
             entity.HasOne(d => d.Group).WithMany(p => p.Students)
                 .HasForeignKey(d => d.GroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Student_Group");
         });
 
         modelBuilder.Entity<StudyPlan>(entity =>
         {
-            entity.HasKey(e => new { e.SpecialityId, e.SubjectId, e.Course, e.LessonTypeId });
+            entity.HasKey(e => e.Id).HasName("PK_StudyPlan_1");
 
             entity.ToTable("StudyPlan");
 
             entity.Property(e => e.StartDate).HasColumnType("date");
-
-            entity.HasOne(d => d.LessonType).WithMany(p => p.StudyPlans)
-                .HasForeignKey(d => d.LessonTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StudyPlan_LessonType");
 
             entity.HasOne(d => d.Speciality).WithMany(p => p.StudyPlans)
                 .HasForeignKey(d => d.SpecialityId)
@@ -265,11 +273,26 @@ public partial class DatabaseContext : DbContext
                 .HasConstraintName("FK_StudyPlan_Subject");
         });
 
+        modelBuilder.Entity<StudyPlanRecord>(entity =>
+        {
+            entity.ToTable("StudyPlanRecord");
+
+            entity.HasOne(d => d.LessonType).WithMany(p => p.StudyPlanRecords)
+                .HasForeignKey(d => d.LessonTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudyPlanRecord_LessonType");
+
+            entity.HasOne(d => d.StudyPlan).WithMany(p => p.StudyPlanRecords)
+                .HasForeignKey(d => d.StudyPlanId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudyPlanRecord_StudyPlan");
+        });
+
         modelBuilder.Entity<Subject>(entity =>
         {
             entity.ToTable("Subject");
 
-            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(150);
         });
 
         modelBuilder.Entity<Teacher>(entity =>
@@ -285,6 +308,11 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Timetable");
 
+            entity.HasOne(d => d.Group).WithMany(p => p.Timetables)
+                .HasForeignKey(d => d.GroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Timetable_Group");
+
             entity.HasOne(d => d.Subject).WithMany(p => p.Timetables)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -294,11 +322,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.TeacherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Timetable_Teacher");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.Timetables)
-                .HasForeignKey(d => d.GroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Timetable_Group");
         });
 
         modelBuilder.Entity<TimetableRecord>(entity =>

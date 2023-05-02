@@ -1,6 +1,7 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using ModernWpf.Controls.Primitives;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels

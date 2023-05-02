@@ -69,15 +69,19 @@ namespace CollegeStatictics.ViewModels
 
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Номер")]
-        [FormElement]
-        public int Number
+        [NumberBoxFormElement]
+        [MaxLength(3)]
+        public string Number
         {
-            get => _item.Number;
+            get => $"{_item.Number}";
             set
             {
-                _item.Number = value;
+                if (value.Length == 0)
+                    _item.Number = 0;
+                else
+                    _item.Number = int.Parse(value);
+                    
                 OnPropertyChanged();
-                ValidateProperty(value);
             }
         }
 

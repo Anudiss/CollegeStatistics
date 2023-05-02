@@ -13,11 +13,11 @@ public partial class Timetable
 
     public int GroupId { get; set; }
 
+    public virtual Group Group { get; set; } = null!;
+
     public virtual Subject Subject { get; set; } = null!;
 
     public virtual Teacher Teacher { get; set; } = null!;
-
-    public virtual Group Group { get; set; } = null!;
 
     public virtual ICollection<TimetableRecord> TimetableRecords { get; set; } = new List<TimetableRecord>();
 }

@@ -9,5 +9,5 @@ public partial class LessonType
 
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<StudyPlan> StudyPlans { get; set; } = new List<StudyPlan>();
+    public virtual ICollection<StudyPlanRecord> StudyPlanRecords { get; set; } = new List<StudyPlanRecord>();
 }
