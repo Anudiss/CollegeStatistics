@@ -68,13 +68,14 @@ namespace CollegeStatictics.ViewModels
                 });
             else
             {
-                var record = DatabaseContext.Entities.TimetableRecords.Local.FirstOrDefault(r => r.DayOfWeekId == (int)dayOfWeek && 
-                                                                                                 r.Couple == Couple &&
-                                                                                                 r.Timetable == Timetable);
-                if (record == null)
+                var records = DatabaseContext.Entities.TimetableRecords.Local.Where(r => r.DayOfWeekId == (int)dayOfWeek && 
+                                                                                         r.Couple == Couple &&
+                                                                                         r.Timetable == Timetable);
+                if (records == null)
                     return;
 
-                DatabaseContext.Entities.TimetableRecords.Local.Remove(record);
+                foreach (var record in records)
+                    DatabaseContext.Entities.TimetableRecords.Local.Remove(record);
             }
         }
 

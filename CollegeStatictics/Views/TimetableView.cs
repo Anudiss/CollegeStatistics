@@ -6,10 +6,11 @@ using System.Collections.Generic;
 
 namespace CollegeStatictics.ViewModels
 {
-    [MinHeight(800)]
+    [MinHeight(700)]
+    [MinWidth(500)]
     public class TimetableView : ItemDialog<Timetable>
     {
-        [FormElement(ElementType = ElementType.Timetable)]
+        [TimetableFormElement]
         [Label("Расписание")]
         public ICollection<TimetableRecord> Records
         {
