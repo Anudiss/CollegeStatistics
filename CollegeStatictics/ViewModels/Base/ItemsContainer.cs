@@ -24,17 +24,17 @@ namespace CollegeStatictics.ViewModels.Base
         #region [ Properties ]
 
         [ObservableProperty]
-        private FilteredObservableCollection<T> items;
+        private FilteredObservableCollection<T> items = default!;
 
         [ObservableProperty]
-        private IList selectedItems;
+        private IList selectedItems = default!;
 
         [ObservableProperty]
         private DataGridSelectionMode selectionMode = DataGridSelectionMode.Extended;
 
 
         [ObservableProperty]
-        public ObservableCollection<DataGridColumn> columns;
+        public ObservableCollection<DataGridColumn> columns = default!;
 
         partial void OnSelectedItemsChanged(IList value) =>
             RemoveItemsCommand.NotifyCanExecuteChanged();

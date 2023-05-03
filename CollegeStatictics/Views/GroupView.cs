@@ -71,6 +71,7 @@ namespace CollegeStatictics.ViewModels
         [Label("Номер")]
         [NumberBoxFormElement]
         [MaxLength(3)]
+        [Unique(nameof(Group.Number))]
         public string Number
         {
             get => $"{Item.Number}";

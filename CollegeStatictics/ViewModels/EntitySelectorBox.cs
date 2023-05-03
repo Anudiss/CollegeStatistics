@@ -18,7 +18,7 @@ namespace CollegeStatictics.ViewModels
             DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));
 
         [RelayCommand]
-        private async void OpenSelectorDialog()
+        private void OpenSelectorDialog()
         {
             SelectedItem = OpenSelectorItemDialog(MainVM.PageBuilders[_itemContainerName]());
         }

@@ -4,7 +4,6 @@ using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.Views
@@ -13,7 +12,6 @@ namespace CollegeStatictics.Views
     {
         [Label("Записи")]
         [SubtableFormElement(typeof(StudyPlanRecordView))]
-        [Column("Id", "Id")]
         [Column("Topic", "Тема")]
         [Column("LessonType", "Тип пары")]
         [Column("DurationInLessons", "Длительность в парах")]

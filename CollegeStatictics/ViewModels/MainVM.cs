@@ -15,7 +15,6 @@ namespace CollegeStatictics.ViewModels
         {
             { "Преподаватели", () => new ItemsContainerBuilder<Teacher, TeacherView>()
 
-                               .AddColumn(nameof(Teacher.Id), "Id")
                                .AddColumn(nameof(Teacher.Surname), "Фамилия")
                                .AddColumn(nameof(Teacher.Name), "Имя")
                                .AddColumn(nameof(Teacher.Patronymic), "Отчество")
@@ -27,7 +26,6 @@ namespace CollegeStatictics.ViewModels
                                .Build()
             },
             { "Предметы", () => new ItemsContainerBuilder<Subject, SubjectView>()
-                            .AddColumn(nameof(Subject.Id), "Id")
                             .AddColumn(nameof(Subject.Name), "Название")
 
                             .AddSearching(new Searching<Subject>(subject => subject.Name))
@@ -38,7 +36,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Специальности", () => new ItemsContainerBuilder<Speciality, SpecialityView>()
 
-                               .AddColumn(nameof(Speciality.Id), "Id")
                                .AddColumn(nameof(Speciality.Name), "Название")
                                .AddColumn(nameof(Speciality.Department), "Подразделение")
 
@@ -52,7 +49,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Отделения", () => new ItemsContainerBuilder<Department, DepartmentView>()
             
-                               .AddColumn(nameof(Department.Id), "Id")
                                .AddColumn(nameof(Department.Name), "Название")
 
                                .AddSearching(new Searching<Department>(department => department.Name))
@@ -63,7 +59,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Студенты", () => new ItemsContainerBuilder<Student, StudentView>()
                                 
-                                .AddColumn(nameof(Student.Id), "Id")
                                 .AddColumn(nameof(Student.Surname), "Фамилия")
                                 .AddColumn(nameof(Student.Name), "Имя")
                                 .AddColumn(nameof(Student.Patronymic), "Отчество")
@@ -78,7 +73,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Группы" , () => new ItemsContainerBuilder<Group, GroupView>()
                                
-                               .AddColumn(nameof(Group.Id), "Id")
                                .AddColumn(nameof(Group.Number), "Номер")
                                .AddColumn(nameof(Group.EducationForm), "Форма обучения")
                                .AddColumn(nameof(Group.Speciality), "Специальность")
@@ -98,7 +92,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Расписание", () => new ItemsContainerBuilder<Timetable, TimetableView>()
                             
-                                .AddColumn(nameof(Timetable.Id), "Id")
                                 .AddColumn(nameof(Timetable.Teacher), "Преподаватель")
                                 .AddColumn(nameof(Timetable.Subject), "Предмет")
                                 .AddColumn(nameof(Timetable.Group), "Группа")
@@ -113,7 +106,6 @@ namespace CollegeStatictics.ViewModels
             },
             { "Учебный план", () => new ItemsContainerBuilder<StudyPlan, StudyPlanView>()
                                     
-                                    .AddColumn(nameof(StudyPlan.Id), "Id")
                                     .AddColumn(nameof(StudyPlan.Course), "Курс")
                                     .AddColumn(nameof(StudyPlan.StartDate), "Дата начала", @"dd-MM-yyyy")
                                     .AddColumn(nameof(StudyPlan.Speciality), "Специальность")

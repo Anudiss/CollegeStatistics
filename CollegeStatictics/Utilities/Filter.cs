@@ -29,8 +29,8 @@ namespace CollegeStatictics.Utilities
         public IEnumerable PossibleValues => LoadPossibleValues();
         public IEnumerable MenuItems => LoadMenuItems();
 
-        public Func<T, R> PropertyGetter;
-        public event Action SelectedValuesChanged;
+        public Func<T, R> PropertyGetter = default!;
+        public event Action SelectedValuesChanged = default!;
 
         // new Builder(SubjectCOllection).AddFilter(new Filter<Subject, string>("Название", subject => subject.Name)).Build();
 

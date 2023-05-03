@@ -180,7 +180,7 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.ItemsSource = (IEnumerable)formElement.property.GetValue(this);
+            dataGrid.ItemsSource = (IEnumerable)formElement.property.GetValue(this)!;
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -282,7 +282,7 @@ namespace CollegeStatictics.ViewModels.Base
                 addMethod?.Invoke(formElement.property.GetValue(this), new object[] { itemDialog.Item });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
             };
 
             removeButton.Click += delegate
@@ -303,11 +303,11 @@ namespace CollegeStatictics.ViewModels.Base
 
                 var removeMethod = formElement.property.PropertyType.GetMethod("Remove");
 
-                foreach (var selectedItem in dataGrid.SelectedItems)
+                foreach (var selectedItem in dataGrid.SelectedItems!)
                     removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
             };
 
             buttonsContainer.Children.Add(removeButton);
@@ -319,11 +319,6 @@ namespace CollegeStatictics.ViewModels.Base
             groupBox.Content = grid;
 
             return groupBox;
-
-            static Predicate<PropertyInfo> PropertyFinder(Type linkedType)
-            {
-                return property => property.PropertyType == linkedType;
-            }
         }
 
         private FrameworkElement CreateSelectableSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
@@ -369,7 +364,7 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+            dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -422,7 +417,7 @@ namespace CollegeStatictics.ViewModels.Base
                     addMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
             };
 
             removeButton.Click += delegate
@@ -447,7 +442,7 @@ namespace CollegeStatictics.ViewModels.Base
                     removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
             };
 
             buttonsContainer.Children.Add(addButton);
@@ -623,7 +618,7 @@ namespace CollegeStatictics.ViewModels.Base
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
             var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
-            ((Control)entitySelectorBox).SetBinding(dp, new Binding(formElement.property.Name)
+            ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.property.Name)
             {
                 Mode = BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged

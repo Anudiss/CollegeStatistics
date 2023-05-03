@@ -1,9 +1,12 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
+using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -60,15 +63,41 @@ namespace CollegeStatictics.ViewModels
         private void SyncronizeTimetableRecords(bool value, System.DayOfWeek dayOfWeek)
         {
             if (value)
+            {
+                IEnumerable<Timetable> timetables = DatabaseContext.Entities.Timetables.Local.Where(timetable => timetable.Group == Timetable.Group).Concat(DatabaseContext.Entities.Timetables.Local.Where(timetable => timetable.Teacher == Timetable.Teacher));
+
+                Timetable? timetableIntersection = timetables.FirstOrDefault(timetable => timetable.TimetableRecords.Any(record => record.Couple == Couple &&                                                                                                                             record.DayOfWeekId == (int)dayOfWeek));
+                if (timetableIntersection != null)
+                {
+                    var contentDialog = new DialogWindow
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = $@"У группы {timetableIntersection.Group} в это время пара '{timetableIntersection.Subject}' с преподавателем {timetableIntersection.Teacher}",
+                            FontSize = 16,
+                            TextWrapping = TextWrapping.Wrap
+                        },
+
+                        PrimaryButtonText = "Ок",
+                    };
+
+                    contentDialog.Show();
+
+                    GetType().GetProperty($"Is{dayOfWeek}Checked").SetValue(this, false);
+
+                    return;
+                }
+
                 DatabaseContext.Entities.TimetableRecords.Local.Add(new()
                 {
                     Timetable = Timetable,
                     Couple = Couple,
                     DayOfWeekId = (int)dayOfWeek
                 });
+            }
             else
             {
-                var records = DatabaseContext.Entities.TimetableRecords.Local.Where(r => r.DayOfWeekId == (int)dayOfWeek && 
+                var records = DatabaseContext.Entities.TimetableRecords.Local.Where(r => r.DayOfWeekId == (int)dayOfWeek &&
                                                                                          r.Couple == Couple &&
                                                                                          r.Timetable == Timetable);
                 if (records == null)
