@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -89,6 +90,9 @@ namespace CollegeStatictics.ViewModels.Base
 
                 frameworkElement.MinWidth = formElement.property.GetCustomAttribute<MinWidthAttribute>()?.Width ?? 0;
                 frameworkElement.MinHeight = formElement.property.GetCustomAttribute<MinHeightAttribute>()?.Height ?? 0;
+
+                frameworkElement.MaxWidth = formElement.property.GetCustomAttribute<MaxWidthAttribute>()?.Width ?? double.MaxValue;
+                frameworkElement.MaxHeight = formElement.property.GetCustomAttribute<MaxHeightAttribute>()?.Height ?? double.MaxValue;
 
                 yield return frameworkElement;
             }
@@ -283,7 +287,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             removeButton.Click += delegate
             {
-                if (dataGrid.SelectedItems == null)
+                if (dataGrid.SelectedItems?.Count == 0)
                     return;
 
                 var dialogWindow = new DialogWindow
@@ -306,8 +310,8 @@ namespace CollegeStatictics.ViewModels.Base
                 dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
             };
 
-            buttonsContainer.Children.Add(addButton);
             buttonsContainer.Children.Add(removeButton);
+            buttonsContainer.Children.Add(addButton);
 
             grid.Children.Add(buttonsContainer);
             grid.Children.Add(dataGridBorder);
@@ -464,7 +468,9 @@ namespace CollegeStatictics.ViewModels.Base
             var textBox = new TextBox
             {
                 IsReadOnly = formElement.attribute.IsReadOnly,
-                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.attribute).AcceptsReturn
+                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.attribute).AcceptsReturn,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                VerticalContentAlignment = VerticalAlignment.Stretch,
             };
 
             var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();

@@ -16,8 +16,6 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<Attendance> Attendances { get; set; }
 
-    public virtual DbSet<CommisionCurator> CommisionCurators { get; set; }
-
     public virtual DbSet<DayOfWeek> DayOfWeeks { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
@@ -77,20 +75,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Attendance_Student");
-        });
-
-        modelBuilder.Entity<CommisionCurator>(entity =>
-        {
-            entity.ToTable("CommisionCurator");
-
-            entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Patronymic).HasMaxLength(50);
-            entity.Property(e => e.Surname).HasMaxLength(50);
-
-            entity.HasOne(d => d.Department).WithMany(p => p.CommisionCurators)
-                .HasForeignKey(d => d.DepartmentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CommisionCurator_Department");
         });
 
         modelBuilder.Entity<DayOfWeek>(entity =>
