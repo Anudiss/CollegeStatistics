@@ -4,6 +4,7 @@ using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.Views
@@ -65,6 +66,7 @@ namespace CollegeStatictics.Views
         }
 
         [Label("Номер курса")]
+        [Required(ErrorMessage = "Обязательное поле")]
         [SpinBoxFormElement]
         [Range(1, 4)]
         public string Course
@@ -79,6 +81,7 @@ namespace CollegeStatictics.Views
 
         public StudyPlanView(StudyPlan? item) : base(item)
         {
+            Item.Course = 1;
         }
     }
 }
