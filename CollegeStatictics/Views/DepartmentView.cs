@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System.ComponentModel.DataAnnotations;
@@ -9,13 +10,13 @@ namespace CollegeStatictics.ViewModels
     {
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Название")]
-        [FormElement]
+        [TextBoxFormElement]
         public string Name
         {
-            get => _item.Name;
+            get => Item.Name;
             set
             {
-                _item.Name = value;
+                Item.Name = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

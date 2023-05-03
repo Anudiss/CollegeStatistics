@@ -174,9 +174,7 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("HomeworkExecutionStatus");
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Lesson>(entity =>

@@ -3,12 +3,9 @@ using CollegeStatictics.Utilities;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.EntityFrameworkCore.Internal;
-using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 
 namespace CollegeStatictics.ViewModels
 {
@@ -25,6 +22,8 @@ namespace CollegeStatictics.ViewModels
 
                                .AddSearching(new Searching<Teacher>(teacher => $"{teacher.Surname} {teacher.Name} {teacher.Patronymic}"))
                                
+                               .AddFilter(new Selection<Teacher>(teacher => teacher.IsDeleted == false))
+
                                .Build()
             },
             { "Предметы", () => new ItemsContainerBuilder<Subject, SubjectView>()
@@ -32,6 +31,8 @@ namespace CollegeStatictics.ViewModels
                             .AddColumn(nameof(Subject.Name), "Название")
 
                             .AddSearching(new Searching<Subject>(subject => subject.Name))
+
+                            .AddFilter(new Selection<Subject>(subject => subject.IsDeleted == false))
 
                             .Build()
             },
@@ -45,7 +46,8 @@ namespace CollegeStatictics.ViewModels
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Department.Name))
 
                                .AddFilter(new Filter<Speciality, Department>("Подразделение", speciality => speciality.Department))
-
+                               .AddFilter(new Selection<Speciality>(speciality => speciality.IsDeleted == false))
+                    
                                .Build()
             },
             { "Подразделения", () => new ItemsContainerBuilder<Department, DepartmentView>()
@@ -54,6 +56,8 @@ namespace CollegeStatictics.ViewModels
                                .AddColumn(nameof(Department.Name), "Название")
 
                                .AddSearching(new Searching<Department>(department => department.Name))
+                
+                               .AddFilter(new Selection<Department>(department => department.IsDeleted == false))
 
                                .Build()
             },
@@ -68,6 +72,7 @@ namespace CollegeStatictics.ViewModels
                                 .AddSearching(new Searching<Student>(student => $"{student.Surname} {student.Name} {student.Patronymic}"))
                                 
                                 .AddFilter(new Filter<Student, Group>("Группа", student => student.Group))
+                                .AddFilter(new Selection<Student>(student => student.IsDeleted == false))
 
                                 .Build()
             },
@@ -87,7 +92,7 @@ namespace CollegeStatictics.ViewModels
                                .AddFilter(new Filter<Group, EducationForm>("Форма обучения", group => group.EducationForm))
                                .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
 
-                               //.AddGrouping(new Grouping<Group>("EducationForm"))
+                               .AddFilter(new Selection<Group>(group => group.IsDeleted == false))
             
                                .Build()
             },
@@ -102,6 +107,8 @@ namespace CollegeStatictics.ViewModels
                                 .AddFilter(new Filter<Timetable, Group>("Группа", timetable => timetable.Group))
                                 .AddFilter(new Filter<Timetable, Subject>("Специальность", timetable => timetable.Subject))
 
+                                .AddFilter(new Selection<Timetable>(timetable => timetable.IsDeleted == false))
+
                                 .Build()
             },
             { "Учебный план", () => new ItemsContainerBuilder<StudyPlan, StudyPlanView>()
@@ -114,6 +121,8 @@ namespace CollegeStatictics.ViewModels
 
                                     .AddFilter(new Filter<StudyPlan, Speciality>("Специальность", studyPlan => studyPlan.Speciality))
                                     .AddFilter(new Filter<StudyPlan, Subject>("Предмет", studyPlan => studyPlan.Subject))
+
+                                    .AddFilter(new Selection<StudyPlan>(studyPlan => studyPlan.IsDeleted == false))
 
                                     .Build()
             }

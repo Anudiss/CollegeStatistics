@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System.ComponentModel.DataAnnotations;
@@ -10,13 +11,13 @@ namespace CollegeStatictics.ViewModels
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Отчество")]
-        [FormElement]
+        [TextBoxFormElement]
         public string Patronymic
         {
-            get => _item.Patronymic;
+            get => Item.Patronymic;
             set
             {
-                _item.Patronymic = value;
+                Item.Patronymic = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -25,13 +26,13 @@ namespace CollegeStatictics.ViewModels
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Имя")]
-        [FormElement]
+        [TextBoxFormElement]
         public string Name
         {
-            get => _item.Name;
+            get => Item.Name;
             set
             {
-                _item.Name = value;
+                Item.Name = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -40,13 +41,13 @@ namespace CollegeStatictics.ViewModels
         [MaxLength(50)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Фамилия")]
-        [FormElement]
+        [TextBoxFormElement]
         public string Surname
         {
-            get => _item.Surname;
+            get => Item.Surname;
             set
             {
-                _item.Surname = value;
+                Item.Surname = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -57,10 +58,10 @@ namespace CollegeStatictics.ViewModels
         [EntitySelectorFormElement("Группы")]
         public Group Group
         {
-            get => _item.Group;
+            get => Item.Group;
             set
             {
-                _item.Group = value;
+                Item.Group = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

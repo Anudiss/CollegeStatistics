@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 namespace CollegeStatictics.ViewModels
 {
     [ObservableObject]
-    public partial class EntitySelectorBox<T> : Control where T : class, ITable
+    public partial class EntitySelectorBox<T> : Control where T : class, ITable, IDeletable
     {
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));

@@ -5,7 +5,6 @@ namespace CollegeStatictics.ViewModels.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class FormElementAttribute : Attribute
     {
-        public string DefaultValue { get; set; } = "";
         public bool IsReadOnly { get; set; } = false;
         public ElementType ElementType { get; protected set; } = ElementType.TextBox;
     }
@@ -16,6 +15,7 @@ namespace CollegeStatictics.ViewModels.Attributes
         NumberBox,
         SpinBox,
         EntitySelectorBox,
+        SelectableSubtable,
         Subtable,
         Timetable,
         RadioButton,

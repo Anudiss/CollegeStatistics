@@ -1,18 +1,17 @@
 ﻿using CollegeStatictics.Database;
-using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.Utilities;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using ModernWpf.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,7 +19,7 @@ using ITable = CollegeStatictics.DataTypes.ITable;
 
 namespace CollegeStatictics.ViewModels.Base
 {
-    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable
+    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable, IDeletable
     {
         #region [ Properties ]
 
@@ -31,11 +30,14 @@ namespace CollegeStatictics.ViewModels.Base
         private IList selectedItems;
 
         [ObservableProperty]
-        private DataGridSelectionMode selectionMode = DataGridSelectionMode.Single;
+        private DataGridSelectionMode selectionMode = DataGridSelectionMode.Extended;
 
 
         [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns;
+
+        partial void OnSelectedItemsChanged(IList value) =>
+            RemoveItemsCommand.NotifyCanExecuteChanged();
 
         #endregion
 
@@ -63,7 +65,7 @@ namespace CollegeStatictics.ViewModels.Base
                 SecondaryButtonText = "Отмена",
                 SecondaryButtonCommand = itemDialog.CancelCommand,
 
-                CanClose = () => !DatabaseContext.Entities.ChangeTracker.HasChanges()
+                CanClose = () => !DatabaseContext.HasChanges(itemDialog.Item)
             };
 
             contentDialog.Closing += ContentDialogClosingHandler;
@@ -103,6 +105,47 @@ namespace CollegeStatictics.ViewModels.Base
             Items.Refresh();
             Items.UpdateFilters();
         }
+
+        [RelayCommand(CanExecute = nameof(CanRemoveItems))]
+        private void RemoveItems()
+        {
+            if (!CanRemoveItems())
+            {
+                RemoveItemsCommand.NotifyCanExecuteChanged();
+                return;
+            }
+
+            var acceptDialog = new DialogWindow
+            {
+                Content = new TextBlock()
+                {
+                    Text = $"Хотите удалить {SelectedItems.Count} элемент{SelectedItems.Count switch
+                    {
+                        1 => "",
+                        < 5 => "а",
+                        _ => "ов"
+                    }}?",
+                    FontSize = 16
+                },
+                PrimaryButtonText = "Да",
+                SecondaryButtonText = "Нет"
+            };
+
+            acceptDialog.Show();
+            if (acceptDialog.Result == DialogResult.Secondary)
+                return;
+
+            var itemsToDelete = SelectedItems.Cast<T>();
+            foreach (var item in itemsToDelete)
+                item.MarkToDelete();
+
+            DatabaseContext.Entities.SaveChanges();
+
+            Items.Refresh();
+            Items.UpdateFilters();
+        }
+
+        private bool CanRemoveItems() => !(SelectedItems == null || SelectedItems.Count == 0);
 
         #endregion
 
@@ -154,7 +197,7 @@ namespace CollegeStatictics.ViewModels.Base
 
     #region [ Data types ]
 
-    public class ItemsContainerBuilder<T, R> where T : class, ITable
+    public class ItemsContainerBuilder<T, R> where T : class, ITable, IDeletable
                                              where R : ItemDialog<T>
     {
         private readonly ObservableCollection<T> _sourceCollection;

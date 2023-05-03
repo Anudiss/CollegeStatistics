@@ -9,6 +9,8 @@ public partial class Department
 
     public string Name { get; set; } = null!;
 
+    public bool IsDeleted { get; set; }
+
     public virtual ICollection<CommisionCurator> CommisionCurators { get; set; } = new List<CommisionCurator>();
 
     public virtual ICollection<Speciality> Specialities { get; set; } = new List<Speciality>();

@@ -17,6 +17,8 @@ public partial class Homework
 
     public int LessonId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual HomeworkExecutionStatus ExecutionStatus { get; set; } = null!;
 
     public virtual Lesson Lesson { get; set; } = null!;

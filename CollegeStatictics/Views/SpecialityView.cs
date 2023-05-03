@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System.ComponentModel.DataAnnotations;
@@ -12,10 +13,10 @@ namespace CollegeStatictics.ViewModels
         [EntitySelectorFormElement("Подразделения")]
         public Department Department
         {
-            get => _item.Department;
+            get => Item.Department;
             set
             {
-                _item.Department = value;
+                Item.Department = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -24,13 +25,13 @@ namespace CollegeStatictics.ViewModels
         [MaxLength(150)]
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Название")]
-        [FormElement]
+        [TextBoxFormElement]
         public string Name
         {
-            get => _item.Name;
+            get => Item.Name;
             set
             {
-                _item.Name = value;
+                Item.Name = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

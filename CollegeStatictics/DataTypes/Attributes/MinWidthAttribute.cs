@@ -2,7 +2,7 @@
 
 namespace CollegeStatictics.DataTypes.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class| AttributeTargets.Property)]
     public class MinWidthAttribute : Attribute
     {
         public double Width { get; }

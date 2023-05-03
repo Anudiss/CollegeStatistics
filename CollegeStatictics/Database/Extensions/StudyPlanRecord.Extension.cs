@@ -2,7 +2,7 @@
 
 namespace CollegeStatictics.Database.Models
 {
-    public partial class Attendance
+    public partial class StudyPlanRecord : ITable
     {
     }
 }

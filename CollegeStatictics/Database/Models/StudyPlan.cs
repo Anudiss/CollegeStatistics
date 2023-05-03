@@ -5,6 +5,8 @@ namespace CollegeStatictics.Database.Models;
 
 public partial class StudyPlan
 {
+    public int Id { get; set; }
+
     public int SpecialityId { get; set; }
 
     public int SubjectId { get; set; }
@@ -13,7 +15,7 @@ public partial class StudyPlan
 
     public DateTime StartDate { get; set; }
 
-    public int Id { get; set; }
+    public bool IsDeleted { get; set; }
 
     public virtual Speciality Speciality { get; set; } = null!;
 

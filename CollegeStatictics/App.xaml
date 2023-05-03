@@ -148,6 +148,12 @@
                                         HorizontalAlignment="Right"
                                         Command="{Binding CreateDialogCommand}"
                                         CommandParameter="{x:Null}"/>
+                                
+                                <Button Content="Удалить"
+                                        VerticalAlignment="Center"
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding RemoveItemsCommand}"/>
                             </DockPanel>
 
                             <Border BorderBrush="LightGray"
@@ -222,7 +228,6 @@
                                     </Style>
 
                                     <Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
-                                        <Setter Property="Text" Value=""/>
                                     </Style>
 
                                 </ItemsControl.Resources>

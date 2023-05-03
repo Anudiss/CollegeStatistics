@@ -1,13 +1,9 @@
 ﻿using CollegeStatictics.DataTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CollegeStatictics.DataTypes.Interfaces;
 
 namespace CollegeStatictics.Database.Models
 {
-    public partial class StudyPlan : ITable
+    public partial class StudyPlan : ITable, IDeletable
     {
     }
 }

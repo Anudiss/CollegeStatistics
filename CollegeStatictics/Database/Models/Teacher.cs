@@ -13,6 +13,8 @@ public partial class Teacher
 
     public string Patronymic { get; set; } = null!;
 
+    public bool IsDeleted { get; set; }
+
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
     public virtual ICollection<Timetable> Timetables { get; set; } = new List<Timetable>();

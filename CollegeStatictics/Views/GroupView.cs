@@ -9,7 +9,7 @@ namespace CollegeStatictics.ViewModels
 {
     public class GroupView : ItemDialog<Group>
     {
-        [EntitiesGridFormElement("Студенты")]
+        [SelectableSubtableFormElement("Студенты")]
         [Column("Id", "Id")]
         [Column("Surname", "Фамилия")]
         [Column("Name", "Имя")]
@@ -17,10 +17,10 @@ namespace CollegeStatictics.ViewModels
         [Label("Студенты")]
         public ICollection<Student> Students
         {
-            get => _item.Students;
+            get => Item.Students;
             set
             {
-                _item.Students = value;
+                Item.Students = value;
                 OnPropertyChanged();
             }
         }
@@ -28,12 +28,12 @@ namespace CollegeStatictics.ViewModels
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]
         [EntitySelectorFormElement("Преподаватели")]
-        public Teacher Cuarator
+        public Teacher Curator
         {
-            get => _item.Curator;
+            get => Item.Curator;
             set
             {
-                _item.Curator = value;
+                Item.Curator = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -44,10 +44,10 @@ namespace CollegeStatictics.ViewModels
         [EntitySelectorFormElement("Специальности")]
         public Speciality Speciality
         {
-            get => _item.Speciality;
+            get => Item.Speciality;
             set
             {
-                _item.Speciality = value;
+                Item.Speciality = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -58,10 +58,10 @@ namespace CollegeStatictics.ViewModels
         [RadioButtonFormElement]
         public EducationForm EducationForm
         {
-            get => _item.EducationForm;
+            get => Item.EducationForm;
             set
             {
-                _item.EducationForm = value;
+                Item.EducationForm = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -73,13 +73,13 @@ namespace CollegeStatictics.ViewModels
         [MaxLength(3)]
         public string Number
         {
-            get => $"{_item.Number}";
+            get => $"{Item.Number}";
             set
             {
                 if (value.Length == 0)
-                    _item.Number = 0;
+                    Item.Number = 0;
                 else
-                    _item.Number = int.Parse(value);
+                    Item.Number = int.Parse(value);
                     
                 OnPropertyChanged();
             }

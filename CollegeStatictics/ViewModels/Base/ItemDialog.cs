@@ -9,13 +9,14 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 
 namespace CollegeStatictics.ViewModels.Base
@@ -31,8 +32,8 @@ namespace CollegeStatictics.ViewModels.Base
             if (HasErrors)
                 return;
 
-            if (_item.Id == 0)
-                DatabaseContext.Entities.Set<T>().Local.Add(_item);
+            if (Item.Id == 0)
+                DatabaseContext.Entities.Set<T>().Local.Add(Item);
 
             DatabaseContext.Entities.SaveChanges();
         }
@@ -40,13 +41,13 @@ namespace CollegeStatictics.ViewModels.Base
         private bool CanSave() => !HasErrors;
 
         [RelayCommand]
-        private void Cancel() => DatabaseContext.CancelChanges();
+        private void Cancel() => DatabaseContext.CancelChanges(Item);
 
         #endregion
 
         #region [ Properties ]
 
-        protected readonly T _item;
+        public T Item { get; }
 
         public IEnumerable<FrameworkElement> ViewElements => CreateViewElements();
 
@@ -56,7 +57,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         public ItemDialog(T? item)
         {
-            _item = item ?? CreateDefaultItem();
+            Item = item ?? CreateDefaultItem();
         }
 
         #endregion
@@ -72,11 +73,12 @@ namespace CollegeStatictics.ViewModels.Base
 
             foreach (var formElement in formElements)
             {
-                yield return formElement.attribute.ElementType switch
+                FrameworkElement frameworkElement = formElement.attribute.ElementType switch
                 {
                     ElementType.TextBox => CreateTextBox(formElement),
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
+                    ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
                     ElementType.Timetable => CreateTimetableElement(formElement),
                     ElementType.NumberBox => CreateNumberBox(formElement),
@@ -84,6 +86,11 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.DatePicker => CreateDatePicker(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
+
+                frameworkElement.MinWidth = formElement.property.GetCustomAttribute<MinWidthAttribute>()?.Width ?? 0;
+                frameworkElement.MinHeight = formElement.property.GetCustomAttribute<MinHeightAttribute>()?.Height ?? 0;
+
+                yield return frameworkElement;
             }
         }
 
@@ -111,7 +118,7 @@ namespace CollegeStatictics.ViewModels.Base
                 });
             }
 
-            foreach (var record in TimetableRecordElement.GetRecordElements(_item as Timetable))
+            foreach (var record in TimetableRecordElement.GetRecordElements(Item as Timetable))
             {
                 dataGrid.Items.Add(new DataGridRow()
                 {
@@ -128,6 +135,198 @@ namespace CollegeStatictics.ViewModels.Base
 
         private FrameworkElement CreateSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
         {
+            if (formElement.property.PropertyType.GetInterface("IEnumerable") == null)
+                throw new ArgumentException("Subtable form element must be on property that has IEnumerable type");
+
+            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
+            MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType.GetGenericArguments()[0]);
+
+            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
+            EntityFrameworkQueryableExtensions.Load(values);
+
+            var groupBox = new GroupBox
+            {
+                Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
+            };
+
+            var grid = new StackPanel();
+            /*
+                        grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+                        grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
+
+            #region Datagrid initialization
+            var columnAttributes = formElement.property.GetCustomAttributes<ColumnAttribute>();
+
+            var dataGrid = new DataGrid()
+            {
+                AutoGenerateColumns = false,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false,
+                CanUserResizeColumns = false,
+                IsReadOnly = true,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Height = 160
+            };
+
+            var dataGridBorder = new Border
+            {
+                Child = dataGrid
+            };
+
+            dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
+            dataGrid.SetValue(Grid.ColumnProperty, 1);
+
+            dataGrid.ItemsSource = (IEnumerable)formElement.property.GetValue(this);
+
+            foreach (var column in columnAttributes)
+                dataGrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = column.Header,
+                    Binding = new Binding(column.Path)
+                    {
+                        Mode = BindingMode.OneWay
+                    }
+                });
+
+            #endregion
+
+            var buttonsContainer = new SimpleStackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new(0, 0, 0, 10)
+            };
+
+            buttonsContainer.SetValue(Grid.ColumnProperty, 0);
+
+            var addButton = new Button
+            {
+                Content = "Добавить"
+            };
+
+            var removeButton = new Button
+            {
+                Content = "Удалить"
+            };
+
+            SubtableFormElementAttribute attribute = (SubtableFormElementAttribute)formElement.attribute;
+
+            var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.Base.ItemDialog`1")!
+                                            .MakeGenericType(formElement.property.PropertyType.GetGenericArguments()[0]);
+
+            addButton.Click += delegate
+            {
+                dynamic itemDialog = attribute.Create(null);
+
+                var linkedType = Item.GetType();
+
+                Type type = itemDialog.Item.GetType();
+                PropertyInfo itemProperty = type.GetProperties().First(property => property.PropertyType == linkedType);
+                itemProperty.SetValue(itemDialog.Item, Item);
+
+                var contentDialog = new DialogWindow
+                {
+                    Content = itemDialog,
+                    ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
+
+                    PrimaryButtonText = "Сохранить",
+
+                    SecondaryButtonText = "Отмена",
+                    SecondaryButtonCommand = itemDialog.CancelCommand,
+
+                    CanClose = () => !DatabaseContext.HasChanges(itemDialog.Item)
+                };
+
+                void ContentDialogClosingHandler(object? sender, CancelEventArgs e)
+                {
+                    if (DatabaseContext.Entities.ChangeTracker.HasChanges() && (sender as DialogWindow)!.Result == DialogResult.None)
+                    {
+                        var acceptDialog = new DialogWindow
+                        {
+                            Content = "Сохранить изменения?",
+                            PrimaryButtonText = "Да",
+                            SecondaryButtonText = "Нет",
+                            TertiaryButtonText = "Отмена",
+                        };
+
+                        e.Cancel = false;
+                        acceptDialog.Show();
+
+                        if (acceptDialog.Result == DialogResult.Primary)
+                            DatabaseContext.Entities.SaveChanges(itemDialog.Item);
+                        else if (acceptDialog.Result == DialogResult.Secondary)
+                            DatabaseContext.CancelChanges(itemDialog.Item);
+                        else
+                            e.Cancel = true;
+                    }
+                }
+
+                contentDialog.Closing += ContentDialogClosingHandler;
+                contentDialog.Show();
+                contentDialog.Closing -= ContentDialogClosingHandler;
+
+
+                if (contentDialog.Result != DialogResult.Primary)
+                {
+                    DatabaseContext.CancelChanges(itemDialog.Item);
+                    return;
+                }
+
+                var addMethod = formElement.property.PropertyType.GetMethod("Add");
+
+                addMethod?.Invoke(formElement.property.GetValue(this), new object[] { itemDialog.Item });
+
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+            };
+
+            removeButton.Click += delegate
+            {
+                if (dataGrid.SelectedItems == null)
+                    return;
+
+                var dialogWindow = new DialogWindow
+                {
+                    Content = new Label { Content = "Действительно удалить выбранные элементы?" },
+                    PrimaryButtonText = "Да",
+                    SecondaryButtonText = "Нет"
+                };
+                dialogWindow.Show();
+
+                if (dialogWindow.Result != DialogResult.Primary)
+                    return;
+
+                var removeMethod = formElement.property.PropertyType.GetMethod("Remove");
+
+                foreach (var selectedItem in dataGrid.SelectedItems)
+                    removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this);
+            };
+
+            buttonsContainer.Children.Add(addButton);
+            buttonsContainer.Children.Add(removeButton);
+
+            grid.Children.Add(buttonsContainer);
+            grid.Children.Add(dataGridBorder);
+
+            groupBox.Content = grid;
+
+            return groupBox;
+
+            static Predicate<PropertyInfo> PropertyFinder(Type linkedType)
+            {
+                return property => property.PropertyType == linkedType;
+            }
+        }
+
+        private FrameworkElement CreateSelectableSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        {
+            if (formElement.property.PropertyType.GetInterface("IEnumerable") == null)
+                throw new ArgumentException("Subtable form element must be on property that has IEnumerable type");
+
             MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
             MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType.GetGenericArguments()[0]);
 
@@ -200,7 +399,7 @@ namespace CollegeStatictics.ViewModels.Base
                 Content = "Удалить"
             };
 
-            EntitiesGridFormElementAttribute attribute = (EntitiesGridFormElementAttribute)formElement.attribute;
+            SelectableSubtableFormElementAttribute attribute = (SelectableSubtableFormElementAttribute)formElement.attribute;
 
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitiesGrid`1")!
                                             .MakeGenericType(formElement.property.PropertyType.GetGenericArguments()[0]);
@@ -264,7 +463,8 @@ namespace CollegeStatictics.ViewModels.Base
 
             var textBox = new TextBox
             {
-                IsReadOnly = formElement.attribute.IsReadOnly
+                IsReadOnly = formElement.attribute.IsReadOnly,
+                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.attribute).AcceptsReturn
             };
 
             var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();

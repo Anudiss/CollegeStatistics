@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.Input;
@@ -10,7 +11,7 @@ using System.Windows.Controls;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class EntitiesGrid<T> : Control where T : class, ITable
+    public partial class EntitiesGrid<T> : Control where T : class, ITable, IDeletable
     {
         public static readonly DependencyProperty SelectedItemsProperty =
             DependencyProperty.Register(nameof(SelectedItems), typeof(ICollection<T>), typeof(EntitiesGrid<T>));

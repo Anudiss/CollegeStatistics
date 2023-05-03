@@ -15,6 +15,8 @@ public partial class Student
 
     public int? GroupId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
     public virtual Group? Group { get; set; }

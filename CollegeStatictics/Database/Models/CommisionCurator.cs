@@ -15,5 +15,7 @@ public partial class CommisionCurator
 
     public int DepartmentId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual Department Department { get; set; } = null!;
 }

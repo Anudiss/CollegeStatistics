@@ -3,32 +3,51 @@ using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.Views
 {
     public class StudyPlanView : ItemDialog<StudyPlan>
     {
-        [Label("Предмет")]
-        [EntitySelectorFormElement("Предметы")]
-        public Subject Subject
+        [Label("Записи")]
+        [SubtableFormElement(typeof(StudyPlanRecordView))]
+        [Column("Id", "Id")]
+        [Column("Topic", "Тема")]
+        [Column("LessonType", "Тип пары")]
+        [Column("DurationInLessons", "Длительность")]
+        public ICollection<StudyPlanRecord> Records
         {
-            get => _item.Subject;
+            get => Item.StudyPlanRecords;
             set
             {
-                _item.Subject = value;
+                Item.StudyPlanRecords = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [Label("Предмет")]
+        [EntitySelectorFormElement("Предметы")]
+        [Required(ErrorMessage = "Обязательное поле")]
+        public Subject Subject
+        {
+            get => Item.Subject;
+            set
+            {
+                Item.Subject = value;
                 OnPropertyChanged();
             }
         }
 
         [Label("Специальность")]
         [EntitySelectorFormElement("Специальности")]
+        [Required(ErrorMessage = "Обязательное поле")]
         public Speciality Speciality
         {
-            get => _item.Speciality;
+            get => Item.Speciality;
             set
             {
-                _item.Speciality = value;
+                Item.Speciality = value;
                 OnPropertyChanged();
             }
         }
@@ -37,10 +56,10 @@ namespace CollegeStatictics.Views
         [DatePickerFormElement]
         public DateTime StartDate
         {
-            get => _item.StartDate;
+            get => Item.StartDate;
             set
             {
-                _item.StartDate = value;
+                Item.StartDate = value;
                 OnPropertyChanged();
             }
         }
@@ -50,10 +69,10 @@ namespace CollegeStatictics.Views
         [Range(1, 4)]
         public string Course
         {
-            get => $"{_item.Course}";
+            get => $"{Item.Course}";
             set
             {
-                _item.Course = (byte)int.Parse(value);
+                Item.Course = (byte)int.Parse(value);
                 OnPropertyChanged();
             }
         }

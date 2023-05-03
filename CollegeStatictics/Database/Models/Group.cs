@@ -19,6 +19,8 @@ public partial class Group
 
     public int? GroupLeaderId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual EducationForm EducationForm { get; set; } = null!;
 
     public virtual Student? GroupLeader { get; set; }

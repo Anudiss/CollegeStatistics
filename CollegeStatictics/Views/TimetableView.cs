@@ -14,10 +14,10 @@ namespace CollegeStatictics.ViewModels
         [Label("Расписание")]
         public ICollection<TimetableRecord> Records
         {
-            get => _item.TimetableRecords;
+            get => Item.TimetableRecords;
             set
             {
-                _item.TimetableRecords = value;
+                Item.TimetableRecords = value;
                 OnPropertyChanged();
             }
         }
@@ -26,10 +26,10 @@ namespace CollegeStatictics.ViewModels
         [Label("Предмет")]
         public Subject Subject
         {
-            get => _item.Subject;
+            get => Item.Subject;
             set
             {
-                _item.Subject = value;
+                Item.Subject = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -39,10 +39,10 @@ namespace CollegeStatictics.ViewModels
         [Label("Преподаватель")]
         public Teacher Teacher
         {
-            get => _item.Teacher;
+            get => Item.Teacher;
             set
             {
-                _item.Teacher = value;
+                Item.Teacher = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }
@@ -52,10 +52,10 @@ namespace CollegeStatictics.ViewModels
         [Label("Группа")]
         public Group Group
         {
-            get => _item.Group;
+            get => Item.Group;
             set
             {
-                _item.Group = value;
+                Item.Group = value;
                 OnPropertyChanged();
                 ValidateProperty(value);
             }

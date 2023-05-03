@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CollegeStatictics.DataTypes;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CollegeStatictics.Database
 {
@@ -25,6 +27,31 @@ namespace CollegeStatictics.Database
                         break;
                 }
             }
+        }
+
+        public static void CancelChanges<T>(T item) where T : class
+        {
+            var entry = Entities.Entry(item);
+
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                    entry.CurrentValues.SetValues(entry.OriginalValues);
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Added:
+                    entry.State = EntityState.Detached;
+                    break;
+                case EntityState.Deleted:
+                    entry.State = EntityState.Unchanged;
+                    break;
+            }
+        }
+
+        public static bool HasChanges<T>(T item) where T : class
+        {
+            var entry = Entities.Entry(item);
+            return new[] { EntityState.Modified, EntityState.Deleted, EntityState.Added }.Contains(entry.State);
         }
     }
 }

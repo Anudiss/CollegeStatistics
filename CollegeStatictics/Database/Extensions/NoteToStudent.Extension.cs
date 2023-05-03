@@ -2,6 +2,6 @@
 
 namespace CollegeStatictics.Database.Models;
 
-public partial class NoteToStudent : ITable
+public partial class NoteToStudent
 {
 }

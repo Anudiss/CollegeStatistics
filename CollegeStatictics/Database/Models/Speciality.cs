@@ -11,6 +11,8 @@ public partial class Speciality
 
     public int DepartmentId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual Department Department { get; set; } = null!;
 
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();

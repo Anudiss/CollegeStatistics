@@ -2,7 +2,7 @@
 
 namespace CollegeStatictics.Database.Models
 {
-    public partial class EducationForm : ITable
+    public partial class EducationForm
     {
         public override string ToString() => Name;
     }
