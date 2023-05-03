@@ -10,7 +10,7 @@ namespace CollegeStatictics.ViewModels
     {
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Подразделение")]
-        [EntitySelectorFormElement("Подразделения")]
+        [EntitySelectorFormElement("Отделения")]
         public Department Department
         {
             get => Item.Department;

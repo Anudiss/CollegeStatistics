@@ -3,11 +3,10 @@
 namespace CollegeStatictics.DataTypes.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-    public class MinWidthAttribute : Attribute
+    public class MaxWidthAttribute : Attribute
     {
         public double Width { get; }
 
-        public MinWidthAttribute(double width) =>
-            Width = width;
+        public MaxWidthAttribute(double width) => Width = width;
     }
 }

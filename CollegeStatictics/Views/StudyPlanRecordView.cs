@@ -8,34 +8,21 @@ namespace CollegeStatictics.Views
 {
     public class StudyPlanRecordView : ItemDialog<StudyPlanRecord>
     {
-        [Label("Тема")]
-        [TextBoxFormElement]
-        [Required(ErrorMessage = "Обязательное поле")]
-        public string Topic
+        [Label("Описание")]
+        [TextBoxFormElement(AcceptsReturn = true)]
+        [MaxHeight(300)]
+        public string Content
         {
-            get => Item.Topic;
+            get => Item.Content;
             set
             {
-                Item.Topic = value;
-                OnPropertyChanged();
-                ValidateProperty(value);
-            }
-        }
-
-        [Label("Тип пары")]
-        [RadioButtonFormElement]
-        public LessonType LessonType
-        {
-            get => Item.LessonType;
-            set
-            {
-                Item.LessonType = value;
+                Item.Content = value;
                 OnPropertyChanged();
             }
         }
 
         [Label("Длительность в парах")]
-        [NumberBoxFormElement]
+        [SpinBoxFormElement]
         [Range(1, int.MaxValue)]
         public string DurationInLessons
         {
@@ -51,16 +38,29 @@ namespace CollegeStatictics.Views
             }
         }
 
-        [Label("Описание")]
-        [TextBoxFormElement(AcceptsReturn = true)]
-        [MinHeight(300)]
-        public string Content
+        [Label("Тип пары")]
+        [RadioButtonFormElement]
+        public LessonType LessonType
         {
-            get => Item.Content;
+            get => Item.LessonType;
             set
             {
-                Item.Content = value;
+                Item.LessonType = value;
                 OnPropertyChanged();
+            }
+        }
+
+        [Label("Тема")]
+        [TextBoxFormElement]
+        [Required(ErrorMessage = "Обязательное поле")]
+        public string Topic
+        {
+            get => Item.Topic;
+            set
+            {
+                Item.Topic = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
             }
         }
 

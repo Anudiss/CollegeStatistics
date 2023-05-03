@@ -19,7 +19,7 @@
                                    IsSelected="True"/>
             <ui:NavigationViewItem Content="Предметы"/>
             <ui:NavigationViewItem Content="Специальности"/>
-            <ui:NavigationViewItem Content="Подразделения"/>
+            <ui:NavigationViewItem Content="Отделения"/>
             <ui:NavigationViewItem Content="Студенты"/>
             <ui:NavigationViewItem Content="Группы"/>
             <ui:NavigationViewItem Content="Расписание"/>

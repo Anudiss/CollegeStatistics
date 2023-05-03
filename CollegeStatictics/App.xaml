@@ -142,6 +142,7 @@
                                 <Menu ItemsSource="{Binding Path=Items.Filters}"
                                       ItemContainerStyle="{StaticResource FilterMenuItemStyle}"
                                       VerticalAlignment="Center"/>
+                                
                                 <Button Content="Создать"
                                         VerticalAlignment="Center"
                                         DockPanel.Dock="Right"
@@ -150,6 +151,7 @@
                                         CommandParameter="{x:Null}"/>
                                 
                                 <Button Content="Удалить"
+                                        Margin="0 0 10 0"
                                         VerticalAlignment="Center"
                                         DockPanel.Dock="Right"
                                         HorizontalAlignment="Right"
@@ -228,6 +230,7 @@
                                     </Style>
 
                                     <Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
+                                        <Setter Property="Background" Value="White"/>
                                     </Style>
 
                                 </ItemsControl.Resources>

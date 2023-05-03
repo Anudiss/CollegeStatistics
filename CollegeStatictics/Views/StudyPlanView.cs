@@ -15,7 +15,7 @@ namespace CollegeStatictics.Views
         [Column("Id", "Id")]
         [Column("Topic", "Тема")]
         [Column("LessonType", "Тип пары")]
-        [Column("DurationInLessons", "Длительность")]
+        [Column("DurationInLessons", "Длительность в парах")]
         public ICollection<StudyPlanRecord> Records
         {
             get => Item.StudyPlanRecords;
