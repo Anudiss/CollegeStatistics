@@ -51,7 +51,7 @@ namespace CollegeStatictics.Utilities
 
             var possibleValues = values.Local.Select(entity => PropertyGetter(entity)).Distinct();
 
-            foreach (var selectedValue in SelectedValues)
+            foreach (var selectedValue in SelectedValues.ToList())
                 if (!possibleValues.Contains(selectedValue))
                     Remove(selectedValue);
 
@@ -95,8 +95,6 @@ namespace CollegeStatictics.Utilities
         public void Refresh()
         {
             OnPropertyChanged(nameof(MenuItems));
-
-
         }
     }
 

@@ -71,12 +71,14 @@ namespace CollegeStatictics.ViewModels
         [Label("Номер")]
         [NumberBoxFormElement]
         [MaxLength(3)]
-        [Unique(nameof(Group.Number))]
+        [Unique(nameof(Group.Number), ErrorMessage = "Группа с таким номером уже существует")]
         public string Number
         {
             get => $"{Item.Number}";
             set
             {
+                ValidateProperty(value);
+
                 if (value.Length == 0)
                     Item.Number = 0;
                 else

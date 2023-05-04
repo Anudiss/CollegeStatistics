@@ -1,8 +1,11 @@
 ﻿using CollegeStatictics.Database;
+using CollegeStatictics.ViewModels.Attributes;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Windows.Documents;
 
 namespace CollegeStatictics.DataTypes.Attributes
 {
@@ -26,9 +29,27 @@ namespace CollegeStatictics.DataTypes.Attributes
 
             var property = genericType.GetProperty(PropertyPath);
 
-            foreach (dynamic item in values.Local)
-                if (property!.GetValue(item) == value)
-                    return new ValidationResult("Группа с таким номер уже есть");
+            // 1) prop is number and value is number
+            // 2) prop is not numbe and value is number
+            // 3) prop is number and value is not number
+            // 4) prop is not number and value is not number
+
+            // Extensions.Single(values.Local.Select(item => GetValue(item)), value) = ;
+
+            foreach (var item in values.Local)
+            {
+                if (item == ((dynamic)validationContext.ObjectInstance).Item)
+                    continue;
+
+                if (property!.GetValue(item).ToString() == value!.ToString())
+                    return new(ErrorMessage);
+            }
+
+
+            /*bool GetPropertyValue(object? item) => property!.GetValue(item).ToString() == value.ToString();
+
+            if (EntityFrameworkQueryableExtensions.CountAsync(values.Local, i => GetPropertyValue(i)) != 1)
+                return new(ErrorMessage);*/
 
             return ValidationResult.Success;
         }
