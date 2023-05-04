@@ -305,15 +305,11 @@ namespace CollegeStatictics.ViewModels.Base
                 Header = formElement.Property.GetCustomAttribute<LabelAttribute>()?.Label,
                 VerticalAlignment = VerticalAlignment.Center
             };
-
             dockPanel.Children.Add(groupBox);
 
             groupBox.SetValue(DockPanel.DockProperty, Dock.Left);
 
             var stackPanel = new StackPanel();
-            /*
-                        grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-                        grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
 
             #region Datagrid initialization
             var columnAttributes = formElement.Property.GetCustomAttributes<ColumnAttribute>();
@@ -571,7 +567,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         private FrameworkElement CreateEntitySelectorBox(FormElement formElement)
         {
-            EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.Attribute;
+            var attribute = (EntitySelectorFormElementAttribute)formElement.Attribute;
 
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitySelectorBox`1")!
                                             .MakeGenericType(formElement.Property.PropertyType);
@@ -593,19 +589,9 @@ namespace CollegeStatictics.ViewModels.Base
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate")
             };
 
-            var labelAttribute = formElement.Property.GetCustomAttribute<LabelAttribute>();
-            if (labelAttribute != null)
-            {
-                var label = new Label
-                {
-                    Content = labelAttribute.Label,
-                    Target = entitySelectorBoxContainer,
-                };
-                stackPanel.Children.Add(label);
-            }
+            TryAttachLabel(stackPanel, entitySelectorBoxContainer, formElement);
 
             stackPanel.Children.Add(entitySelectorBoxContainer);
-
             return stackPanel;
         }
 
@@ -677,12 +663,9 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
-        private T CreateDefaultItem()
+        private static T CreateDefaultItem()
         {
-            var properties = GetType().GetProperties().Where(property => property.GetCustomAttribute<FormElementAttribute>() != null);
-
             var itemType = typeof(T);
-
             T itemInstance = (T)itemType.GetConstructor(Type.EmptyTypes)!.Invoke(Array.Empty<object>());
 
             return itemInstance;
