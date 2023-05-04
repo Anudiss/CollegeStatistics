@@ -1,10 +1,12 @@
-﻿using CollegeStatictics.Database.Models;
+﻿using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace CollegeStatictics.Views
 {
@@ -15,15 +17,7 @@ namespace CollegeStatictics.Views
         [Column("Topic", "Тема")]
         [Column("LessonType", "Тип пары")]
         [Column("DurationInLessons", "Длительность в парах")]
-        public ICollection<StudyPlanRecord> Records
-        {
-            get => Item.StudyPlanRecords;
-            set
-            {
-                Item.StudyPlanRecords = value;
-                OnPropertyChanged();
-            }
-        }
+        public IEnumerable<StudyPlanRecord> Records => DatabaseContext.Entities.StudyPlanRecords.Local.Where(r => r.StudyPlan == Item);
 
         [Label("Предмет")]
         [EntitySelectorFormElement("Предметы")]

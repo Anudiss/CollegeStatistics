@@ -43,7 +43,7 @@ namespace CollegeStatictics.ViewModels.Base
         private bool CanSave() => !HasErrors;
 
         [RelayCommand]
-        private void Cancel() => DatabaseContext.CancelChanges(Item);
+        private void Cancel() => DatabaseContext.CancelChanges();
 
         #endregion
 
@@ -443,10 +443,8 @@ namespace CollegeStatictics.ViewModels.Base
                 if (dialogWindow.Result != DialogResult.Primary)
                     return;
 
-                var removeMethod = formElement.property.PropertyType.GetMethod("Remove");
-
                 foreach (var selectedItem in dataGrid.SelectedItems!)
-                    removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+                    DatabaseContext.Entities.Remove(selectedItem);
 
                 dataGrid.ItemsSource = null;
                 dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
@@ -640,7 +638,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
-        private void OpenItemDialog((PropertyInfo property, FormElementAttribute attribute) formElement, object item)
+        private void OpenItemDialog((PropertyInfo property, FormElementAttribute attribute) formElement, object? item)
         {
             var attribute = (SubtableFormElementAttribute)formElement.attribute;
 
@@ -660,9 +658,8 @@ namespace CollegeStatictics.ViewModels.Base
                 PrimaryButtonText = "Сохранить",
 
                 SecondaryButtonText = "Отмена",
-                SecondaryButtonCommand = itemDialog.CancelCommand,
 
-                CanClose = () => !DatabaseContext.HasChanges(itemDialog.Item)
+                CanClose = () => true
             };
 
             void ContentDialogClosingHandler(object? sender, CancelEventArgs e)
@@ -681,7 +678,10 @@ namespace CollegeStatictics.ViewModels.Base
                     acceptDialog.Show();
 
                     if (acceptDialog.Result == DialogResult.Primary)
-                        DatabaseContext.Entities.SaveChanges(itemDialog.Item);
+                    {
+                        if (itemDialog.Item.Id == 0)
+                            DatabaseContext.Entities.Add(itemDialog.Item);
+                    }
                     else if (acceptDialog.Result == DialogResult.Secondary)
                         DatabaseContext.CancelChanges(itemDialog.Item);
                     else
@@ -697,17 +697,9 @@ namespace CollegeStatictics.ViewModels.Base
             {
                 if (itemDialog.Item.Id == 0)
                     DatabaseContext.Entities.Add(itemDialog.Item);
-
-                return;
             }
             else
-            {
                 DatabaseContext.CancelChanges(itemDialog.Item);
-                return;
-            }
-
-            var addMethod = formElement.property.PropertyType.GetMethod("Add");
-            addMethod?.Invoke(formElement.property.GetValue(this), new object[] { itemDialog.Item });
         }
 
         private T CreateDefaultItem()
