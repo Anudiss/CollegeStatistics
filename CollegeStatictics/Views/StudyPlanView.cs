@@ -10,6 +10,8 @@ using System.Linq;
 
 namespace CollegeStatictics.Views
 {
+    [MinWidth(800)]
+    [MinHeight(800)]
     public class StudyPlanView : ItemDialog<StudyPlan>
     {
         [Label("Записи")]

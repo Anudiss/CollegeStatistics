@@ -330,12 +330,19 @@ namespace CollegeStatictics.ViewModels.Base
             dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
             EntityFrameworkQueryableExtensions.Load(values);
 
+            var dockPanel = new DockPanel();
+
             var groupBox = new GroupBox
             {
                 Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            var grid = new StackPanel();
+            dockPanel.Children.Add(groupBox);
+
+            groupBox.SetValue(DockPanel.DockProperty, Dock.Left);
+
+            var stackPanel = new StackPanel();
             /*
                         grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
                         grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
@@ -404,7 +411,9 @@ namespace CollegeStatictics.ViewModels.Base
                 Margin = new(0, 0, 0, 10)
             };
 
-            buttonsContainer.SetValue(Grid.ColumnProperty, 0);
+            dockPanel.Children.Add(buttonsContainer);
+
+            buttonsContainer.SetValue(DockPanel.DockProperty, Dock.Right);
 
             var addButton = new Button
             {
@@ -453,12 +462,13 @@ namespace CollegeStatictics.ViewModels.Base
             buttonsContainer.Children.Add(removeButton);
             buttonsContainer.Children.Add(addButton);
 
-            grid.Children.Add(buttonsContainer);
-            grid.Children.Add(dataGridBorder);
+            stackPanel.Children.Add(dockPanel);
+            stackPanel.Children.Add(dataGridBorder);
 
-            groupBox.Content = grid;
-
-            return groupBox;
+            return new GroupBox
+            {
+                Content = stackPanel
+            };
         }
 
         private FrameworkElement CreateSelectableSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
