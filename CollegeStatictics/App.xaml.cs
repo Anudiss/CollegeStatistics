@@ -1,8 +1,12 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.ViewModels;
+using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CollegeStatictics
 {
@@ -24,5 +28,17 @@ namespace CollegeStatictics
         public App() => Instance = this;
 
         #endregion
+
+        private void ItemsContainer_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            dynamic itemsContainer = ((DataGrid)sender).DataContext;
+
+            e.Row.InputBindings.Add(new MouseBinding
+            {
+                Gesture = new MouseGesture(MouseAction.LeftDoubleClick),
+                Command = itemsContainer.OpenDialogCommand,
+                CommandParameter = e.Row.Item
+            });
+        }
     }
 }

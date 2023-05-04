@@ -172,23 +172,19 @@
                                                            AutoGenerateColumns="False"
                                                            CanUserAddRows="False"
                                                            CanUserDeleteRows="False"
+                                                           LoadingRow="ItemsContainer_LoadingRow"
                                                            Margin="10">
                                     <controls:ExtendedDataGrid.GroupStyle>
                                         <GroupStyle>
                                             <GroupStyle.HeaderTemplate>
                                                 <DataTemplate>
-                                                   <TextBlock Text="{Binding Path=Name}"
+                                                    <TextBlock Text="{Binding Path=Name}"
                                                                FontWeight="Normal"
                                                                FontSize="12" />
-                                               </DataTemplate>
+                                                </DataTemplate>
                                             </GroupStyle.HeaderTemplate>
                                         </GroupStyle>
                                     </controls:ExtendedDataGrid.GroupStyle>
-                                    <controls:ExtendedDataGrid.InputBindings>
-                                        <MouseBinding Gesture="LeftDoubleClick"
-                                                      Command="{Binding OpenDialogCommand}"
-                                                      CommandParameter="{Binding ElementName=ItemsContainer, Path=SelectedItem}"/>
-                                    </controls:ExtendedDataGrid.InputBindings>
                                 </controls:ExtendedDataGrid>
                             </Border>
                         
