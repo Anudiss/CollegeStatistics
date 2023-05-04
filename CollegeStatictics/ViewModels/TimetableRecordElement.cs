@@ -12,6 +12,8 @@ namespace CollegeStatictics.ViewModels
 {
     public partial class TimetableRecordElement : ObservableObject
     {
+        #region [ Properties ]
+
         [ObservableProperty]
         private int couple;
 
@@ -39,6 +41,10 @@ namespace CollegeStatictics.ViewModels
         [ObservableProperty]
         private bool isSundayChecked;
 
+        #endregion
+
+        #region [ Public methods ]
+
         partial void OnIsMondayCheckedChanged(bool value) =>
             SyncronizeTimetableRecords(value, System.DayOfWeek.Monday);
 
@@ -60,20 +66,64 @@ namespace CollegeStatictics.ViewModels
         partial void OnIsSundayCheckedChanged(bool value) =>
             SyncronizeTimetableRecords(value, System.DayOfWeek.Sunday);
 
+        #endregion
+
+        #region [ Public static methods ]
+
+        public static ICollection<TimetableRecordElement> GetRecordElements(Timetable timetable)
+        {
+            DatabaseContext.Entities.DayOfWeeks.Load();
+            DatabaseContext.Entities.TimetableRecords.Load();
+
+            var recordElements = new List<TimetableRecordElement>();
+
+            for (int couple = 1; couple <= 8; couple++)
+            {
+                var timetableRecords = timetable.TimetableRecords.Where(record => record.Couple == couple);
+
+                TimetableRecordElement recordElement = new()
+                {
+                    Timetable = timetable,
+                    Couple = couple,
+
+                    isMondayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Monday),
+                    isTuesdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Tuesday),
+                    isWednesdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Wednesday),
+                    isThursdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Thursday),
+                    isFridayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Friday),
+                    isSaturdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Saturday),
+                    isSundayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Sunday)
+                };
+
+                recordElements.Add(recordElement);
+            }
+
+            return recordElements;
+        }
+
+        #endregion
+
+        #region [ Private methods ]
+
         private void SyncronizeTimetableRecords(bool value, System.DayOfWeek dayOfWeek)
         {
             if (value)
             {
-                IEnumerable<Timetable> timetables = DatabaseContext.Entities.Timetables.Local.Where(timetable => timetable.Group == Timetable.Group).Concat(DatabaseContext.Entities.Timetables.Local.Where(timetable => timetable.Teacher == Timetable.Teacher));
+                var timetables = DatabaseContext.Entities.Timetables.Local
+                    .Where(timetable => timetable.Group == Timetable.Group)
+                    .Concat(DatabaseContext.Entities.Timetables.Local
+                    .Where(timetable => timetable.Teacher == Timetable.Teacher));
 
-                Timetable? timetableIntersection = timetables.FirstOrDefault(timetable => timetable.TimetableRecords.Any(record => record.Couple == Couple &&                                                                                                                             record.DayOfWeekId == (int)dayOfWeek));
+                Timetable? timetableIntersection = timetables.FirstOrDefault(timetable => timetable.TimetableRecords
+                                                             .Any(record => record.Couple == Couple && record.DayOfWeekId == (int)dayOfWeek));
+
                 if (timetableIntersection != null)
                 {
                     var contentDialog = new DialogWindow
                     {
                         Content = new TextBlock
                         {
-                            Text = $@"У группы {timetableIntersection.Group} в это время пара '{timetableIntersection.Subject}' с преподавателем {timetableIntersection.Teacher}",
+                            Text = $"У группы {timetableIntersection.Group} в это время пара '{timetableIntersection.Subject}' с преподавателем {timetableIntersection.Teacher}",
                             FontSize = 16,
                             TextWrapping = TextWrapping.Wrap
                         },
@@ -83,7 +133,7 @@ namespace CollegeStatictics.ViewModels
 
                     contentDialog.Show();
 
-                    GetType().GetProperty($"Is{dayOfWeek}Checked").SetValue(this, false);
+                    GetType().GetProperty($"Is{dayOfWeek}Checked")!.SetValue(this, false);
 
                     return;
                 }
@@ -108,35 +158,6 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
-        public static ICollection<TimetableRecordElement> GetRecordElements(Timetable timetable)
-        {
-            DatabaseContext.Entities.DayOfWeeks.Load();
-            DatabaseContext.Entities.TimetableRecords.Load();
-
-            var elements = new List<TimetableRecordElement>();
-
-            for (int couple = 1; couple <= 8; couple++)
-            {
-                var timetableRecords = timetable.TimetableRecords.Where(record => record.Couple == couple);
-
-                TimetableRecordElement item = new()
-                {
-                    Timetable = timetable,
-                    Couple = couple,
-
-                    isMondayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Monday),
-                    isTuesdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Tuesday),
-                    isWednesdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Wednesday),
-                    isThursdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Thursday),
-                    isFridayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Friday),
-                    isSaturdayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Saturday),
-                    isSundayChecked = timetableRecords.Any(record => record.DayOfWeekId == (int)System.DayOfWeek.Sunday)
-                };
-
-                elements.Add(item);
-            }
-
-            return elements;
-        }
+        #endregion
     }
 }

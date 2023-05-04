@@ -17,8 +17,7 @@
                                     xmlns:base="clr-namespace:CollegeStatictics.ViewModels.Base"
                                     xmlns:controls="clr-namespace:CollegeStatictics.Controls.Extensions"
                                     xmlns:vm="clr-namespace:CollegeStatictics.ViewModels"
-                                    xmlns:views="clr-namespace:CollegeStatictics.Views"
-                                    xmlns:utils="clr-namespace:CollegeStatictics.Utilities">
+                                    xmlns:views="clr-namespace:CollegeStatictics.Views">
 
                     <DataTemplate DataType="{x:Type vm:MainVM}">
                         <views:MainView/>

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace CollegeStatictics.Utilities
+namespace CollegeStatictics.DataTypes.Classes
 {
     public class Searching<T>
     {

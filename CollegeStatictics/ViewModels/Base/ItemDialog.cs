@@ -2,6 +2,7 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
+using CollegeStatictics.DataTypes.Records;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -66,79 +67,70 @@ namespace CollegeStatictics.ViewModels.Base
 
         #region [ Private methods ]
 
-        #region [ Building view elements ]
+        #region [ Assemblying view elements ]
 
         private IEnumerable<FrameworkElement> CreateViewElements()
         {
-            foreach (var formElement in GetFormElements())
+            var formElements = GetFormElements();
+            foreach (var formElement in formElements)
             {
                 var viewElement = CreateViewElement(formElement);
-                ApplyAttributesToViewElement(formElement, viewElement);
+                ApplyAttributesToViewElement(viewElement, formElement);
 
                 yield return viewElement;
             }
         }
 
-        private IEnumerable<(PropertyInfo property, FormElementAttribute attribute)> GetFormElements()
+        private IEnumerable<FormElement> GetFormElements()
         {
-            return from property in GetType().GetProperties().Reverse()
-                   let attribute = property.GetCustomAttribute<FormElementAttribute>()
-                   where attribute != null
-                   select (property, attribute);
+            var propertyAttributePairs = from property in GetType().GetProperties().Reverse()
+                                         let attribute = property.GetCustomAttribute<FormElementAttribute>()
+                                         where attribute != null
+                                         select (property, attribute);
+
+            return propertyAttributePairs.Select(pair => new FormElement(pair.property, pair.attribute));
         }
 
-        private FrameworkElement CreateViewElement((PropertyInfo property, FormElementAttribute attribute) formElement)
-            => formElement.attribute.ElementType switch
+        private FrameworkElement CreateViewElement(FormElement formElement)
+            => formElement.Attribute.ElementType switch
                 {
                     ElementType.TextBox => CreateTextBox(formElement),
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
-                    ElementType.Timetable => CreateTimetableElement(formElement),
+                    ElementType.Timetable => CreateTimetableElement(),
                     ElementType.NumberBox => CreateNumberBox(formElement),
                     ElementType.SpinBox => CreateSpinBox(formElement),
                     ElementType.DatePicker => CreateDatePicker(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
         
-        private static void ApplyAttributesToViewElement((PropertyInfo property, FormElementAttribute attribute) formElement, FrameworkElement frameworkElement)
+        private static void ApplyAttributesToViewElement(FrameworkElement frameworkElement, FormElement formElement)
         {
-            frameworkElement.MinWidth = formElement.property.GetCustomAttribute<MinWidthAttribute>()?.Width ?? 0;
-            frameworkElement.MinHeight = formElement.property.GetCustomAttribute<MinHeightAttribute>()?.Height ?? 0;
+            frameworkElement.MinWidth = formElement.Property.GetCustomAttribute<MinWidthAttribute>()?.Width ?? 0;
+            frameworkElement.MinHeight = formElement.Property.GetCustomAttribute<MinHeightAttribute>()?.Height ?? 0;
 
-            frameworkElement.MaxWidth = formElement.property.GetCustomAttribute<MaxWidthAttribute>()?.Width ?? double.MaxValue;
-            frameworkElement.MaxHeight = formElement.property.GetCustomAttribute<MaxHeightAttribute>()?.Height ?? double.MaxValue;
+            frameworkElement.MaxWidth = formElement.Property.GetCustomAttribute<MaxWidthAttribute>()?.Width ?? double.MaxValue;
+            frameworkElement.MaxHeight = formElement.Property.GetCustomAttribute<MaxHeightAttribute>()?.Height ?? double.MaxValue;
         }
 
         #endregion
 
-        #region [ Element creator methods ]
+        #region [ Creation of view elements ]
 
-        private static FrameworkElement CreateTextBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        #region [ Primitive controls ]
+        private FrameworkElement CreateTextBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
             var textBox = new TextBox
             {
-                IsReadOnly = formElement.attribute.IsReadOnly,
-                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.attribute).AcceptsReturn,
+                IsReadOnly = formElement.Attribute.IsReadOnly,
+                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.Attribute).AcceptsReturn,
             };
 
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
-            if (labelAttribute != null)
-                stackPanel.Children.Add(new Label
-                {
-                    Content = labelAttribute.Label,
-                    Target = textBox,
-                });
-
-            textBox.SetBinding(TextBox.TextProperty, new Binding(formElement.property.Name)
-            {
-                Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                ValidatesOnNotifyDataErrors = true,
-            });
+            TryAttachLabel(stackPanel, textBox, formElement);
 
             SetBinding(textBox, TextBox.TextProperty, formElement);
 
@@ -146,14 +138,14 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private static FrameworkElement CreateNumberBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateNumberBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
             var textBox = new TextBox
             {
-                IsReadOnly = formElement.attribute.IsReadOnly,
-                MaxLength = formElement.property.GetCustomAttribute<MaxLengthAttribute>()?.Length ?? int.MaxValue
+                IsReadOnly = formElement.Attribute.IsReadOnly,
+                MaxLength = formElement.Property.GetCustomAttribute<MaxLengthAttribute>()?.Length ?? int.MaxValue
             };
 
             textBox.PreviewTextInput += (_, e) =>
@@ -165,13 +157,8 @@ namespace CollegeStatictics.ViewModels.Base
                     e.Handled = true;
             };
 
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
-            if (labelAttribute != null)
-                stackPanel.Children.Add(new Label
-                {
-                    Content = labelAttribute.Label,
-                    Target = textBox,
-                });
+
+            TryAttachLabel(stackPanel, textBox, formElement);
 
             SetBinding(textBox, TextBox.TextProperty, formElement);
 
@@ -179,29 +166,23 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private static FrameworkElement CreateSpinBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateSpinBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
             
             var spinBox = new NumberBox
             {
-                IsEnabled = formElement.attribute.IsReadOnly == false,
+                IsEnabled = formElement.Attribute.IsReadOnly == false,
                 SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
             };
 
-            if (formElement.property.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
+            if (formElement.Property.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
             {
                 spinBox.Minimum = (int)rangeAttribute.Minimum;
                 spinBox.Maximum = (int)rangeAttribute.Maximum;
             }
 
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
-            if (labelAttribute != null)
-                stackPanel.Children.Add(new Label
-                {
-                    Content = labelAttribute.Label,
-                    Target = spinBox,
-                });
+            TryAttachLabel(stackPanel, spinBox, formElement);
 
             SetBinding(spinBox, NumberBox.ValueProperty, formElement);
 
@@ -209,26 +190,20 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
         
-        private FrameworkElement CreateDatePicker((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateDatePicker(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
-            var selectedDate = (DateTime)formElement.property.GetValue(this)!;
+            var selectedDate = (DateTime)formElement.Property.GetValue(this)!;
             if (selectedDate == DateTime.MinValue)
-                formElement.property.SetValue(this, DateTime.Now);
+                formElement.Property.SetValue(this, DateTime.Now);
 
             var datePicker = new DatePicker
             {
-                IsEnabled = formElement.attribute.IsReadOnly == false
+                IsEnabled = formElement.Attribute.IsReadOnly == false
             };
 
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
-            if (labelAttribute != null)
-                stackPanel.Children.Add(new Label
-                {
-                    Content = labelAttribute.Label,
-                    Target = datePicker,
-                });
+            TryAttachLabel(stackPanel, datePicker, formElement);
 
             SetBinding(datePicker, DatePicker.SelectedDateProperty, formElement);
 
@@ -236,66 +211,63 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateRadioButtonList((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateRadioButtonList(FormElement formElement)
         {
-            var methodInfo = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
-            var genericMethod = methodInfo.MakeGenericMethod(formElement.property.PropertyType);
+            var entityType = formElement.Property.PropertyType;
+            var entities = DatabaseContext.LoadEntities(entityType);
 
-            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            EntityFrameworkQueryableExtensions.Load(values);
+            var groupBox = new GroupBox();
 
-            var groupBox = new GroupBox
-            {
-                Padding = new(0, 0, 0, 0)
-            };
-
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            var labelAttribute = formElement.Property.GetCustomAttribute<LabelAttribute>();
             if (labelAttribute != null)
                 groupBox.Header = labelAttribute.Label;
 
             var stackPanel = new StackPanel();
 
-            var border = new Border
-            {
-                Child = stackPanel
-            };
+            var border = new Border { Child = stackPanel };
             groupBox.Content = border;
 
-            if (formElement.property.GetValue(this) == null)
-                formElement.property.SetValue(this, Enumerable.FirstOrDefault(values.Local));
+            // If property value is null, then assign it default value
+            if (formElement.Property.GetValue(this) == null)
+                formElement.Property.SetValue(this, Enumerable.FirstOrDefault(entities.Local));
 
-            foreach (var value in values.Local)
+            foreach (var entity in entities.Local)
             {
                 var radioButton = new RadioButton
                 {
-                    Content = value,
-                    IsChecked = formElement.property.GetValue(this) == value
+                    Content = entity,
+                    IsChecked = entity == formElement.Property.GetValue(this)
                 };
-                radioButton.Click += delegate { formElement.property.SetValue(this, value); };
+                radioButton.Click += (_ ,__) => formElement.Property.SetValue(this, entity);
+
                 stackPanel.Children.Add(radioButton);
             }
 
             return groupBox;
         }
 
+        #endregion
 
+        #region [ Table controls ]
 
-        private FrameworkElement CreateTimetableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateTimetableElement()
         {
             var dataGrid = new DataGrid()
             {
                 Style = (Style)Application.Current.FindResource("TimetableDataGridStyle"),
-                //ItemsSource = TimetableRecordElement.GetRecordElements(_item as Timetable)
             };
 
             DatabaseContext.Entities.DayOfWeeks.Load();
+
             var systemDayOfWeeks = Enum.GetValues<System.DayOfWeek>();
+
             foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local.Skip(1))
             {
                 dataGrid.Columns.Add(new DataGridCheckBoxColumn()
                 {
                     Width = DataGridLength.SizeToCells,
                     Header = dayOfWeek.Reduction,
+
                     Binding = new Binding($"Is{systemDayOfWeeks[dayOfWeek.Id]}Checked")
                     {
                         Mode = BindingMode.TwoWay,
@@ -304,31 +276,27 @@ namespace CollegeStatictics.ViewModels.Base
                 });
             }
 
-            foreach (var record in TimetableRecordElement.GetRecordElements(Item as Timetable))
+            var timetable = (Item as Timetable)!;
+            foreach (var timetableRecord in TimetableRecordElement.GetRecordElements(timetable))
             {
                 dataGrid.Items.Add(new DataGridRow()
                 {
-                    Item = record,
-                    Header = $"{record.Couple} пара"
+                    Item = timetableRecord,
+                    Header = $"{timetableRecord.Couple} пара"
                 });
             }
 
-            return new Border()
-            {
-                Child = dataGrid
-            };
+            return new Border { Child = dataGrid };
         }
 
-        private FrameworkElement CreateSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateSubtableElement(FormElement formElement)
         {
-            if (formElement.property.PropertyType.GetInterface("IEnumerable") == null)
+            var isPropertyEnumerable = formElement.Property.PropertyType.GetInterface("IEnumerable") != null;
+            if (isPropertyEnumerable == false)
                 throw new ArgumentException("Subtable form element must be on property that has IEnumerable type");
 
-            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
-            MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType.GetGenericArguments()[0]);
-
-            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            EntityFrameworkQueryableExtensions.Load(values);
+            var entityType = formElement.Property.PropertyType.GetGenericArguments()[0];
+            var entities = DatabaseContext.LoadEntities(entityType);
 
             var dockPanel = new DockPanel();
 
@@ -348,7 +316,7 @@ namespace CollegeStatictics.ViewModels.Base
                         grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
 
             #region Datagrid initialization
-            var columnAttributes = formElement.property.GetCustomAttributes<ColumnAttribute>();
+            var columnAttributes = formElement.Property.GetCustomAttributes<ColumnAttribute>();
 
             var dataGrid = new DataGrid()
             {
@@ -366,7 +334,7 @@ namespace CollegeStatictics.ViewModels.Base
                 OpenItemDialog(formElement, item);
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
             });
 
             dataGrid.LoadingRow += (sender, e) =>
@@ -389,7 +357,7 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.ItemsSource = (IEnumerable)formElement.property.GetValue(this)!;
+            dataGrid.ItemsSource = (IEnumerable)formElement.Property.GetValue(this)!;
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -426,14 +394,14 @@ namespace CollegeStatictics.ViewModels.Base
             };
 
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.Base.ItemDialog`1")!
-                                            .MakeGenericType(formElement.property.PropertyType.GetGenericArguments()[0]);
+                                            .MakeGenericType(formElement.Property.PropertyType.GetGenericArguments()[0]);
 
             addButton.Click += delegate
             {
                 OpenItemDialog(formElement, null);
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
             };
 
             removeButton.Click += delegate
@@ -456,7 +424,7 @@ namespace CollegeStatictics.ViewModels.Base
                     DatabaseContext.Entities.Remove(selectedItem);
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
             };
 
             buttonsContainer.Children.Add(removeButton);
@@ -471,29 +439,24 @@ namespace CollegeStatictics.ViewModels.Base
             };
         }
 
-        private FrameworkElement CreateSelectableSubtableElement((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateSelectableSubtableElement(FormElement formElement)
         {
-            if (formElement.property.PropertyType.GetInterface("IEnumerable") == null)
+            var isPropertyEnumerable = formElement.Property.PropertyType.GetInterface("IEnumerable") != null;
+            if (isPropertyEnumerable == false)
                 throw new ArgumentException("Subtable form element must be on property that has IEnumerable type");
 
-            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
-            MethodInfo genericMethod = method.MakeGenericMethod(formElement.property.PropertyType.GetGenericArguments()[0]);
-
-            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            EntityFrameworkQueryableExtensions.Load(values);
+            var entityType = formElement.Property.PropertyType.GetGenericArguments()[0];
+            var entities = DatabaseContext.LoadEntities(entityType);
 
             var groupBox = new GroupBox
             {
-                Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
+                Header = formElement.Property.GetCustomAttribute<LabelAttribute>()?.Label,
             };
 
             var grid = new StackPanel();
-/*
-            grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-            grid.RowDefinitions.Add(new RowDefinition() { Height = new(1, GridUnitType.Star) });*/
 
             #region Datagrid initialization
-            var columnAttributes = formElement.property.GetCustomAttributes<ColumnAttribute>();
+            var columnAttributes = formElement.Property.GetCustomAttributes<ColumnAttribute>();
 
             var dataGrid = new DataGrid()
             {
@@ -514,7 +477,7 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.SetValue(ScrollViewer.CanContentScrollProperty, false);
             dataGrid.SetValue(Grid.ColumnProperty, 1);
 
-            dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+            dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
 
             foreach (var column in columnAttributes)
                 dataGrid.Columns.Add(new DataGridTextColumn()
@@ -548,26 +511,26 @@ namespace CollegeStatictics.ViewModels.Base
                 Content = "Удалить"
             };
 
-            SelectableSubtableFormElementAttribute attribute = (SelectableSubtableFormElementAttribute)formElement.attribute;
+            SelectableSubtableFormElementAttribute attribute = (SelectableSubtableFormElementAttribute)formElement.Attribute;
 
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitiesGrid`1")!
-                                            .MakeGenericType(formElement.property.PropertyType.GetGenericArguments()[0]);
+                                            .MakeGenericType(formElement.Property.PropertyType.GetGenericArguments()[0]);
 
             addButton.Click += delegate
             {
                 dynamic entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName })!;
                 entitySelectorBox.OpenSelectorDialog();
 
-                var addMethod = formElement.property.PropertyType.GetMethod("Add");
+                var addMethod = formElement.Property.PropertyType.GetMethod("Add");
 
                 if (entitySelectorBox.SelectedItems == null)
                     return;
 
                 foreach (var selectedItem in entitySelectorBox.SelectedItems)
-                    addMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+                    addMethod?.Invoke(formElement.Property.GetValue(this), new object[] { selectedItem });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
             };
 
             removeButton.Click += delegate
@@ -586,13 +549,13 @@ namespace CollegeStatictics.ViewModels.Base
                 if (dialogWindow.Result != DialogResult.Primary)
                     return;
 
-                var removeMethod = formElement.property.PropertyType.GetMethod("Remove");
+                var removeMethod = formElement.Property.PropertyType.GetMethod("Remove");
 
                 foreach (var selectedItem in dataGrid.SelectedItems)
-                    removeMethod?.Invoke(formElement.property.GetValue(this), new object[] { selectedItem });
+                    removeMethod?.Invoke(formElement.Property.GetValue(this), new object[] { selectedItem });
 
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.property.GetValue(this)!;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
             };
 
             buttonsContainer.Children.Add(addButton);
@@ -606,17 +569,17 @@ namespace CollegeStatictics.ViewModels.Base
             return groupBox;
         }
 
-        private static FrameworkElement CreateEntitySelectorBox((PropertyInfo property, FormElementAttribute attribute) formElement)
+        private FrameworkElement CreateEntitySelectorBox(FormElement formElement)
         {
-            EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.attribute;
+            EntitySelectorFormElementAttribute attribute = (EntitySelectorFormElementAttribute)formElement.Attribute;
 
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitySelectorBox`1")!
-                                            .MakeGenericType(formElement.property.PropertyType);
+                                            .MakeGenericType(formElement.Property.PropertyType);
 
             var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
             var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
-            ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.property.Name)
+            ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.Property.Name)
             {
                 Mode = BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
@@ -630,7 +593,7 @@ namespace CollegeStatictics.ViewModels.Base
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate")
             };
 
-            var labelAttribute = formElement.property.GetCustomAttribute<LabelAttribute>();
+            var labelAttribute = formElement.Property.GetCustomAttribute<LabelAttribute>();
             if (labelAttribute != null)
             {
                 var label = new Label
@@ -648,9 +611,9 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
-        private void OpenItemDialog((PropertyInfo property, FormElementAttribute attribute) formElement, object? item)
+        private void OpenItemDialog(FormElement formElement, object item)
         {
-            var attribute = (SubtableFormElementAttribute)formElement.attribute;
+            var attribute = (SubtableFormElementAttribute)formElement.Attribute;
 
             dynamic itemDialog = attribute.Create(item);
 
@@ -712,6 +675,8 @@ namespace CollegeStatictics.ViewModels.Base
                 DatabaseContext.CancelChanges(itemDialog.Item);
         }
 
+        #endregion
+
         private T CreateDefaultItem()
         {
             var properties = GetType().GetProperties().Where(property => property.GetCustomAttribute<FormElementAttribute>() != null);
@@ -723,14 +688,23 @@ namespace CollegeStatictics.ViewModels.Base
             return itemInstance;
         }
 
-        #region [ Static methods ]
-        
-        private static void SetBinding(FrameworkElement frameworkElement, DependencyProperty property,
-            (PropertyInfo property, FormElementAttribute attribute) formElement)
+        #region [ Static (helper) methods ]
+
+        private static void TryAttachLabel(Panel panel, UIElement target, FormElement formElement)
         {
-            frameworkElement.SetBinding(property, new Binding(formElement.property.Name)
+            if (formElement.Property.GetCustomAttribute<LabelAttribute>() is LabelAttribute labelAttribute)
+                panel.Children.Add(new Label
+                {
+                    Content = labelAttribute.Label,
+                    Target = target,
+                });
+        }
+
+        private static void SetBinding(FrameworkElement frameworkElement, DependencyProperty property, FormElement formElement)
+        {
+            frameworkElement.SetBinding(property, new Binding(formElement.Property.Name)
             {
-                Mode = formElement.attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                Mode = formElement.Attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 ValidatesOnNotifyDataErrors = true,
             });

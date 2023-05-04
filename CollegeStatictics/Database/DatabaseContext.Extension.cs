@@ -1,13 +1,21 @@
 ﻿using CollegeStatictics.DataTypes;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Reflection;
 
 namespace CollegeStatictics.Database
 {
     public partial class DatabaseContext
     {
+        #region [ Properties ]
+
         private static DatabaseContext _entities = null!;
         public static DatabaseContext Entities => _entities ??= new();
+
+        #endregion
+
+        #region [ Public static methods ]
 
         public static void CancelChanges()
         {
@@ -78,5 +86,18 @@ namespace CollegeStatictics.Database
             var entry = Entities.Entry(item);
             return new[] { EntityState.Modified, EntityState.Deleted, EntityState.Added }.Contains(entry.State);
         }
+
+        public static dynamic LoadEntities(Type entityType)
+        {
+            var setMethod = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
+            var SetMethodForEntityOfType = setMethod.MakeGenericMethod(entityType);
+
+            dynamic entitySet = SetMethodForEntityOfType.Invoke(Entities, Array.Empty<object>())!;
+            EntityFrameworkQueryableExtensions.Load(entitySet);
+
+            return entitySet;
+        }
+
+        #endregion
     }
 }

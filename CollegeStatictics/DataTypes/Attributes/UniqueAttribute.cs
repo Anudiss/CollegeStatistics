@@ -18,16 +18,10 @@ namespace CollegeStatictics.DataTypes.Attributes
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            /*var property = validationContext.ObjectInstance.GetType().GetProperty(PropertyPath);*/
+            var entityType = validationContext.ObjectInstance.GetType().BaseType!.GetGenericArguments()[0];
+            var entities = DatabaseContext.LoadEntities(entityType);
 
-            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
-            Type genericType = validationContext.ObjectInstance.GetType().BaseType!.GetGenericArguments()[0];
-            MethodInfo genericMethod = method.MakeGenericMethod(genericType);
-
-            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            EntityFrameworkQueryableExtensions.Load(values);
-
-            var property = genericType.GetProperty(PropertyPath);
+            var property = entityType.GetProperty(PropertyPath);
 
             // 1) prop is number and value is number
             // 2) prop is not numbe and value is number
@@ -36,15 +30,15 @@ namespace CollegeStatictics.DataTypes.Attributes
 
             // Extensions.Single(values.Local.Select(item => GetValue(item)), value) = ;
 
-            foreach (var item in values.Local)
+            // TODO: Is it right to compare strings?
+            foreach (var entity in entities.Local)
             {
-                if (item == ((dynamic)validationContext.ObjectInstance).Item)
+                if (entity == ((dynamic)validationContext.ObjectInstance).Item)
                     continue;
 
-                if (property!.GetValue(item).ToString() == value!.ToString())
+                if (property!.GetValue(entity).ToString() == value!.ToString())
                     return new(ErrorMessage);
             }
-
 
             /*bool GetPropertyValue(object? item) => property!.GetValue(item).ToString() == value.ToString();
 

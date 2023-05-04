@@ -1,5 +1,5 @@
 ﻿using CollegeStatictics.Database.Models;
-using CollegeStatictics.Utilities;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
 using CommunityToolkit.Mvvm.ComponentModel;

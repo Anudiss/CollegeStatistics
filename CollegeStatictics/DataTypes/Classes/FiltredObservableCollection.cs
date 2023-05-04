@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 
-namespace CollegeStatictics.Utilities
+namespace CollegeStatictics.DataTypes.Classes
 {
     public partial class FilteredObservableCollection<T> : ObservableObject
     {

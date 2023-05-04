@@ -7,28 +7,21 @@ namespace CollegeStatictics.DataTypes.Interfaces
 {
     public interface IDeletable
     {
-        public bool IsDeleted { get; set; }
+        bool IsDeleted { get; set; }
 
-        public void MarkToDelete()
-        {
-            IsDeleted = true;
-        }
-
-        public void Delete()
+        void MarkToDelete() => IsDeleted = true;
+        
+        void Delete()
         {
             RemoveLinkedData();
 
-            MethodInfo method = typeof(DbContext).GetMethod("Set", Type.EmptyTypes)!;
-            MethodInfo genericMethod = method.MakeGenericMethod(GetType());
+            var entities = DatabaseContext.LoadEntities(GetType());
 
-            dynamic values = genericMethod.Invoke(DatabaseContext.Entities, Array.Empty<object>())!;
-            EntityFrameworkQueryableExtensions.Load(values);
-
-            values.Remove(this);
+            entities.Remove(this);
 
             DatabaseContext.Entities.SaveChanges();
         }
 
-        public void RemoveLinkedData() { }
+        void RemoveLinkedData() { }
     }
 }

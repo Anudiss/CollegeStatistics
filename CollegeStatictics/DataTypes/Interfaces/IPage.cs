@@ -1,4 +1,4 @@
-﻿using CollegeStatictics.Utilities;
+﻿using CollegeStatictics.DataTypes.Classes;
 using System.Collections;
 
 namespace CollegeStatictics.DataTypes

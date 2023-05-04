@@ -9,9 +9,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace CollegeStatictics.Utilities
+namespace CollegeStatictics.DataTypes.Classes
 {
-    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable 
+    public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable
                                                                      where R : class
     {
         // Properties:

@@ -1,7 +1,7 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Interfaces;
-using CollegeStatictics.Utilities;
 using CollegeStatictics.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
