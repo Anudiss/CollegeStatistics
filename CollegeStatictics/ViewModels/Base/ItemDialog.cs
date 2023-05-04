@@ -302,7 +302,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             var groupBox = new GroupBox
             {
-                Header = formElement.property.GetCustomAttribute<LabelAttribute>()?.Label,
+                Header = formElement.Property.GetCustomAttribute<LabelAttribute>()?.Label,
                 VerticalAlignment = VerticalAlignment.Center
             };
 
