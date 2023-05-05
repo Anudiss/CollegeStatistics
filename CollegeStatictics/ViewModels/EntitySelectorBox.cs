@@ -12,7 +12,7 @@ using System.Windows.Controls;
 namespace CollegeStatictics.ViewModels
 {
     [ObservableObject]
-    public partial class EntitySelectorBox<T> : Control where T : class, ITable, IDeletable
+    public partial class EntitySelectorBox<T> : Control where T : class, ITable, IDeletable, new()
     {
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));

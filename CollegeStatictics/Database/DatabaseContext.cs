@@ -1,5 +1,7 @@
 ﻿using CollegeStatictics.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Windows;
 
 namespace CollegeStatictics.Database;
 
@@ -59,6 +61,11 @@ public partial class DatabaseContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
+    private void Log(string text)
+    {
+        string filePath = @"C:\Users\meshc\OneDrive\Рабочий стол\Текстовый документ.txt";
+        File.AppendAllText(filePath, $"{text}\n\n");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -253,6 +260,7 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StudyPlan_Subject");
+
         });
 
         modelBuilder.Entity<StudyPlanRecord>(entity =>

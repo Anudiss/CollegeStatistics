@@ -3,8 +3,11 @@ using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -59,23 +62,25 @@ namespace CollegeStatictics.Views
             }
         }
 
+        // TODO: Fix default value in spin box
+        [DefaultValue(2)]
         [Label("Номер курса")]
         [Required(ErrorMessage = "Обязательное поле")]
         [SpinBoxFormElement]
-        [Range(1, 4)]
-        public string Course
+        [Range(1, 4, ErrorMessage = "лщфьыщвлфцв")]
+        public byte Course
         {
-            get => $"{Item.Course}";
+            get => Item.Course;
             set
             {
-                Item.Course = (byte)int.Parse(value);
+                Item.Course = value;
                 OnPropertyChanged();
             }
         }
 
         public StudyPlanView(StudyPlan? item) : base(item)
         {
-            Item.Course = 1;
+            DatabaseContext.Entities.StudyPlanRecords.Load();
         }
     }
 }

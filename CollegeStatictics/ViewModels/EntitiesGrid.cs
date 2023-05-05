@@ -11,7 +11,7 @@ using System.Windows.Controls;
 
 namespace CollegeStatictics.ViewModels
 {
-    public partial class EntitiesGrid<T> : Control where T : class, ITable, IDeletable
+    public partial class EntitiesGrid<T> : Control where T : class, ITable, IDeletable, new()
     {
         public static readonly DependencyProperty SelectedItemsProperty =
             DependencyProperty.Register(nameof(SelectedItems), typeof(ICollection<T>), typeof(EntitiesGrid<T>));

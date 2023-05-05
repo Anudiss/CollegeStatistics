@@ -19,7 +19,7 @@ using ITable = CollegeStatictics.DataTypes.ITable;
 
 namespace CollegeStatictics.ViewModels.Base
 {
-    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable, IDeletable
+    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable, IDeletable, new()
     {
         #region [ Properties ]
 
@@ -197,7 +197,7 @@ namespace CollegeStatictics.ViewModels.Base
 
     #region [ Data types ]
 
-    public class ItemsContainerBuilder<T, R> where T : class, ITable, IDeletable
+    public class ItemsContainerBuilder<T, R> where T : class, ITable, IDeletable, new()
                                              where R : ItemDialog<T>
     {
         private readonly ObservableCollection<T> _sourceCollection;

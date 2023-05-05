@@ -2,12 +2,14 @@
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.Views
 {
     public class StudyPlanRecordView : ItemDialog<StudyPlanRecord>
     {
+        [DefaultValue("")]
         [Label("Описание")]
         [TextBoxFormElement(AcceptsReturn = true)]
         [MaxHeight(300)]
@@ -50,6 +52,7 @@ namespace CollegeStatictics.Views
             }
         }
 
+        [DefaultValue("")]
         [Label("Тема")]
         [TextBoxFormElement]
         [Required(ErrorMessage = "Обязательное поле")]

@@ -24,7 +24,7 @@ using System.Windows.Input;
 
 namespace CollegeStatictics.ViewModels.Base
 {
-    public abstract partial class ItemDialog<T> : ObservableValidator where T : class, ITable
+    public abstract partial class ItemDialog<T> : ObservableValidator where T : class, ITable, new()
     {
         #region [ Commands ]
 
@@ -60,7 +60,8 @@ namespace CollegeStatictics.ViewModels.Base
 
         public ItemDialog(T? item)
         {
-            Item = item ?? CreateDefaultItem();
+            Item = item ?? new T();
+            InitializeItemDefaultValues();
         }
 
         #endregion
@@ -184,7 +185,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             TryAttachLabel(stackPanel, spinBox, formElement);
 
-            SetBinding(spinBox, NumberBox.ValueProperty, formElement);
+            SetBinding(spinBox, NumberBox.TextProperty, formElement);
 
             stackPanel.Children.Add(spinBox);
             return stackPanel;
@@ -200,7 +201,8 @@ namespace CollegeStatictics.ViewModels.Base
 
             var datePicker = new DatePicker
             {
-                IsEnabled = formElement.Attribute.IsReadOnly == false
+                IsEnabled = formElement.Attribute.IsReadOnly == false,
+                SelectedDateFormat = DatePickerFormat.Long
             };
 
             TryAttachLabel(stackPanel, datePicker, formElement);
@@ -677,15 +679,20 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
-        private T CreateDefaultItem()
+        private void InitializeItemDefaultValues()
         {
             var properties = GetType().GetProperties().Where(property => property.GetCustomAttribute<FormElementAttribute>() != null);
 
-            var itemType = typeof(T);
+            foreach (var property in GetType().GetProperties().Where(p => p.CanWrite))
+            {
+                DefaultValueAttribute? attribute = property.GetCustomAttribute<DefaultValueAttribute>();
 
-            T itemInstance = (T)itemType.GetConstructor(Type.EmptyTypes)!.Invoke(Array.Empty<object>());
+                var cond = property.GetValue(this) == default;
 
-            return itemInstance;
+                if (property.GetValue(this) == default && attribute?.Value != null)
+                    property.SetValue(this, attribute.Value);
+
+            }
         }
 
         #region [ Static (helper) methods ]

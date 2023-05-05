@@ -14,7 +14,7 @@ namespace CollegeStatictics.DataTypes.Attributes
             _type = type;
         }
 
-        public ItemDialog<T> Create<T>(T value) where T : class, ITable =>
+        public ItemDialog<T> Create<T>(T value) where T : class, ITable, new() =>
             (ItemDialog<T>)Activator.CreateInstance(_type, new[] { value });
 
         public object Create(object? value) =>
