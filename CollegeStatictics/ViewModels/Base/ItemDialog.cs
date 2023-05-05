@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
-using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -672,14 +671,14 @@ namespace CollegeStatictics.ViewModels.Base
 
         private void InitializeItemDefaultValues()
         {
-            var properties = GetType().GetProperties().Where(property => property.GetCustomAttribute<FormElementAttribute>() != null);
+            if (Item.Id != 0)
+                return;
 
-            foreach (var property in GetType().GetProperties().Where(p => p.CanWrite))
+            foreach (var property in GetType().GetProperties().Where(p => p.GetCustomAttribute<DefaultValueAttribute>() != null))
             {
-                DefaultValueAttribute? attribute = property.GetCustomAttribute<DefaultValueAttribute>();
+                DefaultValueAttribute attribute = property.GetCustomAttribute<DefaultValueAttribute>()!;
 
-                if (property.GetValue(this) == default && attribute?.Value != null)
-                    property.SetValue(this, attribute.Value);
+                property.SetValue(this, attribute.Value);
             }
         }
 

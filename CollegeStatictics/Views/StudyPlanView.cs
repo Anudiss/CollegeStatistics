@@ -63,7 +63,7 @@ namespace CollegeStatictics.Views
         }
 
         // TODO: Fix default value in spin box
-        [DefaultValue(2)]
+        [DefaultValue((byte)2)]
         [Label("Номер курса")]
         [Required(ErrorMessage = "Обязательное поле")]
         [SpinBoxFormElement]

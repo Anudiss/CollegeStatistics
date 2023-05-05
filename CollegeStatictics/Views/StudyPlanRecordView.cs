@@ -4,6 +4,7 @@ using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Windows;
 
 namespace CollegeStatictics.Views
 {
@@ -25,21 +26,25 @@ namespace CollegeStatictics.Views
         }
 
         // TODO: Fix spin box default value
-        [DefaultValue(1)]
+        [DefaultValue(2)]
         [Label("Длительность в парах")]
         [SpinBoxFormElement]
         [Range(1, int.MaxValue)]
-        public string DurationInLessons
+        public int DurationInLessons
         {
-            get => $"{Item.DurationInLessons}";
+            get => Item.DurationInLessons;
             set
             {
-                if (int.TryParse(value?.Trim(), out var duration))
+                /*if (int.TryParse(value?.Trim(), out var duration))
                 {
                     Item.DurationInLessons = duration;
                     OnPropertyChanged();
                     ValidateProperty(value);
-                }
+                }*/
+
+                Item.DurationInLessons = value;
+                OnPropertyChanged();
+                ValidateProperty(value);
             }
         }
 
@@ -58,7 +63,6 @@ namespace CollegeStatictics.Views
         [DefaultValue("")]
         [Label("Тема")]
         [TextBoxFormElement]
-        [Required(ErrorMessage = "Обязательное поле")]
         public string Topic
         {
             get => Item.Topic;
@@ -66,7 +70,6 @@ namespace CollegeStatictics.Views
             {
                 Item.Topic = value;
                 OnPropertyChanged();
-                ValidateProperty(value);
             }
         }
 
