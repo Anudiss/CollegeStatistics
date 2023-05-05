@@ -217,15 +217,19 @@
                                            BasedOn="{StaticResource {x:Type Label}}">
                                         <Setter Property="Margin" Value="0 0 0 12"/>
                                     </Style>
-                                    
+
                                     <Style TargetType="Border">
-                                       <Setter Property="Padding" Value="10"/>
-                                       <Setter Property="BorderThickness" Value="0.5"/>
-                                       <Setter Property="BorderBrush" Value="LightGray"/>
+                                        <Setter Property="Padding" Value="10"/>
+                                        <Setter Property="BorderThickness" Value="0.5"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
                                     </Style>
 
-                                    <Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
-                                        <Setter Property="Background" Value="White"/>
+                                    <!--<Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
+                                        --><!--<Setter Property="Background" Value="White"/>--><!--
+                                    </Style>-->
+
+                                    <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+                                        
                                     </Style>
 
                                 </ItemsControl.Resources>

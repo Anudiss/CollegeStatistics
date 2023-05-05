@@ -12,7 +12,8 @@ namespace CollegeStatictics.Views
         [DefaultValue("")]
         [Label("Описание")]
         [TextBoxFormElement(AcceptsReturn = true)]
-        [MaxHeight(300)]
+        //[MinHeight(300)]
+        //[MaxHeight(300)]
         public string Content
         {
             get => Item.Content;
@@ -23,6 +24,8 @@ namespace CollegeStatictics.Views
             }
         }
 
+        // TODO: Fix spin box default value
+        [DefaultValue(1)]
         [Label("Длительность в парах")]
         [SpinBoxFormElement]
         [Range(1, int.MaxValue)]

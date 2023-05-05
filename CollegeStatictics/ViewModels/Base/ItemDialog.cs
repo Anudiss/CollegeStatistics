@@ -76,6 +76,7 @@ namespace CollegeStatictics.ViewModels.Base
             foreach (var formElement in formElements)
             {
                 var viewElement = CreateViewElement(formElement);
+
                 ApplyAttributesToViewElement(viewElement, formElement);
 
                 yield return viewElement;
@@ -128,8 +129,10 @@ namespace CollegeStatictics.ViewModels.Base
             var textBox = new TextBox
             {
                 IsReadOnly = formElement.Attribute.IsReadOnly,
-                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.Attribute).AcceptsReturn,
+                AcceptsReturn = ((TextBoxFormElementAttribute)formElement.Attribute).AcceptsReturn
             };
+
+            ApplyAttributesToViewElement(textBox, formElement);
 
             TryAttachLabel(stackPanel, textBox, formElement);
 
@@ -599,6 +602,8 @@ namespace CollegeStatictics.ViewModels.Base
 
         #endregion
 
+        #endregion
+
         private void OpenItemDialog(FormElement formElement, object item)
         {
             var attribute = (SubtableFormElementAttribute)formElement.Attribute;
@@ -611,7 +616,7 @@ namespace CollegeStatictics.ViewModels.Base
             PropertyInfo itemProperty = type.GetProperties().First(property => property.PropertyType == linkedType);
             itemProperty.SetValue(itemDialog.Item, Item);
 
-            var contentDialog = new DialogWindow
+            var dialogWindow = new DialogWindow
             {
                 Content = itemDialog,
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
@@ -623,9 +628,12 @@ namespace CollegeStatictics.ViewModels.Base
                 CanClose = () => true
             };
 
-            void ContentDialogClosingHandler(object? sender, CancelEventArgs e)
+            void WindowDialogClosingHandler(object? sender, CancelEventArgs e)
             {
-                if (DatabaseContext.Entities.ChangeTracker.HasChanges() && (sender as DialogWindow)!.Result == DialogResult.None)
+                var dialogResult = (sender as DialogWindow)!.Result;
+                bool areThereUnsavedChanges = DatabaseContext.Entities.ChangeTracker.HasChanges();
+
+                if (areThereUnsavedChanges == true && dialogResult == DialogResult.None)
                 {
                     var acceptDialog = new DialogWindow
                     {
@@ -635,7 +643,6 @@ namespace CollegeStatictics.ViewModels.Base
                         TertiaryButtonText = "Отмена",
                     };
 
-                    e.Cancel = false;
                     acceptDialog.Show();
 
                     if (acceptDialog.Result == DialogResult.Primary)
@@ -650,11 +657,11 @@ namespace CollegeStatictics.ViewModels.Base
                 }
             }
 
-            contentDialog.Closing += ContentDialogClosingHandler;
-            contentDialog.Show();
-            contentDialog.Closing -= ContentDialogClosingHandler;
+            dialogWindow.Closing += WindowDialogClosingHandler;
+            dialogWindow.Show();
+            dialogWindow.Closing -= WindowDialogClosingHandler;
 
-            if (contentDialog.Result == DialogResult.Primary)
+            if (dialogWindow.Result == DialogResult.Primary)
             {
                 if (itemDialog.Item.Id == 0)
                     DatabaseContext.Entities.Add(itemDialog.Item);
@@ -662,8 +669,6 @@ namespace CollegeStatictics.ViewModels.Base
             else
                 DatabaseContext.CancelChanges(itemDialog.Item);
         }
-
-        #endregion
 
         private void InitializeItemDefaultValues()
         {
@@ -673,11 +678,8 @@ namespace CollegeStatictics.ViewModels.Base
             {
                 DefaultValueAttribute? attribute = property.GetCustomAttribute<DefaultValueAttribute>();
 
-                var cond = property.GetValue(this) == default;
-
                 if (property.GetValue(this) == default && attribute?.Value != null)
                     property.SetValue(this, attribute.Value);
-
             }
         }
 
