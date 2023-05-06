@@ -117,6 +117,20 @@ namespace CollegeStatictics.ViewModels
                                     .AddFilter(new Selection<StudyPlan>(studyPlan => studyPlan.IsDeleted == false))
 
                                     .Build()
+            },
+            {
+                "Занятия", () => new ItemsContainerBuilder<Lesson, LessonView>()
+
+                                    .AddColumn(nameof(Lesson.Datetime), "Дата и время")
+                                    .AddColumn(nameof(Lesson.TimetableRecord.Timetable.Subject), "Предмет")
+                                    .AddColumn(nameof(Lesson.TimetableRecord.Timetable.Teacher), "Преподаватель")
+                                    .AddColumn(nameof(Lesson.TimetableRecord.Timetable.Group), "Группа")
+
+                                    .AddFilter(new Filter<Lesson, Subject>("Предмет", lesson => lesson.TimetableRecord.Timetable.Subject))
+                                    .AddFilter(new Filter<Lesson, Teacher>("Преподаватель", lesson => lesson.TimetableRecord.Timetable.Teacher))
+                                    .AddFilter(new Filter<Lesson, Group>("Группа", lesson => lesson.TimetableRecord.Timetable.Group))
+
+                                    .Build()
             }
         };
 

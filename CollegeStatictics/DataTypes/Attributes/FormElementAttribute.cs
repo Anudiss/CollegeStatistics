@@ -14,6 +14,7 @@ namespace CollegeStatictics.ViewModels.Attributes
         TextBox,
         NumberBox,
         SpinBox,
+        CheckBox,
         EntitySelectorBox,
         SelectableSubtable,
         Subtable,

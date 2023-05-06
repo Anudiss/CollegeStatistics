@@ -1,7 +1,6 @@
-﻿using CollegeStatictics.Database.Models;
+﻿using System.Collections.Generic;
+using CollegeStatictics.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using System.Windows;
 
 namespace CollegeStatictics.Database;
 
@@ -34,9 +33,9 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<Lesson> Lessons { get; set; }
 
-    public virtual DbSet<LessonType> LessonTypes { get; set; }
+    public virtual DbSet<LessonStartTime> LessonStartTimes { get; set; }
 
-    public virtual DbSet<LessonsStartTime> LessonsStartTimes { get; set; }
+    public virtual DbSet<LessonType> LessonTypes { get; set; }
 
     public virtual DbSet<NoteToLesson> NoteToLessons { get; set; }
 
@@ -61,11 +60,6 @@ public partial class DatabaseContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
-    private void Log(string text)
-    {
-        string filePath = @"C:\Users\meshc\OneDrive\Рабочий стол\Текстовый документ.txt";
-        File.AppendAllText(filePath, $"{text}\n\n");
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -91,6 +85,23 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Reduction).HasMaxLength(2);
+
+            entity.HasMany(d => d.LessonStartTimes).WithMany(p => p.DayOfWeeks)
+                .UsingEntity<Dictionary<string, object>>(
+                    "LessonStartTimesForDayOfWeek",
+                    r => r.HasOne<LessonStartTime>().WithMany()
+                        .HasForeignKey("LessonStartTimeId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_LessonStartTimesForDayOfWeek_LessonStartTime"),
+                    l => l.HasOne<DayOfWeek>().WithMany()
+                        .HasForeignKey("DayOfWeekId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_LessonStartTimesForDayOfWeek_DayOfWeek"),
+                    j =>
+                    {
+                        j.HasKey("DayOfWeekId", "LessonStartTimeId");
+                        j.ToTable("LessonStartTimesForDayOfWeek");
+                    });
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -104,7 +115,9 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("EducationForm");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("ID");
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
@@ -166,6 +179,7 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("HomeworkExecutionStatus");
 
+            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
@@ -176,21 +190,27 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("Lesson");
 
             entity.Property(e => e.Datetime).HasColumnType("smalldatetime");
+
+            entity.HasOne(d => d.TimetableRecord).WithMany(p => p.Lessons)
+                .HasForeignKey(d => d.TimetableRecordId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Lesson_TimetableRecord");
+        });
+
+        modelBuilder.Entity<LessonStartTime>(entity =>
+        {
+            entity.ToTable("LessonStartTime");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.StartTime).HasPrecision(0);
         });
 
         modelBuilder.Entity<LessonType>(entity =>
         {
             entity.ToTable("LessonType");
 
+            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<LessonsStartTime>(entity =>
-        {
-            entity.ToTable("LessonsStartTime");
-
-            entity.Property(e => e.DayOfWeek).HasMaxLength(150);
-            entity.Property(e => e.Time).HasPrecision(0);
         });
 
         modelBuilder.Entity<NoteToLesson>(entity =>
@@ -260,7 +280,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StudyPlan_Subject");
-
         });
 
         modelBuilder.Entity<StudyPlanRecord>(entity =>

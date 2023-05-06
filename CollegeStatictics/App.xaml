@@ -224,13 +224,13 @@
                                         <Setter Property="BorderBrush" Value="LightGray"/>
                                     </Style>
 
-                                    <!--<Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
+                                    <Style TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
+                                        <Setter Property="Background" Value="White"/>
+                                    </Style>
+
+                                    <!--<Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
                                         --><!--<Setter Property="Background" Value="White"/>--><!--
                                     </Style>-->
-
-                                    <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
-                                        
-                                    </Style>
 
                                 </ItemsControl.Resources>
                              

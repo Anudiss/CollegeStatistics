@@ -12,4 +12,6 @@ public partial class DayOfWeek
     public string Reduction { get; set; } = null!;
 
     public virtual ICollection<TimetableRecord> TimetableRecords { get; set; } = new List<TimetableRecord>();
+
+    public virtual ICollection<LessonStartTime> LessonStartTimes { get; set; } = new List<LessonStartTime>();
 }
