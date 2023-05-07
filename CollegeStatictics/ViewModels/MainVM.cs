@@ -117,7 +117,8 @@ namespace CollegeStatictics.ViewModels
                                     .AddFilter(new Selection<StudyPlan>(studyPlan => studyPlan.IsDeleted == false))
 
                                     .Build()
-            }
+            },
+            { "Помеченные на удаление", () => new DeletedItemsContainer() }
         };
 
         public static readonly Dictionary<string, string> PageIcons = new()

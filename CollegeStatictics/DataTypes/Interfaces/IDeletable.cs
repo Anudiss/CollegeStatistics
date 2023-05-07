@@ -10,6 +10,8 @@ namespace CollegeStatictics.DataTypes.Interfaces
         bool IsDeleted { get; set; }
 
         void MarkToDelete() => IsDeleted = true;
+
+        void UnmarkToDelete() => IsDeleted = false;
         
         void Delete()
         {

@@ -21,5 +21,7 @@ public partial class Timetable
 
     public virtual Teacher Teacher { get; set; } = null!;
 
+    public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
     public virtual ICollection<TimetableRecord> TimetableRecords { get; set; } = new List<TimetableRecord>();
 }

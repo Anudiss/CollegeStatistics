@@ -13,6 +13,8 @@ public partial class Lesson
 
     public bool IsDeleted { get; set; }
 
+    public virtual Timetable Timetable { get; set; } = null!;
+
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
     public virtual ICollection<EmergencySituation> EmergencySituations { get; set; } = new List<EmergencySituation>();

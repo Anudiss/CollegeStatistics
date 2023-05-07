@@ -29,7 +29,7 @@ namespace CollegeStatictics.ViewModels
             set => SetValue(SelectedItemProperty, value);
         }
 
-        private string _itemContainerName;
+        private readonly string _itemContainerName;
 
         public EntitySelectorBox(string itemContainerName)
         {

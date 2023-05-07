@@ -176,6 +176,11 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("Lesson");
 
             entity.Property(e => e.Datetime).HasColumnType("smalldatetime");
+
+            entity.HasOne(d => d.Timetable).WithMany(p => p.Lessons)
+                .HasForeignKey(d => d.TimetableId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Lesson_Timetable");
         });
 
         modelBuilder.Entity<LessonType>(entity =>

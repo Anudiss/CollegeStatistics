@@ -100,7 +100,7 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
-                    ElementType.Timetable => CreateTimetableElement(),
+                    ElementType.Timetable => CreateTimetableElement(formElement),
                     ElementType.NumberBox => CreateNumberBox(formElement),
                     ElementType.SpinBox => CreateSpinBox(formElement),
                     ElementType.DatePicker => CreateDatePicker(formElement),
@@ -254,7 +254,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         #region [ Table controls ]
 
-        private FrameworkElement CreateTimetableElement()
+        private FrameworkElement CreateTimetableElement(FormElement formElement)
         {
             var dataGrid = new DataGrid()
             {
@@ -271,10 +271,11 @@ namespace CollegeStatictics.ViewModels.Base
                 {
                     Width = DataGridLength.SizeToCells,
                     Header = dayOfWeek.Reduction,
+                    IsReadOnly = formElement.Attribute.IsReadOnly,
 
                     Binding = new Binding($"Is{systemDayOfWeeks[dayOfWeek.Id]}Checked")
                     {
-                        Mode = BindingMode.TwoWay,
+                        Mode = formElement.Attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
                         UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                     }
                 });
