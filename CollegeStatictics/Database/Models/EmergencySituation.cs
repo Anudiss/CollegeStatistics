@@ -11,7 +11,5 @@ public partial class EmergencySituation
 
     public string Description { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
-
     public virtual Lesson Lesson { get; set; } = null!;
 }

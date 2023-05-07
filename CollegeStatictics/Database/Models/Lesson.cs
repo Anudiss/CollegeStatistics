@@ -7,13 +7,13 @@ public partial class Lesson
 {
     public int Id { get; set; }
 
-    public int TimetableId { get; set; }
+    public int TimetableRecordId { get; set; }
 
     public DateTime Datetime { get; set; }
 
     public bool IsDeleted { get; set; }
 
-    public virtual Timetable Timetable { get; set; } = null!;
+    public bool IsRestoring { get; set; }
 
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
@@ -24,4 +24,6 @@ public partial class Lesson
     public virtual ICollection<NoteToLesson> NoteToLessons { get; set; } = new List<NoteToLesson>();
 
     public virtual ICollection<NoteToStudent> NoteToStudents { get; set; } = new List<NoteToStudent>();
+
+    public virtual TimetableRecord TimetableRecord { get; set; } = null!;
 }

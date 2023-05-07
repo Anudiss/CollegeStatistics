@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -69,7 +70,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         #region [ Assemblying view elements ]
 
-        private IEnumerable<FrameworkElement> CreateViewElements()
+        protected virtual IEnumerable<FrameworkElement> CreateViewElements()
         {
             var formElements = GetFormElements();
             foreach (var formElement in formElements)
@@ -96,13 +97,14 @@ namespace CollegeStatictics.ViewModels.Base
             => formElement.Attribute.ElementType switch
                 {
                     ElementType.TextBox => CreateTextBox(formElement),
+                    ElementType.NumberBox => CreateNumberBox(formElement),
+                    ElementType.SpinBox => CreateSpinBox(formElement),
+                    ElementType.CheckBox => CreateCheckBox(formElement),
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
-                    ElementType.Timetable => CreateTimetableElement(formElement),
-                    ElementType.NumberBox => CreateNumberBox(formElement),
-                    ElementType.SpinBox => CreateSpinBox(formElement),
+                    ElementType.Timetable => CreateTimetableElement(),
                     ElementType.DatePicker => CreateDatePicker(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
@@ -192,7 +194,23 @@ namespace CollegeStatictics.ViewModels.Base
             stackPanel.Children.Add(spinBox);
             return stackPanel;
         }
-        
+
+        private FrameworkElement CreateCheckBox(FormElement formElement)
+        {
+            var stackPanel = new StackPanel();
+
+            var checkBox = new CheckBox();
+
+            ApplyAttributesToViewElement(checkBox, formElement);
+
+            TryAttachLabel(stackPanel, checkBox, formElement);
+
+            SetBinding(checkBox, ToggleButton.IsCheckedProperty, formElement);
+
+            stackPanel.Children.Add(checkBox);
+            return stackPanel;
+        }
+
         private FrameworkElement CreateDatePicker(FormElement formElement)
         {
             var stackPanel = new StackPanel();

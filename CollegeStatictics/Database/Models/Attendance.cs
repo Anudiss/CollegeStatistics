@@ -11,8 +11,6 @@ public partial class Attendance
 
     public int StudentId { get; set; }
 
-    public bool IsAttended { get; set; }
-
     public virtual Lesson Lesson { get; set; } = null!;
 
     public virtual Student Student { get; set; } = null!;
