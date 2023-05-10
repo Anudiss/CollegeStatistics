@@ -1,9 +1,5 @@
-﻿using CollegeStatictics.Database.Models;
-using CollegeStatictics.ViewModels;
-using CollegeStatictics.ViewModels.Base;
+﻿using CollegeStatictics.ViewModels;
 using CollegeStatictics.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

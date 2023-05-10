@@ -75,7 +75,7 @@ namespace CollegeStatictics.Views
         {
             var viewElements = base.CreateViewElements();
 
-            return null;
+            return viewElements;
         }
     }
 }

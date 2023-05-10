@@ -104,7 +104,7 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
-                    ElementType.Timetable => CreateTimetableElement(),
+                    ElementType.Timetable => CreateTimetableElement(formElement),
                     ElementType.DatePicker => CreateDatePicker(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };

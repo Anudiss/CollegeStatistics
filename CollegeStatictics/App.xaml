@@ -266,10 +266,6 @@
                         </Grid>
                         
                     </DataTemplate>
-                    
-                    <DataTemplate>
-                        
-                    </DataTemplate>
 
                     <Style x:Key="TimetableDataGridStyle"
                            TargetType="{x:Type DataGrid}"
