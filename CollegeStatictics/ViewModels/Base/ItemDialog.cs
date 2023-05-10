@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -83,7 +84,7 @@ namespace CollegeStatictics.ViewModels.Base
             }
         }
 
-        private IEnumerable<FormElement> GetFormElements()
+        protected IEnumerable<FormElement> GetFormElements()
         {
             var propertyAttributePairs = from property in GetType().GetProperties().Reverse()
                                          let attribute = property.GetCustomAttribute<FormElementAttribute>()
@@ -93,7 +94,7 @@ namespace CollegeStatictics.ViewModels.Base
             return propertyAttributePairs.Select(pair => new FormElement(pair.property, pair.attribute));
         }
 
-        private FrameworkElement CreateViewElement(FormElement formElement)
+        protected FrameworkElement CreateViewElement(FormElement formElement)
             => formElement.Attribute.ElementType switch
                 {
                     ElementType.TextBox => CreateTextBox(formElement),
@@ -106,6 +107,7 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.Subtable => CreateSubtableElement(formElement),
                     ElementType.Timetable => CreateTimetableElement(formElement),
                     ElementType.DatePicker => CreateDatePicker(formElement),
+                    ElementType.TimeBox => CreateTimeBoxElement(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
         
@@ -123,7 +125,7 @@ namespace CollegeStatictics.ViewModels.Base
         #region [ Creation of view elements ]
 
         #region [ Primitive controls ]
-        private FrameworkElement CreateTextBox(FormElement formElement)
+        protected FrameworkElement CreateTextBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
@@ -143,7 +145,7 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateNumberBox(FormElement formElement)
+        protected FrameworkElement CreateNumberBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
@@ -171,7 +173,7 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateSpinBox(FormElement formElement)
+        protected FrameworkElement CreateSpinBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
             
@@ -195,7 +197,7 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateCheckBox(FormElement formElement)
+        protected FrameworkElement CreateCheckBox(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
@@ -211,7 +213,7 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateDatePicker(FormElement formElement)
+        protected FrameworkElement CreateDatePicker(FormElement formElement)
         {
             var stackPanel = new StackPanel();
 
@@ -233,7 +235,26 @@ namespace CollegeStatictics.ViewModels.Base
             return stackPanel;
         }
 
-        private FrameworkElement CreateRadioButtonList(FormElement formElement)
+        protected FrameworkElement CreateTimeBoxElement(FormElement formElement)
+        {
+            var stackPanel = new StackPanel();
+
+            var timeTextBox = new TextBox();
+            TextBoxHelper.SetIsDeleteButtonVisible(timeTextBox, false);
+            timeTextBox.PreviewTextInput += (_, e) =>
+            {
+                // 00:00
+            };
+
+            TryAttachLabel(stackPanel, timeTextBox, formElement);
+
+            SetBinding(timeTextBox, DatePickerTextBox.TextProperty, formElement);
+
+            stackPanel.Children.Add(timeTextBox);
+            return stackPanel;
+        }
+
+        protected FrameworkElement CreateRadioButtonList(FormElement formElement)
         {
             var entityType = formElement.Property.PropertyType;
             var entities = DatabaseContext.LoadEntities(entityType);

@@ -1,4 +1,7 @@
-﻿namespace CollegeStatictics.Database.Models
+﻿using System;
+using System.Collections;
+
+namespace CollegeStatictics.Database.Models
 {
     public partial class DayOfWeek
     {

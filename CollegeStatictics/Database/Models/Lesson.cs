@@ -9,11 +9,13 @@ public partial class Lesson
 
     public int TimetableRecordId { get; set; }
 
-    public DateTime Datetime { get; set; }
+    public TimeSpan Time { get; set; }
 
     public bool IsDeleted { get; set; }
 
     public bool IsRestoring { get; set; }
+
+    public DateTime Date { get; set; }
 
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 

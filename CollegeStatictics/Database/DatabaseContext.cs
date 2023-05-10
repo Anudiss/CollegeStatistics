@@ -58,6 +58,7 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -188,7 +189,8 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("Lesson");
 
-            entity.Property(e => e.Datetime).HasColumnType("smalldatetime");
+            entity.Property(e => e.Date).HasColumnType("date");
+            entity.Property(e => e.Time).HasPrecision(0);
 
             entity.HasOne(d => d.TimetableRecord).WithMany(p => p.Lessons)
                 .HasForeignKey(d => d.TimetableRecordId)

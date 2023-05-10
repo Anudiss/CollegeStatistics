@@ -20,6 +20,8 @@ namespace CollegeStatictics.ViewModels.Attributes
         Subtable,
         Timetable,
         RadioButton,
-        DatePicker
+        DatePicker,
+        TimeBox,
+        ComboBox
     }
 }
