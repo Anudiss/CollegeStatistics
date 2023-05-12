@@ -32,6 +32,8 @@ namespace CollegeStatictics.ViewModels.Base
         [ObservableProperty]
         private DataGridSelectionMode selectionMode = DataGridSelectionMode.Extended;
 
+        [ObservableProperty]
+        private bool canCreate = false;
 
         [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns = default!;
@@ -205,6 +207,7 @@ namespace CollegeStatictics.ViewModels.Base
         private readonly List<Searching<T>> _searchings;
         private readonly List<Grouping<T>> _groupings;
         private readonly ObservableCollection<DataGridColumn> _columns;
+        private bool canCreate = true;
 
         public ItemsContainerBuilder(ObservableCollection<T> sourceCollection)
         {
@@ -268,6 +271,12 @@ namespace CollegeStatictics.ViewModels.Base
             return this;
         }
 
+        public ItemsContainerBuilder<T, R> BanCreate()
+        {
+            canCreate = false;
+            return this;
+        }
+
         public ItemsContainerBuilder<T, R> AddGrouping(Grouping<T> grouping)
         {
             _groupings.Add(grouping);
@@ -275,7 +284,10 @@ namespace CollegeStatictics.ViewModels.Base
         }
 
         public ItemsContainer<T> Build() =>
-            new(new(_sourceCollection, _filters, _searchings, _groupings), _columns, typeof(R));
+            new(new(_sourceCollection, _filters, _searchings, _groupings), _columns, typeof(R))
+            {
+                CanCreate = canCreate
+            };
     }
 
     #endregion

@@ -53,7 +53,6 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
-        [Required(ErrorMessage = "Поле обязательно")]
         [Label("Группа")]
         [EntitySelectorFormElement("Группы")]
         public Group Group

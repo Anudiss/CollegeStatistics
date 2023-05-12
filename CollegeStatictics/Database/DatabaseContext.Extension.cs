@@ -21,6 +21,13 @@ namespace CollegeStatictics.Database
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<EducationForm>(entity =>
+            {
+                entity.Property(d => d.Id).ValueGeneratedNever();
+
+                entity.HasData(new() { Id = 0, Name = "Бюджет" }, new() { Id = 1, Name = "Коммерция" });
+            });
+
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.Navigation(d => d.Group).AutoInclude();

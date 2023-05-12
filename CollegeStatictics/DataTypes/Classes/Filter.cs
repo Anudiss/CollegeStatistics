@@ -12,6 +12,7 @@ using System.Windows.Controls;
 namespace CollegeStatictics.DataTypes.Classes
 {
     public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable
+                                                                     where R : class
     {
         // Properties:
         //  + Possible values collection
@@ -43,6 +44,7 @@ namespace CollegeStatictics.DataTypes.Classes
 
         private IEnumerable<R> LoadPossibleValues()
         {
+
             var values = DatabaseContext.Entities.Set<T>();
             values.Load();
 

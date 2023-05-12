@@ -130,6 +130,8 @@ namespace CollegeStatictics.ViewModels
                                    .AddFilter(new Filter<Lesson, Teacher>("Преподаватель", lesson => lesson.TimetableRecord.Timetable.Teacher))
                                    .AddFilter(new Filter<Lesson, Group>("Группа", lesson => lesson.TimetableRecord.Timetable.Group))
 
+                                   .BanCreate()
+
                                    .Build()
             }
         };

@@ -244,6 +244,8 @@ namespace CollegeStatictics.ViewModels.Base
             timeTextBox.PreviewTextInput += (_, e) =>
             {
                 // 00:00
+
+
             };
 
             TryAttachLabel(stackPanel, timeTextBox, formElement);
