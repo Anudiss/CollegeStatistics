@@ -42,6 +42,11 @@ namespace CollegeStatictics.Database
                 entity.Navigation(d => d.Subject).AutoInclude();
             });
 
+            modelBuilder.Entity<StudyPlanRecord>(entity =>
+            {
+                entity.Navigation(d => d.LessonType).AutoInclude();
+            });
+
             modelBuilder.Entity<Lesson>(entity =>
             {
                 entity.Navigation(d => d.NoteToLessons).AutoInclude();

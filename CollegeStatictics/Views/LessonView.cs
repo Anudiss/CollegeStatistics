@@ -8,6 +8,7 @@ using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
+using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,69 +65,19 @@ namespace CollegeStatictics.Views
         }
 
         [Label("Запись из расписания")]
-        public TimetableRecord TimetableRecord
-        {
-            get => Item.TimetableRecord;
-            set
-            {
-                Item.TimetableRecord = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Subject));
-                OnPropertyChanged(nameof(Teacher));
-                OnPropertyChanged(nameof(Group));
-            }
-        }
+        public TimetableRecord TimetableRecord => Item.TimetableRecord;
 
         [Label("Предмет")]
         [TextBoxFormElement(IsReadOnly = true)]
-        public Subject? Subject
-        {
-            get => Item?.TimetableRecord?.Timetable?.Subject;
-            set
-            {
-                Item.TimetableRecord.Timetable.Subject = value!;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Subjects));
-                OnPropertyChanged(nameof(Teachers));
-                OnPropertyChanged(nameof(Groups));
-
-                TimetableRecords.Refresh();
-            }
-        }
+        public Subject? Subject => Item?.TimetableRecord?.Timetable?.Subject;
 
         [Label("Преподаватель")]
         [TextBoxFormElement(IsReadOnly = true)]
-        public Teacher? Teacher
-        {
-            get => Item?.TimetableRecord?.Timetable?.Teacher;
-            set
-            {
-                Item.TimetableRecord.Timetable.Teacher = value!;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Subjects));
-                OnPropertyChanged(nameof(Teachers));
-                OnPropertyChanged(nameof(Groups));
-
-                TimetableRecords.Refresh();
-            }
-        }
+        public Teacher? Teacher => Item?.TimetableRecord?.Timetable?.Teacher;
 
         [Label("Группа")]
         [TextBoxFormElement(IsReadOnly = true)]
-        public Group? Group
-        {
-            get => Item?.TimetableRecord?.Timetable?.Group;
-            set
-            {
-                Item.TimetableRecord.Timetable.Group = value!;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Subjects));
-                OnPropertyChanged(nameof(Teachers));
-                OnPropertyChanged(nameof(Groups));
-
-                TimetableRecords.Refresh();
-            }
-        }
+        public Group? Group => Item?.TimetableRecord?.Timetable?.Group;
 
         public FilteredObservableCollection<TimetableRecord> TimetableRecords { get; }
 
@@ -183,7 +134,6 @@ namespace CollegeStatictics.Views
             var prevTime = TimeSpan.Zero;
             foreach (var availableTime in availableTimes)
             {
-                // If 7 -> return 8
                 if (currentTime <= availableTime)
                     return availableTime;
                 
@@ -204,24 +154,27 @@ namespace CollegeStatictics.Views
 
         protected override IEnumerable<FrameworkElement> CreateViewElements()
         {
-            var stackPanel = new StackPanel
+            var header = new TextBlock { Text = "Пара" };
+
+            var headerGrid = new Grid
             {
-                Orientation = Orientation.Horizontal
             };
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-            var datePicker = CreateViewElementFor(nameof(Date)); datePicker.Margin = new(0, 0, 10, 0);
-            var timeBox = CreateViewElementFor(nameof(Time)); timeBox.Margin = new(0, 0, 10, 0);
-            var defaultLessonTimesBox = CreateDefaultLessonTimesComboBox();
+            var datePicker = CreateViewElementFor(nameof(Date)); datePicker.SetValue(Grid.ColumnProperty, 0);
+            var timeBox = CreateViewElementFor(nameof(Time)); timeBox.SetValue(Grid.ColumnProperty, 1);
+            var defaultLessonTimesBox = CreateDefaultLessonTimesComboBox(); defaultLessonTimesBox.SetValue(Grid.ColumnProperty, 2);
+            var isRestoringCheckBox = CreateViewElementFor(nameof(IsRestoring)); isRestoringCheckBox.SetValue(Grid.ColumnProperty, 3);
 
-            var groupSelector = CreateComboBox(nameof(Group), nameof(Groups)); groupSelector.Margin = new(0, 0, 10, 0);
-            var teacherSelector = CreateComboBox(nameof(Teacher), nameof(Teachers)); teacherSelector.Margin = new(0, 0, 10, 0);
-            var subjectSelector = CreateComboBox(nameof(Subject), nameof(Subjects)); subjectSelector.Margin = new(0, 0, 10, 0);
-
-            stackPanel.Children.Add(datePicker);
-            stackPanel.Children.Add(timeBox);
-            stackPanel.Children.Add(defaultLessonTimesBox);
+            headerGrid.Children.Add(datePicker);
+            headerGrid.Children.Add(timeBox);
+            headerGrid.Children.Add(defaultLessonTimesBox);
+            headerGrid.Children.Add(isRestoringCheckBox);
             
-            yield return stackPanel;
+            yield return headerGrid;
 
             var uniformGrid = new UniformGrid
             {
@@ -229,11 +182,13 @@ namespace CollegeStatictics.Views
                 Columns = 3
             };
 
+            var groupSelector = CreateViewElementFor(nameof(Group)); groupSelector.Margin = new(0, 0, 10, 0);
+            var teacherSelector = CreateViewElementFor(nameof(Teacher)); teacherSelector.Margin = new(0, 0, 10, 0);
+            var subjectSelector = CreateViewElementFor(nameof(Subject)); subjectSelector.Margin = new(0, 0, 10, 0);
+
             uniformGrid.Children.Add(groupSelector);
             uniformGrid.Children.Add(teacherSelector);
             uniformGrid.Children.Add(subjectSelector);
-
-            uniformGrid.Children.Add(CreateViewElementFor(nameof(IsRestoring)));
 
             yield return uniformGrid;
         }

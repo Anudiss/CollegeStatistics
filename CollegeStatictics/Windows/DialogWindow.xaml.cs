@@ -104,7 +104,6 @@ namespace CollegeStatictics.Windows
             var minWidthAttribute = args.NewValue.GetType().GetCustomAttribute<MinWidthAttribute>();
             if (minWidthAttribute != null)
                 dialogWindow.MinWidth = minWidthAttribute.Width;
-
         }
 
         public new void Show() => ShowDialog();

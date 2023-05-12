@@ -82,6 +82,36 @@ namespace CollegeStatictics.ViewModels.Base
 
                 yield return viewElement;
             }
+
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            var methodAttributePairs = from method in GetType().GetMethods(bindingFlags).Reverse()
+                                       let attribute = method.GetCustomAttribute<ButtonElementAttribute>()
+                                       where attribute != null
+                                       select (method, attribute);
+
+            var simpleStackPanel = new SimpleStackPanel
+            {
+                Spacing = 6,
+                HorizontalAlignment = HorizontalAlignment.Right,
+            };
+
+            foreach (var pair in methodAttributePairs)
+            {
+                var commandName = $"{pair.method.Name}Command";
+                var command = (ICommand)GetType()
+                                       .GetProperty(commandName)!
+                                       .GetValue(this)!;
+
+                var button = new Button
+                {
+                    Content = pair.attribute.Content,
+                    Command = command,
+                };
+                simpleStackPanel.Children.Add(button);
+            }
+
+            yield return simpleStackPanel;
         }
 
         protected IEnumerable<FormElement> GetFormElements()
@@ -303,10 +333,10 @@ namespace CollegeStatictics.ViewModels.Base
             };
 
             DatabaseContext.Entities.DayOfWeeks.Load();
-
+                
             var systemDayOfWeeks = Enum.GetValues<System.DayOfWeek>();
 
-            foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local.Skip(1))
+            foreach (var dayOfWeek in DatabaseContext.Entities.DayOfWeeks.Local.OrderBy(d => d.Id).Skip(1))
             {
                 dataGrid.Columns.Add(new DataGridCheckBoxColumn()
                 {

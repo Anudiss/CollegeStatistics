@@ -49,6 +49,18 @@
                             </Trigger>
                          </Style.Triggers>
                    </Style>
+
+                        
+                    <GroupStyle x:Key="DataGridGroupStyle">
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Name}"
+                                                            FontWeight="Normal"
+                                                            FontSize="12" />
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+
                 </ResourceDictionary>
                
                 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -98,17 +110,6 @@
                                                            CanUserAddRows="False"
                                                            CanUserDeleteRows="False"
                                                            Margin="10">
-                                    <controls:ExtendedDataGrid.GroupStyle>
-                                        <GroupStyle>
-                                            <GroupStyle.HeaderTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Path=Name}"
-                                                               FontWeight="Normal"
-                                                               FontSize="12" />
-                                               </DataTemplate>
-                                            </GroupStyle.HeaderTemplate>
-                                        </GroupStyle>
-                                    </controls:ExtendedDataGrid.GroupStyle>
                                     <controls:ExtendedDataGrid.InputBindings>
                                         <MouseBinding Gesture="LeftDoubleClick"
                                                       Command="{Binding OpenDialogCommand}"
@@ -131,15 +132,6 @@
                             
                             <DockPanel VerticalAlignment="Center"
                                        Margin="0 0 0 10">
-                                <DockPanel.Resources>
-                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CanCreate}" Value="False">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </DockPanel.Resources>
                                 
                                 <ui:AutoSuggestBox Text="{Binding Path=Items.SearchingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                    QueryIcon="Find"
@@ -151,14 +143,24 @@
                                 <Menu ItemsSource="{Binding Path=Items.Filters}"
                                       ItemContainerStyle="{StaticResource FilterMenuItemStyle}"
                                       VerticalAlignment="Center"/>
-                                
+
                                 <Button Content="Создать"
                                         VerticalAlignment="Center"
                                         DockPanel.Dock="Right"
                                         HorizontalAlignment="Right"
                                         Command="{Binding CreateDialogCommand}"
-                                        CommandParameter="{x:Null}"/>
-                                
+                                        CommandParameter="{x:Null}">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CanCreate}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
                                 <Button Content="Удалить"
                                         Margin="0 0 10 0"
                                         VerticalAlignment="Center"
