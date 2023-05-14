@@ -7,7 +7,9 @@ public partial class Lesson
 {
     public int Id { get; set; }
 
-    public int TimetableRecordId { get; set; }
+    public int StudyPlanRecordId { get; set; }
+
+    public int GroupId { get; set; }
 
     public TimeSpan Time { get; set; }
 
@@ -19,13 +21,17 @@ public partial class Lesson
 
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
-    public virtual ICollection<EmergencySituation> EmergencySituations { get; set; } = new List<EmergencySituation>();
+    public virtual EmergencySituation? EmergencySituation { get; set; }
 
-    public virtual ICollection<Homework> Homeworks { get; set; } = new List<Homework>();
+    public virtual Group Group { get; set; } = null!;
 
-    public virtual ICollection<NoteToLesson> NoteToLessons { get; set; } = new List<NoteToLesson>();
+    public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = new List<HomeworkStudent>();
+
+    public virtual LessonHomework LessonHomework { get; set; } = null!;
+
+    public virtual NoteToLesson? NoteToLesson { get; set; }
 
     public virtual ICollection<NoteToStudent> NoteToStudents { get; set; } = new List<NoteToStudent>();
 
-    public virtual TimetableRecord TimetableRecord { get; set; } = null!;
+    public virtual StudyPlanRecord StudyPlanRecord { get; set; } = null!;
 }

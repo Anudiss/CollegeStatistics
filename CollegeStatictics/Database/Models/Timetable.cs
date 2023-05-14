@@ -9,7 +9,7 @@ public partial class Timetable
 
     public int TeacherId { get; set; }
 
-    public int SubjectId { get; set; }
+    public int StudyPlanId { get; set; }
 
     public int GroupId { get; set; }
 
@@ -17,7 +17,7 @@ public partial class Timetable
 
     public virtual Group Group { get; set; } = null!;
 
-    public virtual Subject Subject { get; set; } = null!;
+    public virtual StudyPlan StudyPlan { get; set; } = null!;
 
     public virtual Teacher Teacher { get; set; } = null!;
 

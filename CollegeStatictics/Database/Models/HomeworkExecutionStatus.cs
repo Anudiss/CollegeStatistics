@@ -9,5 +9,5 @@ public partial class HomeworkExecutionStatus
 
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<Homework> Homeworks { get; set; } = new List<Homework>();
+    public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = new List<HomeworkStudent>();
 }

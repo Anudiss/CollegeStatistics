@@ -7,19 +7,11 @@ public partial class Homework
 {
     public int Id { get; set; }
 
-    public DateTime IssueDate { get; set; }
-
-    public DateTime Deadline { get; set; }
+    public string Topic { get; set; } = null!;
 
     public string Text { get; set; } = null!;
 
-    public int ExecutionStatusId { get; set; }
-
-    public int LessonId { get; set; }
-
     public bool IsDeleted { get; set; }
 
-    public virtual HomeworkExecutionStatus ExecutionStatus { get; set; } = null!;
-
-    public virtual Lesson Lesson { get; set; } = null!;
+    public virtual ICollection<LessonHomework> LessonHomeworks { get; set; } = new List<LessonHomework>();
 }

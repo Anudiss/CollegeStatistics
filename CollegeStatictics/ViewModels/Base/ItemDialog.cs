@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -36,7 +37,7 @@ namespace CollegeStatictics.ViewModels.Base
             if (HasErrors)
                 return;
 
-            if (Item.Id == 0)
+            if (DatabaseContext.Entities.Entry(Item).State == EntityState.Detached)
                 DatabaseContext.Entities.Set<T>().Local.Add(Item);
 
             DatabaseContext.Entities.SaveChanges();
@@ -134,13 +135,14 @@ namespace CollegeStatictics.ViewModels.Base
                     ElementType.EntitySelectorBox => CreateEntitySelectorBox(formElement),
                     ElementType.RadioButton => CreateRadioButtonList(formElement),
                     ElementType.SelectableSubtable => CreateSelectableSubtableElement(formElement),
+                    ElementType.EditableSubtable => CreateEditableSubtableElement(formElement),
                     ElementType.Subtable => CreateSubtableElement(formElement),
                     ElementType.Timetable => CreateTimetableElement(formElement),
                     ElementType.DatePicker => CreateDatePicker(formElement),
                     ElementType.TimeBox => CreateTimeBoxElement(formElement),
                     _ => throw new NotSupportedException("Invalid element type")
                 };
-        
+
         private static void ApplyAttributesToViewElement(FrameworkElement frameworkElement, FormElement formElement)
         {
             frameworkElement.MinWidth = formElement.Property.GetCustomAttribute<MinWidthAttribute>()?.Width ?? 0;
@@ -161,6 +163,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             var textBox = new TextBox
             {
+                TextWrapping = TextWrapping.Wrap,
                 IsReadOnly = formElement.Attribute.IsReadOnly,
                 AcceptsReturn = ((TextBoxFormElementAttribute)formElement.Attribute).AcceptsReturn
             };
@@ -296,6 +299,7 @@ namespace CollegeStatictics.ViewModels.Base
             var labelAttribute = formElement.Property.GetCustomAttribute<LabelAttribute>();
             if (labelAttribute != null)
                 groupBox.Header = labelAttribute.Label;
+        
 
             var stackPanel = new StackPanel();
 
@@ -324,6 +328,33 @@ namespace CollegeStatictics.ViewModels.Base
         #endregion
 
         #region [ Table controls ]
+
+        private FrameworkElement CreateEditableSubtableElement(FormElement formElement)
+        {
+            var dataGrid = new DataGrid()
+            {
+                AutoGenerateColumns = false,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false,
+                CanUserResizeColumns = false,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                MinHeight = 160
+            };
+
+            dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(formElement.Property.Name)
+            {
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+
+            var columns = formElement.Property.GetCustomAttributes<TextColumnAttribute>();
+
+            foreach (var column in columns)
+                dataGrid.Columns.Add(column.ToDataGridColumn());
+
+            return dataGrid;
+        }
+
 
         private FrameworkElement CreateTimetableElement(FormElement formElement)
         {
@@ -388,7 +419,7 @@ namespace CollegeStatictics.ViewModels.Base
             var stackPanel = new StackPanel();
 
             #region Datagrid initialization
-            var columnAttributes = formElement.Property.GetCustomAttributes<ColumnAttribute>();
+            var columnAttributes = formElement.Property.GetCustomAttributes<TextColumnAttribute>();
 
             var dataGrid = new DataGrid()
             {
@@ -396,7 +427,6 @@ namespace CollegeStatictics.ViewModels.Base
                 CanUserAddRows = false,
                 CanUserDeleteRows = false,
                 CanUserResizeColumns = false,
-                IsReadOnly = true,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 Height = 160
             };
@@ -432,16 +462,11 @@ namespace CollegeStatictics.ViewModels.Base
             dataGrid.ItemsSource = (IEnumerable)formElement.Property.GetValue(this)!;
 
             foreach (var column in columnAttributes)
-                dataGrid.Columns.Add(new DataGridTextColumn()
-                {
-                    Header = column.Header,
-                    Binding = new Binding(column.Path)
-                    {
-                        Mode = BindingMode.OneWay
-                    }
-                });
+                dataGrid.Columns.Add(column.ToDataGridColumn());
 
             #endregion
+
+            var buttonAttributes = formElement.Property.GetCustomAttributes<SubtableButtonFormElementAttribute>();
 
             var buttonsContainer = new SimpleStackPanel
             {
@@ -452,8 +477,15 @@ namespace CollegeStatictics.ViewModels.Base
             };
 
             dockPanel.Children.Add(buttonsContainer);
-
             buttonsContainer.SetValue(DockPanel.DockProperty, Dock.Right);
+
+            foreach (var buttonAttribute in buttonAttributes)
+                buttonsContainer.Children.Add(new Button()
+                {
+                    Content = buttonAttribute.Text,
+                    Command = (ICommand)GetType().GetProperty(buttonAttribute.CommandName)!.GetValue(this)!,
+                    CommandParameter = dataGrid.SelectedItems
+                });
 
             var addButton = new Button
             {
@@ -528,7 +560,7 @@ namespace CollegeStatictics.ViewModels.Base
             var grid = new StackPanel();
 
             #region Datagrid initialization
-            var columnAttributes = formElement.Property.GetCustomAttributes<ColumnAttribute>();
+            var columnAttributes = formElement.Property.GetCustomAttributes<TextColumnAttribute>();
 
             var dataGrid = new DataGrid()
             {
@@ -648,7 +680,9 @@ namespace CollegeStatictics.ViewModels.Base
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitySelectorBox`1")!
                                             .MakeGenericType(formElement.Property.PropertyType);
 
-            var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName });
+            var filter = attribute.FilterPropertyName is not null ? GetType().GetProperty(attribute.FilterPropertyName)!.GetValue(this) : null;
+
+            var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName, filter });
             var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
             ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.Property.Name)
@@ -734,16 +768,21 @@ namespace CollegeStatictics.ViewModels.Base
 
             if (dialogWindow.Result == DialogResult.Primary)
             {
-                if (itemDialog.Item.Id == 0)
+                if (DatabaseContext.Entities.Entry((object)itemDialog.Item).State == EntityState.Detached)
                     DatabaseContext.Entities.Add(itemDialog.Item);
+
+                DatabaseContext.Entities.SaveChanges(itemDialog.Item);
             }
             else
-                DatabaseContext.CancelChanges(itemDialog.Item);
+            {
+                var entityEntry = DatabaseContext.Entities.Entry((object)itemDialog.Item);
+                entityEntry.CurrentValues.SetValues(entityEntry.OriginalValues);
+            }
         }
 
         private void InitializeItemDefaultValues()
         {
-            if (Item.Id != 0)
+            if (DatabaseContext.Entities.Entry(Item).State != EntityState.Detached)
                 return;
 
             foreach (var property in GetType().GetProperties().Where(p => p.GetCustomAttribute<DefaultValueAttribute>() != null))
@@ -756,7 +795,7 @@ namespace CollegeStatictics.ViewModels.Base
 
         #region [ Static (helper) methods ]
 
-        private static void TryAttachLabel(Panel panel, UIElement target, FormElement formElement)
+        protected static void TryAttachLabel(Panel panel, UIElement target, FormElement formElement)
         {
             if (formElement.Property.GetCustomAttribute<LabelAttribute>() is LabelAttribute labelAttribute)
                 panel.Children.Add(new Label
@@ -772,7 +811,7 @@ namespace CollegeStatictics.ViewModels.Base
             {
                 Mode = formElement.Attribute.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                ValidatesOnNotifyDataErrors = true,
+                ValidatesOnNotifyDataErrors = true
             });
         }
 

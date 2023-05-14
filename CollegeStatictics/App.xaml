@@ -278,6 +278,20 @@
                         </Grid>
                         
                     </DataTemplate>
+                    
+                    <Style TargetType="{x:Type DataGridCell}"
+                           x:Key="EditingCell">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="IsEditing" Value="True"/>
+                            </Trigger>
+
+                        </Style.Triggers>
+                    </Style>
 
                     <Style x:Key="TimetableDataGridStyle"
                            TargetType="{x:Type DataGrid}"
@@ -311,24 +325,12 @@
                             </Setter.Value>
                         </Setter>
 
-                        <Setter Property="CellStyle">
-                            <Setter.Value>
-                                <Style TargetType="{x:Type DataGridCell}">
-                                    
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="White" />
-                                            <Setter Property="BorderBrush" Value="{x:Null}" />
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="IsEditing" Value="True"/>
-                                        </Trigger>
-
-                                    </Style.Triggers>
-                                </Style>
-                            </Setter.Value>
-                        </Setter>
+                        <Setter Property="CellStyle" Value="{StaticResource EditingCell}"/>
                     </Style>
+                    
+                    <DataTemplate x:Key="DataGridComboBoxColumnTemplate">
+                        <ComboBox ItemsSource="{Binding }"/>
+                    </DataTemplate>
                     
                 </ResourceDictionary>
                 

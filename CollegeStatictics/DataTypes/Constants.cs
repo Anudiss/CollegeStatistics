@@ -35,7 +35,8 @@ namespace CollegeStatictics.DataTypes
             { DayOfWeek.Wednesday, _regularDayLessonStartTimes },
             { DayOfWeek.Thursday, _regularDayLessonStartTimes },
             { DayOfWeek.Friday, _regularDayLessonStartTimes },
-            { DayOfWeek.Saturday, _regularDayLessonStartTimes },
+            { DayOfWeek.Saturday, _saturdayLessonStartTimes },
+            { DayOfWeek.Sunday, _regularDayLessonStartTimes },
         };
     }
 }

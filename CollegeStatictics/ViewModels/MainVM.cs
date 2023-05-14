@@ -15,9 +15,9 @@ namespace CollegeStatictics.ViewModels
         {
             { "Преподаватели", () => new ItemsContainerBuilder<Teacher, TeacherView>()
 
-                               .AddColumn(nameof(Teacher.Surname), "Фамилия")
-                               .AddColumn(nameof(Teacher.Name), "Имя")
-                               .AddColumn(nameof(Teacher.Patronymic), "Отчество")
+                               .AddTextBoxColumn(nameof(Teacher.Surname), "Фамилия")
+                               .AddTextBoxColumn(nameof(Teacher.Name), "Имя")
+                               .AddTextBoxColumn(nameof(Teacher.Patronymic), "Отчество")
 
                                .AddSearching(new Searching<Teacher>(teacher => $"{teacher.Surname} {teacher.Name} {teacher.Patronymic}"))
                                
@@ -26,7 +26,7 @@ namespace CollegeStatictics.ViewModels
                                .Build()
             },
             { "Предметы", () => new ItemsContainerBuilder<Subject, SubjectView>()
-                            .AddColumn(nameof(Subject.Name), "Название")
+                            .AddTextBoxColumn(nameof(Subject.Name), "Название")
 
                             .AddSearching(new Searching<Subject>(subject => subject.Name))
 
@@ -36,8 +36,8 @@ namespace CollegeStatictics.ViewModels
             },
             { "Специальности", () => new ItemsContainerBuilder<Speciality, SpecialityView>()
 
-                               .AddColumn(nameof(Speciality.Name), "Название")
-                               .AddColumn(nameof(Speciality.Department), "Подразделение")
+                               .AddTextBoxColumn(nameof(Speciality.Name), "Название")
+                               .AddTextBoxColumn(nameof(Speciality.Department), "Подразделение")
 
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Name))
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Department.Name))
@@ -49,7 +49,7 @@ namespace CollegeStatictics.ViewModels
             },
             { "Отделения", () => new ItemsContainerBuilder<Department, DepartmentView>()
             
-                               .AddColumn(nameof(Department.Name), "Название")
+                               .AddTextBoxColumn(nameof(Department.Name), "Название")
 
                                .AddSearching(new Searching<Department>(department => department.Name))
                 
@@ -59,10 +59,10 @@ namespace CollegeStatictics.ViewModels
             },
             { "Студенты", () => new ItemsContainerBuilder<Student, StudentView>()
                                 
-                                .AddColumn(nameof(Student.Surname), "Фамилия")
-                                .AddColumn(nameof(Student.Name), "Имя")
-                                .AddColumn(nameof(Student.Patronymic), "Отчество")
-                                .AddColumn(nameof(Student.Group), "Группа")
+                                .AddTextBoxColumn(nameof(Student.Surname), "Фамилия")
+                                .AddTextBoxColumn(nameof(Student.Name), "Имя")
+                                .AddTextBoxColumn(nameof(Student.Patronymic), "Отчество")
+                                .AddTextBoxColumn(nameof(Student.Group), "Группа")
 
                                 .AddSearching(new Searching<Student>(student => $"{student.Surname} {student.Name} {student.Patronymic}"))
                                 
@@ -73,10 +73,10 @@ namespace CollegeStatictics.ViewModels
             },
             { "Группы" , () => new ItemsContainerBuilder<Group, GroupView>()
                                
-                               .AddColumn(nameof(Group.Number), "Номер")
-                               .AddColumn(nameof(Group.EducationForm), "Форма обучения")
-                               .AddColumn(nameof(Group.Speciality), "Специальность")
-                               .AddColumn(nameof(Group.Curator), "Куратор")
+                               .AddTextBoxColumn(nameof(Group.Number), "Номер")
+                               .AddTextBoxColumn(nameof(Group.EducationForm), "Форма обучения")
+                               .AddTextBoxColumn(nameof(Group.Speciality), "Специальность")
+                               .AddTextBoxColumn(nameof(Group.Curator), "Куратор")
 
                                /* Here should be some sort of student list */
 
@@ -92,13 +92,13 @@ namespace CollegeStatictics.ViewModels
             },
             { "Расписание", () => new ItemsContainerBuilder<Timetable, TimetableView>()
                             
-                                .AddColumn(nameof(Timetable.Teacher), "Преподаватель")
-                                .AddColumn(nameof(Timetable.Subject), "Предмет")
-                                .AddColumn(nameof(Timetable.Group), "Группа")
+                                .AddTextBoxColumn(nameof(Timetable.Teacher), "Преподаватель")
+                                .AddTextBoxColumn(nameof(Timetable.StudyPlan), "Предмет")
+                                .AddTextBoxColumn(nameof(Timetable.Group), "Группа")
 
                                 .AddFilter(new Filter<Timetable, Teacher>("Преподаватель", timetable => timetable.Teacher))
                                 .AddFilter(new Filter<Timetable, Group>("Группа", timetable => timetable.Group))
-                                .AddFilter(new Filter<Timetable, Subject>("Специальность", timetable => timetable.Subject))
+                                .AddFilter(new Filter<Timetable, StudyPlan>("Учебный план", timetable => timetable.StudyPlan))
 
                                 .AddFilter(new Selection<Timetable>(timetable => timetable.IsDeleted == false))
 
@@ -106,10 +106,10 @@ namespace CollegeStatictics.ViewModels
             },
             { "Учебный план", () => new ItemsContainerBuilder<StudyPlan, StudyPlanView>()
                                     
-                                    .AddColumn(nameof(StudyPlan.Course), "Курс")
-                                    .AddColumn(nameof(StudyPlan.StartDate), "Дата начала", @"dd-MM-yyyy")
-                                    .AddColumn(nameof(StudyPlan.Speciality), "Специальность")
-                                    .AddColumn(nameof(StudyPlan.Subject), "Предмет")
+                                    .AddTextBoxColumn(nameof(StudyPlan.Course), "Курс")
+                                    .AddTextBoxColumn(nameof(StudyPlan.StartDate), "Дата начала", "{0:dd.MM.yyyy}")
+                                    .AddTextBoxColumn(nameof(StudyPlan.Speciality), "Специальность")
+                                    .AddTextBoxColumn(nameof(StudyPlan.Subject), "Предмет")
 
                                     .AddFilter(new Filter<StudyPlan, Speciality>("Специальность", studyPlan => studyPlan.Speciality))
                                     .AddFilter(new Filter<StudyPlan, Subject>("Предмет", studyPlan => studyPlan.Subject))
@@ -120,19 +120,24 @@ namespace CollegeStatictics.ViewModels
             },
             { "Занятия", () => new ItemsContainerBuilder<Lesson, LessonView>()
 
-                                   .AddColumn(nameof(LessonView.Date), "Дата")
-                                   .AddColumn(nameof(LessonView.Time), "Время")
-                                   .AddColumn(nameof(LessonView.Subject), "Предмет")
-                                   .AddColumn(nameof(LessonView.Teacher), "Преподаватель")
-                                   .AddColumn(nameof(LessonView.Group), "Группа")
+                                   .AddTextBoxColumn(nameof(LessonView.Date), "Дата", "{0:dd.MM.yyyy}")
+                                   .AddTextBoxColumn(nameof(LessonView.Time), "Время")
+                                   .AddTextBoxColumn(nameof(LessonView.StudyPlanRecord), "Тема")
+                                   .AddTextBoxColumn($"{nameof(LessonView.StudyPlanRecord)}.{nameof(StudyPlanRecord.LessonType)}", "Тип пары")
+                                   .AddTextBoxColumn($"{nameof(LessonView.StudyPlanRecord)}.{nameof(StudyPlanRecord.StudyPlan)}.{nameof(StudyPlan.Subject)}", "Предмет")
+                                   .AddCheckBoxColumn(nameof(LessonView.IsRestoring), "Восстановление")
 
-                                   .AddFilter(new Filter<Lesson, Subject>("Предмет", lesson => lesson.TimetableRecord.Timetable.Subject))
-                                   .AddFilter(new Filter<Lesson, Teacher>("Преподаватель", lesson => lesson.TimetableRecord.Timetable.Teacher))
-                                   .AddFilter(new Filter<Lesson, Group>("Группа", lesson => lesson.TimetableRecord.Timetable.Group))
+                                   .AddFilter(new Selection<Lesson>(lesson => lesson.IsDeleted == false))
 
                                    .BanCreate()
 
                                    .Build()
+            },
+            { "Домашняя работа", () => new ItemsContainerBuilder<Homework, HomeworkView>()
+
+                                    .AddTextBoxColumn(nameof(HomeworkView.Topic), "Тема")
+
+                                    .Build()
             }
         };
 
@@ -173,6 +178,10 @@ namespace CollegeStatictics.ViewModels
             {
                 "Занятия",
                 "M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
+            },
+            {
+                "Домашняя работа",
+                ""
             }
         };
 

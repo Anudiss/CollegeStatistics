@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -20,7 +21,7 @@ namespace CollegeStatictics.DataTypes.Classes
             }
         }
 
-        public IEnumerable<ISelection<T>> Selections { get; }
+        public ObservableCollection<ISelection<T>> Selections { get; }
         public IEnumerable<IFilter<T>> Filters => Selections.Where(selection => selection is IFilter<T>).Cast<IFilter<T>>();
         public IEnumerable<Searching<T>> Searchings { get; }
         public IEnumerable<Grouping<T>> Groupings { get; }
@@ -29,7 +30,7 @@ namespace CollegeStatictics.DataTypes.Classes
 
         public FilteredObservableCollection(IList<T> sourceCollection, IEnumerable<ISelection<T>> selections, IEnumerable<Searching<T>> searchings, IEnumerable<Grouping<T>> groupings)
         {
-            Selections = selections;
+            Selections = new(selections);
             Searchings = searchings;
             Groupings = groupings;
 

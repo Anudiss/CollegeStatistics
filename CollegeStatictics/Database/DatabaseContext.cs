@@ -31,9 +31,11 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<HomeworkExecutionStatus> HomeworkExecutionStatuses { get; set; }
 
+    public virtual DbSet<HomeworkStudent> HomeworkStudents { get; set; }
+
     public virtual DbSet<Lesson> Lessons { get; set; }
 
-    public virtual DbSet<LessonStartTime> LessonStartTimes { get; set; }
+    public virtual DbSet<LessonHomework> LessonHomeworks { get; set; }
 
     public virtual DbSet<LessonType> LessonTypes { get; set; }
 
@@ -64,6 +66,8 @@ public partial class DatabaseContext : DbContext
     {
         modelBuilder.Entity<Attendance>(entity =>
         {
+            entity.HasKey(e => new { e.LessonId, e.StudentId }).HasName("PK_Attendance_1");
+
             entity.ToTable("Attendance");
 
             entity.HasOne(d => d.Lesson).WithMany(p => p.Attendances)
@@ -84,23 +88,6 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Reduction).HasMaxLength(2);
-
-            entity.HasMany(d => d.LessonStartTimes).WithMany(p => p.DayOfWeeks)
-                .UsingEntity<Dictionary<string, object>>(
-                    "LessonStartTimesForDayOfWeek",
-                    r => r.HasOne<LessonStartTime>().WithMany()
-                        .HasForeignKey("LessonStartTimeId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_LessonStartTimesForDayOfWeek_LessonStartTime"),
-                    l => l.HasOne<DayOfWeek>().WithMany()
-                        .HasForeignKey("DayOfWeekId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_LessonStartTimesForDayOfWeek_DayOfWeek"),
-                    j =>
-                    {
-                        j.HasKey("DayOfWeekId", "LessonStartTimeId");
-                        j.ToTable("LessonStartTimesForDayOfWeek");
-                    });
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -122,10 +109,14 @@ public partial class DatabaseContext : DbContext
 
         modelBuilder.Entity<EmergencySituation>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK_EmergencySituation_1");
+
             entity.ToTable("EmergencySituation");
 
-            entity.HasOne(d => d.Lesson).WithMany(p => p.EmergencySituations)
-                .HasForeignKey(d => d.LessonId)
+            entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.HasOne(d => d.Lesson).WithOne(p => p.EmergencySituation)
+                .HasForeignKey<EmergencySituation>(d => d.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_EmergencySituation_Lesson");
         });
@@ -158,18 +149,7 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Homework");
 
-            entity.Property(e => e.Deadline).HasColumnType("datetime");
-            entity.Property(e => e.IssueDate).HasColumnType("datetime");
-
-            entity.HasOne(d => d.ExecutionStatus).WithMany(p => p.Homeworks)
-                .HasForeignKey(d => d.ExecutionStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Homework_HomeworkExecutionStatus");
-
-            entity.HasOne(d => d.Lesson).WithMany(p => p.Homeworks)
-                .HasForeignKey(d => d.LessonId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Homework_Lesson");
+            entity.Property(e => e.Topic).HasMaxLength(100);
         });
 
         modelBuilder.Entity<HomeworkExecutionStatus>(entity =>
@@ -178,8 +158,29 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("HomeworkExecutionStatus");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<HomeworkStudent>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_HomeworkStudent_1");
+
+            entity.ToTable("HomeworkStudent");
+
+            entity.HasOne(d => d.HomeworkExecutionStatus).WithMany(p => p.HomeworkStudents)
+                .HasForeignKey(d => d.HomeworkExecutionStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonHomework_HomeworkExecutionStatus");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.HomeworkStudents)
+                .HasForeignKey(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_HomeworkStudent_Lesson");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.HomeworkStudents)
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_HomeworkStudent_Student");
         });
 
         modelBuilder.Entity<Lesson>(entity =>
@@ -188,21 +189,40 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("Lesson");
 
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Date).HasColumnType("date");
             entity.Property(e => e.Time).HasPrecision(0);
 
-            entity.HasOne(d => d.TimetableRecord).WithMany(p => p.Lessons)
-                .HasForeignKey(d => d.TimetableRecordId)
+            entity.HasOne(d => d.Group).WithMany(p => p.Lessons)
+                .HasForeignKey(d => d.GroupId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Lesson_TimetableRecord");
+                .HasConstraintName("FK_Lesson_Group");
+
+            entity.HasOne(d => d.LessonHomework).WithOne(p => p.Lesson)
+                .HasForeignKey<Lesson>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonHomework_Lesson");
+
+            entity.HasOne(d => d.StudyPlanRecord).WithMany(p => p.Lessons)
+                .HasForeignKey(d => d.StudyPlanRecordId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Lesson_StudyPlanRecord");
         });
 
-        modelBuilder.Entity<LessonStartTime>(entity =>
+        modelBuilder.Entity<LessonHomework>(entity =>
         {
-            entity.ToTable("LessonStartTime");
+            entity.HasKey(e => e.LessonId).HasName("PK_LessonHomework_1");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.StartTime).HasPrecision(0);
+            entity.ToTable("LessonHomework");
+
+            entity.Property(e => e.LessonId).ValueGeneratedNever();
+            entity.Property(e => e.Deadline).HasColumnType("smalldatetime");
+            entity.Property(e => e.IssueDate).HasColumnType("smalldatetime");
+
+            entity.HasOne(d => d.Homework).WithMany(p => p.LessonHomeworks)
+                .HasForeignKey(d => d.HomeworkId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonHomework_Homework1");
         });
 
         modelBuilder.Entity<LessonType>(entity =>
@@ -215,10 +235,14 @@ public partial class DatabaseContext : DbContext
 
         modelBuilder.Entity<NoteToLesson>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK_NoteToLesson_1");
+
             entity.ToTable("NoteToLesson");
 
-            entity.HasOne(d => d.Lesson).WithMany(p => p.NoteToLessons)
-                .HasForeignKey(d => d.LessonId)
+            entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.HasOne(d => d.Lesson).WithOne(p => p.NoteToLesson)
+                .HasForeignKey<NoteToLesson>(d => d.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NoteToLesson_Lesson");
         });
@@ -322,10 +346,10 @@ public partial class DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Timetable_Group");
 
-            entity.HasOne(d => d.Subject).WithMany(p => p.Timetables)
-                .HasForeignKey(d => d.SubjectId)
+            entity.HasOne(d => d.StudyPlan).WithMany(p => p.Timetables)
+                .HasForeignKey(d => d.StudyPlanId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Timetable_Subject");
+                .HasConstraintName("FK_Timetable_StudyPlan");
 
             entity.HasOne(d => d.Teacher).WithMany(p => p.Timetables)
                 .HasForeignKey(d => d.TeacherId)

@@ -22,4 +22,6 @@ public partial class StudyPlan
     public virtual ICollection<StudyPlanRecord> StudyPlanRecords { get; set; } = new List<StudyPlanRecord>();
 
     public virtual Subject Subject { get; set; } = null!;
+
+    public virtual ICollection<Timetable> Timetables { get; set; } = new List<Timetable>();
 }

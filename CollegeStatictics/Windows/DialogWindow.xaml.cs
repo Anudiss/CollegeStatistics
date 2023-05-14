@@ -1,6 +1,7 @@
 ﻿using CollegeStatictics.DataTypes.Attributes;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CollegeStatictics.Windows
@@ -104,6 +105,20 @@ namespace CollegeStatictics.Windows
             var minWidthAttribute = args.NewValue.GetType().GetCustomAttribute<MinWidthAttribute>();
             if (minWidthAttribute != null)
                 dialogWindow.MinWidth = minWidthAttribute.Width;
+        }
+
+        public static void ShowMessage(string text)
+        {
+            new DialogWindow()
+            {
+                Content = new TextBlock
+                {
+                    Text = text,
+                    FontSize = 16
+                },
+
+                PrimaryButtonText = "Ок"
+            }.Show();
         }
 
         public new void Show() => ShowDialog();

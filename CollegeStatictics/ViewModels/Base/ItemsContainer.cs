@@ -242,11 +242,30 @@ namespace CollegeStatictics.ViewModels.Base
             return this;
         }
 
-        public ItemsContainerBuilder<T, R> AddColumn(string propertyPath, string header)
+        public ItemsContainerBuilder<T, R> AddTextBoxColumn(string propertyPath, string header, string stringFormat)
         {
-            _columns.Add(new DataGridTextColumn()
+            _columns.Add(new DataGridTextColumn
             {
                 Header = header,
+                Binding = new Binding(propertyPath)
+                {
+                    Mode = BindingMode.OneWay,
+                    StringFormat = stringFormat
+                }
+            });
+
+            return this;
+        }
+
+        public ItemsContainerBuilder<T, R> AddTextBoxColumn(string propertyPath, string header)
+            => AddTextBoxColumn(propertyPath, header, "{0}");
+
+        public ItemsContainerBuilder<T, R> AddCheckBoxColumn(string propertyPath, string header)
+        {
+            _columns.Add(new DataGridCheckBoxColumn
+            {
+                Header = header,
+                IsReadOnly = true,
                 Binding = new Binding(propertyPath)
                 {
                     Mode = BindingMode.OneWay

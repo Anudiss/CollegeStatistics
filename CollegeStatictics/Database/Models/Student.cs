@@ -23,5 +23,7 @@ public partial class Student
 
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
+    public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = new List<HomeworkStudent>();
+
     public virtual ICollection<NoteToStudent> NoteToStudents { get; set; } = new List<NoteToStudent>();
 }

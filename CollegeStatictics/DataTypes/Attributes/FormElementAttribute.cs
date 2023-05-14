@@ -17,6 +17,7 @@ namespace CollegeStatictics.ViewModels.Attributes
         CheckBox,
         EntitySelectorBox,
         SelectableSubtable,
+        EditableSubtable,
         Subtable,
         Timetable,
         RadioButton,

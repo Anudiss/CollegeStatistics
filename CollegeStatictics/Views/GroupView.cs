@@ -1,5 +1,6 @@
 ﻿using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes.Attributes;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace CollegeStatictics.ViewModels
     public class GroupView : ItemDialog<Group>
     {
         [SelectableSubtableFormElement("Студенты")]
-        [Column("Id", "Id")]
-        [Column("Surname", "Фамилия")]
-        [Column("Name", "Имя")]
-        [Column("Patronymic", "Отчество")]
+        [TextColumn("Id", "Id")]
+        [TextColumn("Surname", "Фамилия")]
+        [TextColumn("Name", "Имя")]
+        [TextColumn("Patronymic", "Отчество")]
         [Label("Студенты")]
         public ICollection<Student> Students
         {
@@ -24,6 +25,20 @@ namespace CollegeStatictics.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        [Label("Староста")]
+        [EntitySelectorFormElement("Студенты", FilterPropertyName = nameof(GroupLeaderFilter))]
+        public Student? GroupLeader
+        {
+            get => Item.GroupLeader;
+            set
+            {
+                Item.GroupLeader = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Selection<Student> GroupLeaderFilter => new Selection<Student>(student => student.Group == Item);
 
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]

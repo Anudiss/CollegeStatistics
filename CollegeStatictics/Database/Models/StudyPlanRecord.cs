@@ -19,5 +19,7 @@ public partial class StudyPlanRecord
 
     public virtual LessonType LessonType { get; set; } = null!;
 
+    public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
     public virtual StudyPlan StudyPlan { get; set; } = null!;
 }

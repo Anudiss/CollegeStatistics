@@ -123,7 +123,7 @@ namespace CollegeStatictics.ViewModels
                     {
                         Content = new TextBlock
                         {
-                            Text = $"У группы {timetableIntersection.Group} в это время пара '{timetableIntersection.Subject}' с преподавателем {timetableIntersection.Teacher}",
+                            Text = $"У группы {timetableIntersection.Group} в это время пара '{timetableIntersection.StudyPlan.Subject}' с преподавателем {timetableIntersection.Teacher}",
                             FontSize = 16,
                             TextWrapping = TextWrapping.Wrap
                         },

@@ -26,7 +26,7 @@ namespace CollegeStatictics.Views
         }
 
         // TODO: Fix spin box default value
-        [DefaultValue(2)]
+        [DefaultValue(1)]
         [Label("Длительность в парах")]
         [SpinBoxFormElement]
         [Range(1, int.MaxValue)]
@@ -60,7 +60,6 @@ namespace CollegeStatictics.Views
             }
         }
 
-        [DefaultValue("")]
         [Label("Тема")]
         [TextBoxFormElement]
         public string Topic

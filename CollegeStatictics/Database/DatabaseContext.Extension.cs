@@ -13,7 +13,17 @@ namespace CollegeStatictics.Database
         #region [ Properties ]
 
         private static DatabaseContext _entities = null!;
-        public static DatabaseContext Entities => _entities ??= new();
+        public static DatabaseContext Entities
+        {
+            get
+            {
+                var databaseContext = _entities ??= new();
+
+                databaseContext.StudyPlans.Load();
+
+                return databaseContext;
+            }
+        }
 
         #endregion
 
@@ -39,6 +49,8 @@ namespace CollegeStatictics.Database
 
                 entity.Navigation(d => d.StudyPlanRecords).AutoInclude();
 
+                entity.Navigation(d => d.Timetables).AutoInclude();
+
                 entity.Navigation(d => d.Subject).AutoInclude();
             });
 
@@ -49,27 +61,22 @@ namespace CollegeStatictics.Database
 
             modelBuilder.Entity<Lesson>(entity =>
             {
-                entity.Navigation(d => d.NoteToLessons).AutoInclude();
+                entity.Navigation(d => d.NoteToLesson).AutoInclude();
 
-                entity.Navigation(d => d.EmergencySituations).AutoInclude();
+                entity.Navigation(d => d.EmergencySituation).AutoInclude();
 
                 entity.Navigation(d => d.Attendances).AutoInclude();
 
-                entity.Navigation(d => d.Homeworks).AutoInclude();
+                entity.Navigation(d => d.LessonHomework).AutoInclude();
 
                 entity.Navigation(d => d.NoteToStudents).AutoInclude();
 
-                entity.Navigation(d => d.TimetableRecord).AutoInclude();
+                entity.Navigation(d => d.StudyPlanRecord).AutoInclude();
             });
 
             modelBuilder.Entity<NoteToStudent>(entity =>
             {
                 entity.Navigation(d => d.Student).AutoInclude();
-            });
-
-            modelBuilder.Entity<Homework>(entity => 
-            {
-                entity.Navigation(d => d.ExecutionStatus).AutoInclude();
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -86,8 +93,6 @@ namespace CollegeStatictics.Database
             modelBuilder.Entity<Timetable>(entity =>
             {
                 entity.Navigation(d => d.Group).AutoInclude();
-
-                entity.Navigation(d => d.Subject).AutoInclude();
 
                 entity.Navigation(d => d.Teacher).AutoInclude();
 
@@ -150,34 +155,8 @@ namespace CollegeStatictics.Database
 
         public void SaveChanges<TEntity>(TEntity entity)
         {
-            var entry = Entities.Entry(entity!);
-            entry.State = EntityState.Unchanged;
-            entry.GetInfrastructure().AcceptChanges();
-        }
-
-        public int SaveChanges<TEntity>() where TEntity : class
-        {
-            var original = ChangeTracker.Entries()
-                        .Where(x => !typeof(TEntity).IsAssignableFrom(x.Entity.GetType()) && x.State != EntityState.Unchanged)
-                        .GroupBy(x => x.State)
-                        .ToList();
-
-            foreach (var entry in ChangeTracker.Entries().Where(x => !typeof(TEntity).IsAssignableFrom(x.Entity.GetType())))
-            {
-                entry.State = EntityState.Unchanged;
-            }
-
-            var rows = base.SaveChanges();
-
-            foreach (var state in original)
-            {
-                foreach (var entry in state)
-                {
-                    entry.State = state.Key;
-                }
-            }
-
-            return rows;
+            var entry = Entities.Entry(entity);
+            entry.OriginalValues.SetValues(entry.CurrentValues);
         }
 
         public static bool HasChanges<T>(T item) where T : class

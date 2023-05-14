@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
@@ -29,18 +30,30 @@ namespace CollegeStatictics.ViewModels
             set => SetValue(SelectedItemProperty, value);
         }
 
+        private readonly ISelection<T>? _filter;
+
         private readonly string _itemContainerName;
 
-        public EntitySelectorBox(string itemContainerName)
+        public EntitySelectorBox(string itemContainerName, ISelection<T> filter)
         {
             if (!MainVM.PageBuilders.ContainsKey(itemContainerName))
                 throw new ArgumentException($"No itemsContainer with name {itemContainerName}");
 
             _itemContainerName = itemContainerName;
+            _filter = filter;
         }
+
+        public EntitySelectorBox(string itemContainerName) : this(itemContainerName, null)
+        { }
 
         public T OpenSelectorItemDialog(ItemsContainer<T> itemsContainer)
         {
+            if (_filter is not null)
+            {
+                itemsContainer.Items.Selections.Add(_filter);
+                itemsContainer.Items.Refresh();
+            }
+
             var contentDialog = new DialogWindow()
             {
                 Content = itemsContainer,

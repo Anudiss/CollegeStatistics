@@ -5,5 +5,6 @@ namespace CollegeStatictics.Database.Models
 {
     public partial class EmergencySituation : ITable
     {
+        public override string ToString() => $"Открыть";
     }
 }

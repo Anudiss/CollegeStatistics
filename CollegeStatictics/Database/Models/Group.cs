@@ -25,6 +25,8 @@ public partial class Group
 
     public virtual Student? GroupLeader { get; set; }
 
+    public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
     public virtual Speciality Speciality { get; set; } = null!;
 
     public virtual ICollection<Student> Students { get; set; } = new List<Student>();

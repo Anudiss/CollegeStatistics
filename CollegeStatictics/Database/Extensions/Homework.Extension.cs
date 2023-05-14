@@ -5,4 +5,5 @@ namespace CollegeStatictics.Database.Models;
 
 public partial class Homework : ITable, IDeletable
 {
+    public override string ToString() => Topic;
 }

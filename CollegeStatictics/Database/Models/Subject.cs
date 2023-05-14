@@ -12,6 +12,4 @@ public partial class Subject
     public bool IsDeleted { get; set; }
 
     public virtual ICollection<StudyPlan> StudyPlans { get; set; } = new List<StudyPlan>();
-
-    public virtual ICollection<Timetable> Timetables { get; set; } = new List<Timetable>();
 }

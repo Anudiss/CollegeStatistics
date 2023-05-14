@@ -15,7 +15,5 @@ public partial class TimetableRecord
 
     public virtual DayOfWeek DayOfWeek { get; set; } = null!;
 
-    public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-
     public virtual Timetable Timetable { get; set; } = null!;
 }

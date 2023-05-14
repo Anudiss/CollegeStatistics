@@ -25,6 +25,7 @@
             <ui:NavigationViewItem Content="Расписание"/>
             <ui:NavigationViewItem Content="Учебный план"/>
             <ui:NavigationViewItem Content="Занятия"/>
+            <ui:NavigationViewItem Content="Домашняя работа"/>
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.Content>
             <ContentControl Content="{Binding CurrentView}"
