@@ -45,10 +45,10 @@ namespace CollegeStatictics.Views
                 return;
             }
 
-            var itemDialog = new LessonView(null)
+            var itemDialog = new LessonView(new Lesson()
             {
                 StudyPlanRecord = item
-            };
+            });
 
             var dialogWindow = new DialogWindow
             {
@@ -56,7 +56,9 @@ namespace CollegeStatictics.Views
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
 
                 PrimaryButtonText = "Сохранить",
+                PrimaryButtonCommand = itemDialog.SaveCommand,
                 SecondaryButtonText = "Отмена",
+                SecondaryButtonCommand = itemDialog.CancelCommand,
 
                 Width = 800
             };
@@ -94,15 +96,6 @@ namespace CollegeStatictics.Views
             dialogWindow.Closing += WindowDialogClosingHandler;
             dialogWindow.Show();
             dialogWindow.Closing -= WindowDialogClosingHandler;
-
-            if (dialogWindow.Result == DialogResult.Primary)
-            {
-                if (DatabaseContext.Entities.Entry(itemDialog.Item).State == EntityState.Detached)
-                    DatabaseContext.Entities.Add(itemDialog.Item);
-                DatabaseContext.Entities.SaveChanges();
-            }
-            else
-                DatabaseContext.CancelChanges(itemDialog.Item);
         }
 
         [Label("Записи")]
@@ -168,7 +161,7 @@ namespace CollegeStatictics.Views
 
         public StudyPlanView(StudyPlan? item) : base(item)
         {
-            DatabaseContext.Entities.StudyPlanRecords.Load();
+            DatabaseContext.Entities.Lessons.Load();
         }
     }
 }
