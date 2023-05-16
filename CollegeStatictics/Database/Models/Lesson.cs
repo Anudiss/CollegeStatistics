@@ -27,7 +27,7 @@ public partial class Lesson
 
     public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = new List<HomeworkStudent>();
 
-    public virtual LessonHomework LessonHomework { get; set; } = null!;
+    public virtual LessonHomework? LessonHomework { get; set; }
 
     public virtual NoteToLesson? NoteToLesson { get; set; }
 

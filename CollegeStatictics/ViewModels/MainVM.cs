@@ -1,8 +1,10 @@
-﻿using CollegeStatictics.Database.Models;
+﻿using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;

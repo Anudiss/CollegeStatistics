@@ -15,5 +15,5 @@ public partial class LessonHomework
 
     public virtual Homework Homework { get; set; } = null!;
 
-    public virtual Lesson? Lesson { get; set; }
+    public virtual Lesson Lesson { get; set; } = null!;
 }

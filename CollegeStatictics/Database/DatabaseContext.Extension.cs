@@ -35,7 +35,7 @@ namespace CollegeStatictics.Database
             {
                 entity.Property(d => d.Id).ValueGeneratedNever();
 
-                entity.HasData(new() { Id = 0, Name = "Бюджет" }, new() { Id = 1, Name = "Коммерция" });
+                //entity.HasData(new() { Id = 0, Name = "Бюджет" }, new() { Id = 1, Name = "Коммерция" });
             });
 
             modelBuilder.Entity<Student>(entity =>
@@ -57,6 +57,8 @@ namespace CollegeStatictics.Database
             modelBuilder.Entity<StudyPlanRecord>(entity =>
             {
                 entity.Navigation(d => d.LessonType).AutoInclude();
+
+                entity.Navigation(d => d.Lessons).AutoInclude();
             });
 
             modelBuilder.Entity<Lesson>(entity =>

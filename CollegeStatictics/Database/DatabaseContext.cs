@@ -60,7 +60,8 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatisticsNew;Trusted_Connection=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,7 +74,7 @@ public partial class DatabaseContext : DbContext
             entity.HasOne(d => d.Lesson).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.LessonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Attendance_Lesson1");
+                .HasConstraintName("FK_Attendance_Lesson");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.StudentId)
@@ -189,7 +190,6 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("Lesson");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Date).HasColumnType("date");
             entity.Property(e => e.Time).HasPrecision(0);
 
@@ -197,11 +197,6 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.GroupId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Lesson_Group");
-
-            entity.HasOne(d => d.LessonHomework).WithOne(p => p.Lesson)
-                .HasForeignKey<Lesson>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_LessonHomework_Lesson");
 
             entity.HasOne(d => d.StudyPlanRecord).WithMany(p => p.Lessons)
                 .HasForeignKey(d => d.StudyPlanRecordId)
@@ -223,6 +218,11 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.HomeworkId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LessonHomework_Homework1");
+
+            entity.HasOne(d => d.Lesson).WithOne(p => p.LessonHomework)
+                .HasForeignKey<LessonHomework>(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonHomework_Lesson");
         });
 
         modelBuilder.Entity<LessonType>(entity =>

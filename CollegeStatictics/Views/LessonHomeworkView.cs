@@ -21,27 +21,26 @@ public class LessonHomeworkView : ItemDialog<LessonHomework>
         }
     }
 
-
-    [Label("Время начала")]
-    [TextBoxFormElement]
-    public DateTime IssueDate
-    {
-        get => Item.IssueDate;
-        set
-        {
-            Item.IssueDate = value;
-            OnPropertyChanged();
-        }
-    }
-
     [Label("Время окончания")]
-    [TextBoxFormElement]
+    [DatePickerFormElement]
     public DateTime Deadline
     {
         get => Item.Deadline;
         set
         {
             Item.Deadline = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [Label("Время начала")]
+    [DatePickerFormElement]
+    public DateTime IssueDate
+    {
+        get => Item.IssueDate;
+        set
+        {
+            Item.IssueDate = value;
             OnPropertyChanged();
         }
     }

@@ -234,14 +234,13 @@ namespace CollegeStatictics.Views
             #region [ Homework ]
             var homeworkButton = new Button()
             {
-                DataContext = Item.LessonHomework
+                DataContext = Item.LessonHomework,
             };
 
             homeworkButton.SetBinding(ContentControl.ContentProperty, new Binding($"{nameof(LessonHomework.Homework)}")
             {
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                TargetNullValue = "Назначить"
             });
 
             homeworkButton.Click += (_, _) =>
@@ -249,6 +248,7 @@ namespace CollegeStatictics.Views
                 OpenDialog(new LessonHomeworkView(Item.LessonHomework ?? new LessonHomework()
                 {
                     IssueDate = DateTime.Now,
+                    Deadline = DateTime.Now.AddDays(1),
                     Lesson = Item
                 }), l => l.Homework);
             };
