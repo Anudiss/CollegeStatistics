@@ -55,15 +55,18 @@
                     </Style>
                 </UniformGrid.Resources>
 
-                <Button Content="{Binding PrimaryButtonText}"
+                <Button x:Name="PrimaryButton"
+                        Content="{Binding PrimaryButtonText}"
                         Background="#073B4C"
                         Foreground="White"
                         Click="PrimaryButton_Click"/>
 
-                <Button Content="{Binding SecondaryButtonText}"
+                <Button x:Name="SecondaryButton"
+                        Content="{Binding SecondaryButtonText}"
                         Click="SecondaryButton_Click"/>
 
-                <Button Content="{Binding TertiaryButtonText}"
+                <Button x:Name="TertiaryButton"
+                        Content="{Binding TertiaryButtonText}"
                         Click="TertiaryButton_Click"/>
             </UniformGrid>
         </Grid>

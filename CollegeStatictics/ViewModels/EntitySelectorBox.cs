@@ -15,14 +15,7 @@ namespace CollegeStatictics.ViewModels
     [ObservableObject]
     public partial class EntitySelectorBox<T> : Control where T : class, ITable, IDeletable, new()
     {
-        public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));
-
-        [RelayCommand]
-        private void OpenSelectorDialog()
-        {
-            SelectedItem = OpenSelectorItemDialog((ItemsContainer<T>)MainVM.PageBuilders[_itemContainerName]());
-        }
+        #region [ Properties ]
 
         public T SelectedItem
         {
@@ -30,9 +23,43 @@ namespace CollegeStatictics.ViewModels
             set => SetValue(SelectedItemProperty, value);
         }
 
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));
+
+        public bool IsClearable
+        {
+            get { return (bool)GetValue(IsClearableProperty); }
+            set { SetValue(IsClearableProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsClearableProperty =
+            DependencyProperty.Register("IsClearable", typeof(bool), typeof(EntitySelectorBox<T>));
+
+        #endregion
+
+        #region [ Commands ]
+
+        [RelayCommand]
+        private void OpenSelectorDialog()
+        {
+            SelectedItem = OpenSelectorItemDialog((ItemsContainer<T>)MainVM.PageBuilders[_itemContainerName]());
+        }
+
+        [RelayCommand]
+        private void ClearSelectedItem()
+        {
+            SelectedItem = default!;
+        }
+
+        #endregion
+
+        #region [ Fields ]
+
         private readonly ISelection<T>? _filter;
 
         private readonly string _itemContainerName;
+
+        #endregion
 
         public EntitySelectorBox(string itemContainerName, ISelection<T> filter)
         {

@@ -1,8 +1,11 @@
 ﻿using CollegeStatictics.ViewModels;
 using CollegeStatictics.Windows;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
+using System;
 
 namespace CollegeStatictics
 {
@@ -12,8 +15,15 @@ namespace CollegeStatictics
     public partial class App : Application
     {
         #region [Event handlers]
-        private void Application_Startup(object sender, StartupEventArgs e) =>
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            //AppDomain.CurrentDomain.UnhandledException += (_, e) => MessageBox.Show($"{e.ExceptionObject}");
+            //Dispatcher.UnhandledException += (_, e) => { e.Handled = true; MessageBox.Show($"{e.Exception.Message}"); };
+            //Current.DispatcherUnhandledException += (_, e) => { e.Handled = true; MessageBox.Show($"{e.Exception.Message}"); };
+            //TaskScheduler.UnobservedTaskException += (_, e) => { e.SetObserved(); MessageBox.Show($"{e.Exception.Message}"); };
+
             new WindowViewModel(new MainVM()).Show();
+        }
 
         #endregion
 

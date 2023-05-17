@@ -93,6 +93,10 @@ namespace CollegeStatictics.Windows
         public DialogWindow()
         {
             InitializeComponent();
+
+            CommandManager.RequerySuggested += (_, _) => PrimaryButton.IsEnabled = PrimaryButtonCommand?.CanExecute(null) != false;
+            CommandManager.RequerySuggested += (_, _) => SecondaryButton.IsEnabled = SecondaryButtonCommand?.CanExecute(null) != false;
+            CommandManager.RequerySuggested += (_, _) => TertiaryButton.IsEnabled = TertiaryButtonCommand?.CanExecute(null) != false;
         }
 
         public static void OnContentChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
