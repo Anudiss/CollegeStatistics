@@ -24,7 +24,7 @@ public class NumberBoxColumnAttribute : TextColumnAttribute
         factory.SetBinding(NumberBox.ValueProperty, new Binding(Path)
         {
             Mode = IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
-            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
         });
 
         factory.SetValue(NumberBox.MinimumProperty, Min);

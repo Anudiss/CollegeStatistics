@@ -206,28 +206,7 @@ namespace CollegeStatictics.ViewModels
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            DatabaseContext.Entities.Attendances.Load();
-            DatabaseContext.Entities.DayOfWeeks.Load();
-            DatabaseContext.Entities.Departments.Load();
-            DatabaseContext.Entities.EducationForms.Load();
-            DatabaseContext.Entities.EmergencySituations.Load();
-            DatabaseContext.Entities.Groups.Load();
-            DatabaseContext.Entities.HomeworkExecutionStatuses.Load();
-            DatabaseContext.Entities.Homeworks.Load();
-            DatabaseContext.Entities.HomeworkStudents.Load();
-            DatabaseContext.Entities.LessonHomeworks.Load();
             DatabaseContext.Entities.Lessons.Load();
-            DatabaseContext.Entities.LessonTypes.Load();
-            DatabaseContext.Entities.NoteToLessons.Load();
-            DatabaseContext.Entities.NoteToStudents.Load();
-            DatabaseContext.Entities.Specialities.Load();
-            DatabaseContext.Entities.Students.Load();
-            DatabaseContext.Entities.StudyPlanRecords.Load();
-            DatabaseContext.Entities.StudyPlans.Load();
-            DatabaseContext.Entities.Subjects.Load();
-            DatabaseContext.Entities.Teachers.Load();
-            DatabaseContext.Entities.TimetableRecords.Load();
-            DatabaseContext.Entities.Timetables.Load();
 
             stopWatch.Stop();
             MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
