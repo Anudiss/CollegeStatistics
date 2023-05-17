@@ -16,14 +16,6 @@ namespace CollegeStatictics.Views
         public MainView()
         {
             InitializeComponent();
-
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            DatabaseContext.Entities.Lessons.Load();
-
-            stopWatch.Stop();
-            MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

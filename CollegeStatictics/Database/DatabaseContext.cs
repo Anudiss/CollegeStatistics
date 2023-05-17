@@ -60,7 +60,7 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatistics;Trusted_Connection=True;Encrypt=False");
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatisticsNew;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

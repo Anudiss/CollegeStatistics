@@ -24,7 +24,7 @@ public class ComboBoxColumnAttribute : TextColumnAttribute
         });
         factory.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(ItemsSourcePath)
         {
-            Mode = BindingMode.TwoWay,
+            Mode = BindingMode.OneWay,
             UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
         });
 

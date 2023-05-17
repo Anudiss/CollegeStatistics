@@ -111,7 +111,7 @@ namespace CollegeStatictics.Views
         [EditableSubtableFormElement]
         [TextColumn(nameof(HomeworkStudent.Student), "Студент", IsReadOnly = true)]
         [TextColumn($"{nameof(HomeworkStudent.Lesson)}.{nameof(Lesson.LessonHomework)}.{nameof(LessonHomework.Deadline)}", "Дата окончания", IsReadOnly = true)]
-        [ComboBoxColumn(nameof(HomeworkStudent.HomeworkExecutionStatus), "Статус", nameof(ExecutionStatuses))]
+        [ComboBoxColumn(nameof(HomeworkStudent.HomeworkExecutionStatus), "Статус", nameof(HomeworkStudent.ExecutionStatuses))]
         [NumberBoxColumn(nameof(HomeworkStudent.Mark), "Оценка", 2, 5, IsReadOnly = false)]
         public IEnumerable<HomeworkStudent> HomeworkStudents => Item.HomeworkStudents;
 
@@ -127,8 +127,6 @@ namespace CollegeStatictics.Views
                 OnPropertyChanged(nameof(HomeworkStudents));
             }
         }
-
-        public IEnumerable<HomeworkExecutionStatus> ExecutionStatuses => DatabaseContext.Entities.HomeworkExecutionStatuses.Local;
 
         public EmergencySituation? EmergencySituation
         {
