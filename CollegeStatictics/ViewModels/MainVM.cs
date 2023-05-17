@@ -203,13 +203,13 @@ namespace CollegeStatictics.ViewModels
             CurrentViewHeader = PageBuilders.First().Key;
             CurrentView = PageBuilders.First().Value();
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+            //var stopWatch = new Stopwatch();
+            //stopWatch.Start();
 
-            DatabaseContext.Entities.Lessons.Load();
+            //DatabaseContext.Entities.Lessons.Load();
 
-            stopWatch.Stop();
-            MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
+            //stopWatch.Stop();
+            //MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
         }
     }
 }
