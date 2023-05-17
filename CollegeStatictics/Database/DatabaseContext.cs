@@ -73,7 +73,7 @@ public partial class DatabaseContext : DbContext
             entity.HasOne(d => d.Lesson).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.LessonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Attendance_Lesson");
+                .HasConstraintName("FK_Attendance_Lesson1");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.StudentId)
