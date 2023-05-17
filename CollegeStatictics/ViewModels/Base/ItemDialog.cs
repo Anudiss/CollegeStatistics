@@ -5,17 +5,21 @@ using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.DataTypes.Records;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.Windows;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using Microsoft.EntityFrameworkCore;
+
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -197,7 +201,6 @@ namespace CollegeStatictics.ViewModels.Base
                     e.Handled = true;
             };
 
-
             TryAttachLabel(stackPanel, textBox, formElement);
 
             SetBinding(textBox, TextBox.TextProperty, formElement);
@@ -300,7 +303,6 @@ namespace CollegeStatictics.ViewModels.Base
             if (labelAttribute != null)
                 groupBox.Header = labelAttribute.Label;
         
-
             var stackPanel = new StackPanel();
 
             var border = new Border { Child = stackPanel };

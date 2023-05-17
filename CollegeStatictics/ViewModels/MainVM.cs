@@ -1,5 +1,6 @@
 ﻿using CollegeStatictics.Database;
 using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
@@ -13,7 +14,7 @@ namespace CollegeStatictics.ViewModels
 {
     public partial class MainVM : WindowViewModelBase
     {
-        public static readonly Dictionary<string, Func<dynamic>> PageBuilders = new()
+        public static readonly Dictionary<string, Func<IContent>> PageBuilders = new()
         {
             { "Преподаватели", () => new ItemsContainerBuilder<Teacher, TeacherView>()
 
@@ -188,7 +189,7 @@ namespace CollegeStatictics.ViewModels
         };
 
         [ObservableProperty]
-        private object? _currentView;
+        private IContent? _currentView;
 
         [ObservableProperty]
         private string _currentViewHeader;

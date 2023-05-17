@@ -25,6 +25,7 @@ namespace CollegeStatictics.DataTypes.Attributes
                 Binding = new Binding(Path)
                 {
                     Mode = IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                    TargetNullValue = "Нет"
                 },
 
                 IsReadOnly = IsReadOnly

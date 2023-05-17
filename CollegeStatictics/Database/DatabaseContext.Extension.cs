@@ -71,6 +71,8 @@ namespace CollegeStatictics.Database
 
                 entity.Navigation(d => d.LessonHomework).AutoInclude();
 
+                entity.Navigation(d => d.HomeworkStudents).AutoInclude();
+
                 entity.Navigation(d => d.NoteToStudents).AutoInclude();
 
                 entity.Navigation(d => d.StudyPlanRecord).AutoInclude();

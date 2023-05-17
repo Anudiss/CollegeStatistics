@@ -14,16 +14,6 @@ namespace CollegeStatictics.DataTypes.Classes
     public partial class Filter<T, R> : ObservableObject, IFilter<T> where T : class, ITable
                                                                      where R : class
     {
-        // Properties:
-        //  + Possible values collection
-        //  + Selected values collection
-
-        // Methods:
-        //  + IsAccespted (T value)
-        //  + Add value to selected items collection
-        //  + Remove value from selected items collection
-
-
         public string Name { get; set; }
         public ObservableCollection<R> SelectedValues { get; }
         public IEnumerable PossibleValues => LoadPossibleValues();
@@ -31,8 +21,6 @@ namespace CollegeStatictics.DataTypes.Classes
 
         public Func<T, R> PropertyGetter = default!;
         public event Action SelectedValuesChanged = default!;
-
-        // new Builder(SubjectCOllection).AddFilter(new Filter<Subject, string>("Название", subject => subject.Name)).Build();
 
         public Filter(string name, Func<T, R> propertyGetter)
         {

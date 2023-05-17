@@ -13,6 +13,6 @@ namespace CollegeStatictics.DataTypes.Classes
 
 
         public bool IsAccepted(T item, string textToSearch) =>
-            Regex.Split(textToSearch.Trim().ToLower(), @"\s+").Any(text => propertyGetter(item)!.Trim().ToLower().Contains(text) != false);
+            Regex.Split(textToSearch.Trim().ToLower(), @"\s+").All(text => propertyGetter(item)!.Trim().ToLower().Contains(text) != false);
     }
 }

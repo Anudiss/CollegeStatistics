@@ -1,5 +1,6 @@
 ﻿using CollegeStatictics.DataTypes.Classes;
 using System.Collections;
+using System.Windows;
 
 namespace CollegeStatictics.DataTypes
 {
@@ -52,5 +53,10 @@ namespace CollegeStatictics.DataTypes
                         MessageBox.Show($"{((dynamic)item).Name} удалён (Нихуя)");
                 }*/
         #endregion
+    }
+
+    public interface IContent
+    {
+        public DataTemplate ContentTemplate { get; }
     }
 }

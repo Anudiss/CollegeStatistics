@@ -19,7 +19,7 @@ using ITable = CollegeStatictics.DataTypes.ITable;
 
 namespace CollegeStatictics.ViewModels.Base
 {
-    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T> where T : class, ITable, IDeletable, new()
+    public partial class ItemsContainer<T> : ObservableValidator, IItemSelector<T>, IContent where T : class, ITable, IDeletable, new()
     {
         #region [ Properties ]
 
@@ -37,6 +37,8 @@ namespace CollegeStatictics.ViewModels.Base
 
         [ObservableProperty]
         public ObservableCollection<DataGridColumn> columns = default!;
+
+        public DataTemplate ContentTemplate => (DataTemplate)Application.Current.FindResource("ItemsContainerTemplate");
 
         partial void OnSelectedItemsChanged(IList value) =>
             RemoveItemsCommand.NotifyCanExecuteChanged();

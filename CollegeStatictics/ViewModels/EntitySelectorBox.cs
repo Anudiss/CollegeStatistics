@@ -21,7 +21,7 @@ namespace CollegeStatictics.ViewModels
         [RelayCommand]
         private void OpenSelectorDialog()
         {
-            SelectedItem = OpenSelectorItemDialog(MainVM.PageBuilders[_itemContainerName]());
+            SelectedItem = OpenSelectorItemDialog((ItemsContainer<T>)MainVM.PageBuilders[_itemContainerName]());
         }
 
         public T SelectedItem

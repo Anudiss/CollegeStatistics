@@ -13,7 +13,7 @@ public partial class HomeworkStudent
 
     public int HomeworkExecutionStatusId { get; set; }
 
-    public short Mark { get; set; }
+    public short? Mark { get; set; }
 
     public virtual HomeworkExecutionStatus HomeworkExecutionStatus { get; set; } = null!;
 
