@@ -17,6 +17,7 @@ namespace CollegeStatictics.ViewModels
 {
     [MinHeight(700)]
     [MinWidth(500)]
+    [ViewTitle("Расписание")]
     public partial class TimetableView : ItemDialog<Timetable>
     {
         //[ButtonElement("Провести занятие")]

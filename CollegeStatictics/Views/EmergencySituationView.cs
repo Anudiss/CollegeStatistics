@@ -6,6 +6,7 @@ using CollegeStatictics.ViewModels.Base;
 namespace CollegeStatictics.Views;
 
 [MaxHeight(600)]
+[ViewTitle("Нештатная ситуация")]
 public class EmergencySituationView : ItemDialog<EmergencySituation>
 {
     [MinHeight(400)]

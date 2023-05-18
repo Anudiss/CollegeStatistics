@@ -22,6 +22,7 @@ namespace CollegeStatictics.Views
 {
     [MinWidth(800)]
     [MinHeight(800)]
+    [ViewTitle("Учебный план")]
     public partial class StudyPlanView : ItemDialog<StudyPlan>
     {
         [RelayCommand]

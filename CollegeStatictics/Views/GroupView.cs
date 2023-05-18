@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
+    [ViewTitle("Группа")]
     public class GroupView : ItemDialog<Group>
     {
         public Selection<Student> StudentGroupFilter => new(student => student.Group != Item);

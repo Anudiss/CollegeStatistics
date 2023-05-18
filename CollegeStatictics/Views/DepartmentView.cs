@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
+    [ViewTitle("Отделение")]
     public class DepartmentView : ItemDialog<Department>
     {
         [Required(ErrorMessage = "Поле обязательно")]

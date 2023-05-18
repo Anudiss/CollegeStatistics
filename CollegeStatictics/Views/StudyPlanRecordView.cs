@@ -8,6 +8,7 @@ using System.Windows;
 
 namespace CollegeStatictics.Views
 {
+    [ViewTitle("Запись учебного плана")]
     public class StudyPlanRecordView : ItemDialog<StudyPlanRecord>
     {
         [DefaultValue("")]

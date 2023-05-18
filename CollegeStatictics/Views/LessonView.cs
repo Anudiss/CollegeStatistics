@@ -1,20 +1,4 @@
-﻿using CollegeStatictics.Database;
-using CollegeStatictics.Database.Models;
-using CollegeStatictics.DataTypes;
-using CollegeStatictics.DataTypes.Attributes;
-using CollegeStatictics.DataTypes.Classes;
-using CollegeStatictics.DataTypes.Records;
-using CollegeStatictics.ViewModels;
-using CollegeStatictics.ViewModels.Attributes;
-using CollegeStatictics.ViewModels.Base;
-using CollegeStatictics.Windows;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-
-using ModernWpf.Controls;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -26,11 +10,23 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
+using CollegeStatictics.Database;
+using CollegeStatictics.Database.Models;
+using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Attributes;
+using CollegeStatictics.DataTypes.Classes;
+using CollegeStatictics.DataTypes.Records;
+using CollegeStatictics.ViewModels;
+using CollegeStatictics.ViewModels.Attributes;
+using CollegeStatictics.ViewModels.Base;
+using CollegeStatictics.Windows;
+using Microsoft.EntityFrameworkCore;
 
 namespace CollegeStatictics.Views
 {
     [MinWidth(800)]
     [MinHeight(800)]
+    [ViewTitle("Занятие")]
     public partial class LessonView : ItemDialog<Lesson>
     {
         #region [ Properties ]
@@ -149,6 +145,8 @@ namespace CollegeStatictics.Views
 
         #endregion
 
+        #region [ Setup ]
+
         public LessonView(Lesson? item) : base(item)
         {
             DatabaseContext.Entities.HomeworkExecutionStatuses.Load();
@@ -157,58 +155,134 @@ namespace CollegeStatictics.Views
             Time = Time == default ? GetLessonTimeNearestToCurrent() : Time;
         }
 
+        #endregion
+
         //private bool TimetableRecordsFilter(TimetableRecord record) => (record.Timetable?.Group == Group || Group == null) &&
         //                                                               (record.Timetable?.Teacher == Teacher || Teacher == null) &&
         //                                                               (record.Timetable?.Subject == Subject || Subject == null);
 
-        private static TimeSpan GetLessonTimeNearestToCurrent()
-        {
-            var currentTime = DateTime.Now.TimeOfDay;
+        #region [ Private methods ]
 
-            var availableTimes = Constants.LessonStartTimes[DateTime.Now.DayOfWeek];
 
-            var prevTime = TimeSpan.Zero;
-            foreach (var availableTime in availableTimes)
-            {
-                if (currentTime <= availableTime)
-                    return availableTime;
-
-                else if (currentTime > availableTime)
-                {
-                    TimeSpan prevTimeDiff = currentTime - prevTime,
-                             availableTimeDiff = currentTime - availableTime;
-
-                    if (prevTimeDiff < availableTimeDiff)
-                        return prevTime;
-                }
-
-                prevTime = availableTime;
-            }
-
-            return prevTime;
-        }
+        #region [ View elements creation ]
 
         protected override IEnumerable<FrameworkElement> CreateViewElements()
         {
-            #region [ CommandLineContainer ]
-            var commandButtonContainer = new SimpleStackPanel
+            yield return CreateHeaderPanel();
+            yield return CreateDateTimesPanel();
+            yield return CreateSubjectAndTeacherPanel();
+            yield return CreateTopicAndGroupPanel();
+
+            #region [ Tabs ]
+            var panel = new Border
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 12
+                MinHeight = 500,
+                Padding = new(10),
+                CornerRadius = new(2.5),
             };
 
-            commandButtonContainer.Children.Add(new Button()
+            var tabControl = new TabControl();
+            panel.Child = tabControl;
+
+            #region [ Attendance table ]
+            tabControl.Items.Add(new TabItem()
+            {
+                Header = "Посещаемость",
+                Content = CreateViewElementFor(nameof(Attendances))
+            });
+            #endregion
+
+            #region [ Homework table ]
+            tabControl.Items.Add(new TabItem()
+            {
+                Header = "Домашняя работа",
+                Content = CreateViewElementFor(nameof(HomeworkStudents))
+            });
+            #endregion
+
+            yield return panel;
+            #endregion
+        }
+
+        private FrameworkElement CreateHeaderPanel()
+        {
+            var headerPanel = new DockPanel();
+
+            headerPanel.Children.Add(new TextBlock
+            {
+                Text = "Занятие",
+                FontSize = 24,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+
+            #region [ Write changes button ]
+            var writeChangesButton = new Button
             {
                 Content = "Записать",
                 Command = SaveCommand,
-            });
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = (Brush)new BrushConverter().ConvertFromString("#073B4C")!,
+                Foreground = Brushes.White,
+            };
+            writeChangesButton.SetValue(DockPanel.DockProperty, Dock.Right);
 
-            yield return commandButtonContainer;
+            headerPanel.Children.Add(writeChangesButton);
             #endregion
 
-            var header = new TextBlock { Text = "Пара" };
+            #region [ Homework button ]
+            var homeworkButton = new Button
+            {
+                DataContext = Item,
+                Margin = new(0, 0, 10, 0),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Content = "Домашня работа"
+            };
+            homeworkButton.SetValue(DockPanel.DockProperty, Dock.Right);
 
-            #region [ Date time container ]
+            homeworkButton.Click += (_, _) =>
+            {
+                OpenDialog(new LessonHomeworkView(Item.LessonHomework ?? new LessonHomework()
+                {
+                    IssueDate = DateTime.Now,
+                    Deadline = DateTime.Now.AddDays(1),
+                    Lesson = Item,
+                }), l => l.Homework);
+
+                OnPropertyChanged(nameof(HomeworkStudents));
+            };
+
+            headerPanel.Children.Add(homeworkButton);
+            #endregion
+
+            #region [ Emeergency situtation button ]
+            var attachEmergencySitutationButton = new Button
+            {
+                DataContext = Item,
+                Margin = new(0, 0, 10, 0),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Content = "Нештатная ситуация"
+            };
+            attachEmergencySitutationButton.SetValue(DockPanel.DockProperty, Dock.Right);
+
+            attachEmergencySitutationButton.Click += (_, _) =>
+            {
+                OpenDialog(new EmergencySituationView(Item.EmergencySituation ?? new EmergencySituation()
+                {
+                    Lesson = Item,
+                }), l => l.EmergencySituation);
+
+                OnPropertyChanged(nameof(EmergencySituation));
+            };
+
+            headerPanel.Children.Add(attachEmergencySitutationButton);
+            #endregion
+
+            return headerPanel;
+        }
+
+        private FrameworkElement CreateDateTimesPanel()
+        {
             var headerGrid = new UniformGrid
             {
                 Columns = 4
@@ -228,160 +302,45 @@ namespace CollegeStatictics.Views
             headerGrid.Children.Add(datePicker);
             headerGrid.Children.Add(isRestoringCheckBox);
 
-            yield return headerGrid;
-            #endregion
-
-            #region [ StudyPlanRecord ]
-            var studyPlanRecordElement = CreateViewElementFor(nameof(StudyPlanRecord)); studyPlanRecordElement.Margin = new(0, 0, 10, 0);
-
-            yield return studyPlanRecordElement;
-            #endregion
-
-            #region [ Homework ]
-            var homeworkButton = new Button()
-            {
-                DataContext = Item,
-            };
-
-            homeworkButton.SetBinding(ContentControl.ContentProperty, new Binding($"{nameof(Lesson.LessonHomework)}.{nameof(LessonHomework.Homework)}")
-            {
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                TargetNullValue = "Назначить домашнюю работу"
-            });
-
-            homeworkButton.Click += (_, _) =>
-            {
-                OpenDialog(new LessonHomeworkView(Item.LessonHomework ?? new LessonHomework()
-                {
-                    IssueDate = DateTime.Now,
-                    Deadline = DateTime.Now.AddDays(1),
-                    Lesson = Item
-                }), l => l.Homework);
-
-                OnPropertyChanged(nameof(HomeworkStudents));
-            };
-
-            yield return homeworkButton;
-            #endregion
-
-            #region [ Group selector ]
-            yield return CreateViewElementFor(nameof(Group));
-            #endregion
-
-            #region [ Tabs ]
-            var tabControl = new TabControl()
-            {
-                MinHeight = 500,
-            };
-
-            #region [ Attendance table ]
-            tabControl.Items.Add(new TabItem()
-            {
-                Header = "Посещаемость",
-
-                Content = CreateViewElementFor(nameof(Attendances))
-            });
-            #endregion
-
-            #region [ Homework table ]
-            tabControl.Items.Add(new TabItem()
-            {
-                Header = "Домашняя работа",
-
-                Content = CreateViewElementFor(nameof(HomeworkStudents))
-            });
-            #endregion
-
-            #region [ EmergencySituation tab ]
-
-            var emergencySituationTabItem = new TabItem()
-            {
-                Header = "Нештатная ситуация",
-            };
-
-            tabControl.Items.Add(emergencySituationTabItem);
-
-            tabControl.Items.CurrentChanging += (sender, e) =>
-            {
-                var item = ((ICollectionView)sender).CurrentItem;
-                if (item == emergencySituationTabItem)
-                {
-                    if (EmergencySituation is null)
-                    {
-                        var dialogWindow = new DialogWindow()
-                        {
-                            Content = "Нештатная ситуация ещё не создана, создать?",
-
-                            PrimaryButtonText = "Да",
-
-                            SecondaryButtonText = "Нет"
-                        };
-
-                        dialogWindow.Show();
-
-                        if (dialogWindow.Result != DialogResult.Primary)
-                        {
-                            e.Cancel = true;
-                            tabControl.SelectedItem = item;
-                            return;
-                        }
-                        else
-                            EmergencySituation = new()
-                            {
-                                Lesson = Item
-                            };
-                    }
-
-                    var container = new StackPanel();
-
-                    var removeButton = new Button()
-                    {
-                        Content = "Удалить",
-                        Margin = new(0, 0, 0, 10)
-                    };
-
-                    removeButton.Click += (_, _) => DatabaseContext.Entities.Remove(EmergencySituation);
-
-                    container.Children.Add(removeButton);
-
-                    var textBox = new TextBox()
-                    {
-                        Foreground = Brushes.Black,
-                        FontSize = 14,
-                        TextWrapping = TextWrapping.Wrap,
-                        AcceptsReturn = true,
-                        MinHeight = 400,
-                        MaxHeight = 400,
-                        MinWidth = 600,
-                        DataContext = EmergencySituation
-                    };
-                    textBox.SetBinding(TextBox.TextProperty, new Binding(nameof(EmergencySituation.Description))
-                    {
-                        Mode = BindingMode.TwoWay,
-                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                    });
-
-                    container.Children.Add(textBox);
-
-                    emergencySituationTabItem.Content = container;
-                }
-            };
-
-            #endregion
-
-            yield return tabControl;
-            #endregion
+            return headerGrid;
         }
 
-        private void RecreateHomeworkStudents()
+        private FrameworkElement CreateSubjectAndTeacherPanel()
         {
-            Item.HomeworkStudents.Clear();
+            var panel = new UniformGrid
+            {
+                Columns = 2
+            };
 
-            var homeworkStudents = CreateHomeworkStudents();
+            var subjectTextBox = CreateViewElementFor(nameof(Subject));
+            panel.Children.Add(subjectTextBox);
+            subjectTextBox.Margin = new(0, 0, 10, 0);
 
-            DatabaseContext.Entities.AddRange(homeworkStudents);
+            var teacherTextBox = CreateViewElementFor(nameof(Teacher));
+            panel.Children.Add(teacherTextBox);
+
+            return panel;
         }
+
+        private FrameworkElement CreateTopicAndGroupPanel()
+        {
+            var panel = new UniformGrid
+            {
+                Columns = 2
+            };
+
+            var topicTextBox = CreateViewElementFor(nameof(StudyPlanRecord));
+            panel.Children.Add(topicTextBox);
+            topicTextBox.Margin = new(0, 0, 10, 0);
+
+            var groupSelectorBox = CreateViewElementFor(nameof(Group));
+            panel.Children.Add(groupSelectorBox);
+
+            return panel;
+        }
+
+
+        #region ARRANGE_THEM
 
         private IEnumerable<HomeworkStudent> CreateHomeworkStudents()
         {
@@ -392,32 +351,10 @@ namespace CollegeStatictics.Views
                 select new HomeworkStudent()
                 {
                     Student = student,
-                    Lesson = Item,
                     HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
                     Mark = null
                 };
         }
-
-        private void OpenDialog<T>(ItemDialog<T> view, Expression<Func<LessonView, object?>> property) where T : class, ITable, new()
-        {
-            var dialogWindow = new DialogWindow()
-            {
-                Content = view,
-                ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
-
-                PrimaryButtonText = "Сохранить",
-
-                SecondaryButtonText = "Отменить"
-            };
-
-            dialogWindow.Show();
-
-            if (dialogWindow.Result == DialogResult.Primary)
-                ((PropertyInfo)((MemberExpression)property.Body).Member).SetValue(this, view.Item);
-        }
-
-        private FrameworkElement CreateViewElementFor(string propName)
-            => CreateViewElement(_formElements.First(fe => fe.Property.Name == propName));
 
         private FrameworkElement CreateComboBox(string itemPath, string itemsSourcePath)
         {
@@ -473,7 +410,8 @@ namespace CollegeStatictics.Views
             var checkBox = new CheckBox
             {
                 Content = "Восстановление",
-                VerticalAlignment = VerticalAlignment.Bottom
+                VerticalAlignment = VerticalAlignment.Bottom,
+                VerticalContentAlignment = VerticalAlignment.Bottom
             };
 
             checkBox.SetBinding(ToggleButton.IsCheckedProperty, new Binding(nameof(IsRestoring))
@@ -484,5 +422,69 @@ namespace CollegeStatictics.Views
 
             return checkBox;
         }
+
+        private FrameworkElement CreateViewElementFor(string propName)
+            => CreateViewElement(_formElements.First(fe => fe.Property.Name == propName));
+
+        #endregion
+
+        #endregion
+
+        private static TimeSpan GetLessonTimeNearestToCurrent()
+        {
+            var currentTime = DateTime.Now.TimeOfDay;
+
+            var availableTimes = Constants.LessonStartTimes[DateTime.Now.DayOfWeek];
+
+            var prevTime = TimeSpan.Zero;
+            foreach (var availableTime in availableTimes)
+            {
+                if (currentTime <= availableTime)
+                    return availableTime;
+
+                else if (currentTime > availableTime)
+                {
+                    TimeSpan prevTimeDiff = currentTime - prevTime,
+                             availableTimeDiff = currentTime - availableTime;
+
+                    if (prevTimeDiff < availableTimeDiff)
+                        return prevTime;
+                }
+
+                prevTime = availableTime;
+            }
+
+            return prevTime;
+        }
+
+        private void RecreateHomeworkStudents()
+        {
+            Item.HomeworkStudents.Clear();
+
+            var homeworkStudents = CreateHomeworkStudents();
+
+            homeworkStudents.ForEach(hs => Item.HomeworkStudents.Add(hs));
+            //DatabaseContext.Entities.AddRange(homeworkStudents);
+        }
+
+        private void OpenDialog<T>(ItemDialog<T> view, Expression<Func<LessonView, object?>> property) where T : class, ITable, new()
+        {
+            var dialogWindow = new DialogWindow()
+            {
+                Content = view,
+                ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
+
+                PrimaryButtonText = "Сохранить",
+
+                SecondaryButtonText = "Отменить"
+            };
+
+            dialogWindow.Show();
+
+            if (dialogWindow.Result == DialogResult.Primary)
+                ((PropertyInfo)((MemberExpression)property.Body).Member).SetValue(this, view.Item);
+        }
+
+        #endregion
     }
 }

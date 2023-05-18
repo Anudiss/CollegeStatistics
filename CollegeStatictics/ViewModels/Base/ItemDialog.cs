@@ -79,6 +79,16 @@ namespace CollegeStatictics.ViewModels.Base
 
         protected virtual IEnumerable<FrameworkElement> CreateViewElements()
         {
+            var titleAttribute = GetType().GetCustomAttribute<ViewTitleAttribute>();
+            if (titleAttribute != null)
+            {
+                yield return new TextBlock
+                {
+                    Text = titleAttribute.Title,
+                    FontSize = 22
+                };
+            }
+
             var formElements = GetFormElements();
             foreach (var formElement in formElements)
             {

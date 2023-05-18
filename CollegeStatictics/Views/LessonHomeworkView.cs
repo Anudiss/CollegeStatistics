@@ -7,6 +7,7 @@ using System;
 
 namespace CollegeStatictics.Views;
 
+[ViewTitle("Домашняя работа")]
 public class LessonHomeworkView : ItemDialog<LessonHomework>
 {
     [Label("Домашняя работа")]

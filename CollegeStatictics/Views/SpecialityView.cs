@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
+    [ViewTitle("Специальность")]
     public class SpecialityView : ItemDialog<Speciality>
     {
         [Required(ErrorMessage = "Поле обязательно")]
