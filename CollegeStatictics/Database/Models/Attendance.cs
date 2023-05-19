@@ -11,6 +11,8 @@ public partial class Attendance
 
     public bool IsAttented { get; set; }
 
+    public short? Mark { get; set; }
+
     public virtual Lesson Lesson { get; set; } = null!;
 
     public virtual Student Student { get; set; } = null!;

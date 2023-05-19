@@ -16,6 +16,7 @@ using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Records;
+using CollegeStatictics.Utils;
 using CollegeStatictics.ViewModels;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
@@ -103,6 +104,7 @@ namespace CollegeStatictics.Views
         [EditableSubtableFormElement]
         [TextColumn(nameof(Attendance.Student), "Студент", IsReadOnly = true)]
         [CheckBoxColumn(nameof(AttendanceElement.IsAttended), "Присутствие", IsReadOnly = false)]
+        [NumberBoxColumn(nameof(AttendanceElement.Mark), "Оценка", 2, 5, IsReadOnly = false)]
         public IEnumerable<AttendanceElement> Attendances => AttendanceElement.GetFromLesson(Item);
 
         [EditableSubtableFormElement]
@@ -152,7 +154,7 @@ namespace CollegeStatictics.Views
             DatabaseContext.Entities.HomeworkExecutionStatuses.Load();
             _formElements = GetFormElements();
 
-            Time = Time == default ? GetLessonTimeNearestToCurrent() : Time;
+            Time = Time == default ? LessonTimeUtils.GetLessonTimeNearestTo(DateTime.Now.TimeOfDay) : Time;
         }
 
         #endregion
@@ -387,7 +389,7 @@ namespace CollegeStatictics.Views
             var dayOfWeek = DateTime.Now.DayOfWeek;
             var availableTimesBox = new ComboBox
             {
-                ItemsSource = Constants.LessonStartTimes[dayOfWeek],
+                ItemsSource = LessonTimeUtils.LessonStartTimes[dayOfWeek],
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
 
@@ -430,40 +432,13 @@ namespace CollegeStatictics.Views
 
         #endregion
 
-        private static TimeSpan GetLessonTimeNearestToCurrent()
-        {
-            var currentTime = DateTime.Now.TimeOfDay;
-
-            var availableTimes = Constants.LessonStartTimes[DateTime.Now.DayOfWeek];
-
-            var prevTime = TimeSpan.Zero;
-            foreach (var availableTime in availableTimes)
-            {
-                if (currentTime <= availableTime)
-                    return availableTime;
-
-                else if (currentTime > availableTime)
-                {
-                    TimeSpan prevTimeDiff = currentTime - prevTime,
-                             availableTimeDiff = currentTime - availableTime;
-
-                    if (prevTimeDiff < availableTimeDiff)
-                        return prevTime;
-                }
-
-                prevTime = availableTime;
-            }
-
-            return prevTime;
-        }
-
         private void RecreateHomeworkStudents()
         {
             Item.HomeworkStudents.Clear();
 
             var homeworkStudents = CreateHomeworkStudents();
 
-            homeworkStudents.ForEach(hs => Item.HomeworkStudents.Add(hs));
+            homeworkStudents.ForEach(Item.HomeworkStudents.Add);
             //DatabaseContext.Entities.AddRange(homeworkStudents);
         }
 
