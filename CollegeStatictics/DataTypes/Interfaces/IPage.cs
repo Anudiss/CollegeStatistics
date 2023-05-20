@@ -57,6 +57,8 @@ namespace CollegeStatictics.DataTypes
 
     public interface IContent
     {
+        public string Title { get; }
+
         public DataTemplate ContentTemplate { get; }
     }
 }

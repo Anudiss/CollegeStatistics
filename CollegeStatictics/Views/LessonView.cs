@@ -10,7 +10,6 @@ using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 using ModernWpf.Controls;
 
@@ -110,12 +109,12 @@ namespace CollegeStatictics.Views
 
         [EditableSubtableFormElement]
         [TextColumn(nameof(HomeworkStudent.Student), "Студент", IsReadOnly = true)]
-        [TextColumn($"{nameof(HomeworkStudent.Lesson)}.{nameof(Lesson.LessonHomework)}.{nameof(LessonHomework.Deadline)}", "Дата окончания", IsReadOnly = true)]
+        [TextColumn($"{nameof(HomeworkStudent.Lesson)}.{nameof(Lesson.LessonHomework)}.{nameof(LessonHomework.Deadline)}", "Дата окончания", IsReadOnly = true, StringFormat = "{0:dd.MM.yyyy}")]
         [ComboBoxColumn(nameof(HomeworkStudent.HomeworkExecutionStatus), "Статус", nameof(HomeworkStudent.ExecutionStatuses))]
         [NumberBoxColumn(nameof(HomeworkStudent.Mark), "Оценка", 2, 5, IsReadOnly = false)]
         public IEnumerable<HomeworkStudent> HomeworkStudents => Item.HomeworkStudents;
 
-        public LessonHomework Homework
+        public LessonHomework? Homework
         {
             get => Item.LessonHomework;
             set
@@ -144,21 +143,20 @@ namespace CollegeStatictics.Views
 
         #region [ Fields ]
 
-        private IEnumerable<FormElement> _formElements;
+        private readonly IEnumerable<FormElement> _formElements;
 
         #endregion
 
-        public LessonView(Lesson? item) : base(item)
+        public LessonView( Lesson? item ) : base(item)
         {
             DatabaseContext.Entities.HomeworkExecutionStatuses.Load();
             _formElements = GetFormElements();
 
             Time = Time == default ? GetLessonTimeNearestToCurrent() : Time;
-        }
 
-        //private bool TimetableRecordsFilter(TimetableRecord record) => (record.Timetable?.Group == Group || Group == null) &&
-        //                                                               (record.Timetable?.Teacher == Teacher || Teacher == null) &&
-        //                                                               (record.Timetable?.Subject == Subject || Subject == null);
+            DatabaseContext.Entities.HomeworkExecutionStatuses.Load();
+            DatabaseContext.Entities.StudyPlans.Load();
+        }
 
         private static TimeSpan GetLessonTimeNearestToCurrent()
         {
@@ -228,7 +226,8 @@ namespace CollegeStatictics.Views
             #endregion
 
             #region [ StudyPlanRecord ]
-            var studyPlanRecordElement = CreateViewElementFor(nameof(StudyPlanRecord)); studyPlanRecordElement.Margin = new(0, 0, 10, 0);
+            var studyPlanRecordElement = CreateViewElementFor(nameof(StudyPlanRecord));
+            studyPlanRecordElement.Margin = new(0, 0, 10, 0);
 
             yield return studyPlanRecordElement;
             #endregion
@@ -246,14 +245,9 @@ namespace CollegeStatictics.Views
                 TargetNullValue = "Назначить"
             });
 
-            homeworkButton.Click += (_, _) =>
+            homeworkButton.Click += ( _, _ ) =>
             {
-                OpenDialog(new LessonHomeworkView(Item.LessonHomework ?? new LessonHomework()
-                {
-                    IssueDate = DateTime.Now,
-                    Deadline = DateTime.Now.AddDays(1),
-                    Lesson = Item
-                }), l => l.Homework);
+                OpenDialog(new LessonHomeworkView(Item.LessonHomework), l => l.Homework);
 
                 OnPropertyChanged(nameof(HomeworkStudents));
             };
@@ -262,7 +256,7 @@ namespace CollegeStatictics.Views
             #endregion
 
             #region [ Group selector ]
-            yield return CreateViewElementFor(nameof(Group)); 
+            yield return CreateViewElementFor(nameof(Group));
             #endregion
 
             #region [ Tabs ]
@@ -286,7 +280,7 @@ namespace CollegeStatictics.Views
                 Header = "Домашняя работа",
 
                 Content = CreateViewElementFor(nameof(HomeworkStudents))
-            }); 
+            });
             #endregion
 
             #region [ EmergencySituation tab ]
@@ -298,7 +292,7 @@ namespace CollegeStatictics.Views
 
             tabControl.Items.Add(emergencySituationTabItem);
 
-            tabControl.Items.CurrentChanging += (sender, e) =>
+            tabControl.Items.CurrentChanging += ( sender, e ) =>
             {
                 var item = ((ICollectionView)sender).CurrentItem;
                 if (item == emergencySituationTabItem)
@@ -337,7 +331,7 @@ namespace CollegeStatictics.Views
                         Margin = new(0, 0, 0, 10)
                     };
 
-                    removeButton.Click += (_, _) => DatabaseContext.Entities.Remove(EmergencySituation);
+                    removeButton.Click += ( _, _ ) => DatabaseContext.Entities.Remove(EmergencySituation);
 
                     container.Children.Add(removeButton);
 
@@ -374,22 +368,26 @@ namespace CollegeStatictics.Views
         {
             Item.HomeworkStudents.Clear();
 
-            var homeworkStudents = CreateHomeworkStudents();
-
-            DatabaseContext.Entities.AddRange(homeworkStudents);
+            foreach (var homeworkStudent in CreateHomeworkStudents())
+                Item.HomeworkStudents.Add(homeworkStudent);
         }
 
-        private IEnumerable<HomeworkStudent> CreateHomeworkStudents() =>
-            from student in Group.Students
-            select new HomeworkStudent()
-            {
-                Student = student,
-                Lesson = Item,
-                HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
-                Mark = null
-            };
+        private IEnumerable<HomeworkStudent> CreateHomeworkStudents()
+        {
+            if (Item.Group is null || Item.LessonHomework is null)
+                return Enumerable.Empty<HomeworkStudent>();
 
-        private void OpenDialog<T>(ItemDialog<T> view, Expression<Func<LessonView, object?>> property) where T : class, ITable, new()
+            return from student in Group.Students
+                   select new HomeworkStudent()
+                   {
+                       Student = student,
+                       Lesson = Item,
+                       HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
+                       Mark = null
+                   };
+        }
+
+        private void OpenDialog<T>( ItemDialog<T> view, Expression<Func<LessonView, object?>> property ) where T : class, ITable, new()
         {
             var dialogWindow = new DialogWindow()
             {
@@ -404,13 +402,13 @@ namespace CollegeStatictics.Views
             dialogWindow.Show();
 
             if (dialogWindow.Result == DialogResult.Primary)
-                ((PropertyInfo)((MemberExpression)property.Body).Member).SetValue(this, view.Item);
+                ( (PropertyInfo)( (MemberExpression)property.Body ).Member ).SetValue(this, view.Item);
         }
 
-        private FrameworkElement CreateViewElementFor(string propName)
+        private FrameworkElement CreateViewElementFor( string propName )
             => CreateViewElement(_formElements.First(fe => fe.Property.Name == propName));
 
-        private FrameworkElement CreateComboBox(string itemPath, string itemsSourcePath)
+        private FrameworkElement CreateComboBox( string itemPath, string itemsSourcePath )
         {
             var stackPanel = new StackPanel();
 

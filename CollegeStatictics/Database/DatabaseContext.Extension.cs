@@ -19,8 +19,6 @@ namespace CollegeStatictics.Database
             {
                 var databaseContext = _entities ??= new();
 
-                databaseContext.StudyPlans.Load();
-
                 return databaseContext;
             }
         }

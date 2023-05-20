@@ -30,12 +30,9 @@ public class HomeworkView : ItemDialog<Homework>
         get => Item.Topic;
         set
         {
-            ValidateProperty(value);
-            if (HasErrors)
-                return;
-
             Item.Topic = value;
             OnPropertyChanged();
+            ValidateProperty(value);
         }
     }
 

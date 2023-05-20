@@ -23,6 +23,8 @@ namespace CollegeStatictics.ViewModels.Base
     {
         #region [ Properties ]
 
+        public string Title { get; }
+
         [ObservableProperty]
         private FilteredObservableCollection<T> items = default!;
 

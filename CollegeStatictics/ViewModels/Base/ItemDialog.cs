@@ -679,12 +679,15 @@ namespace CollegeStatictics.ViewModels.Base
         {
             var attribute = (EntitySelectorFormElementAttribute)formElement.Attribute;
 
-            var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitySelectorBox`1")!
-                                            .MakeGenericType(formElement.Property.PropertyType);
+            var filteredEntitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.FilteredEntitySelectorBox`1")!
+                                                         .MakeGenericType(formElement.Property.PropertyType);
+
+            var entitySelectorBoxType = Type.GetType("CollegeStatictics.DataTypes.Classes.EntitySelectorBox`1")!
+                                                 .MakeGenericType(formElement.Property.PropertyType);
 
             var filter = attribute.FilterPropertyName is not null ? GetType().GetProperty(attribute.FilterPropertyName)!.GetValue(this) : null;
 
-            var entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName, filter });
+            var entitySelectorBox = Activator.CreateInstance(filteredEntitySelectorBoxType, new[] { attribute.ItemContainerName, filter });
             var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
             ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.Property.Name)

@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.Database;
+using CollegeStatictics.DataTypes;
 using CollegeStatictics.ViewModels;
 
 using Microsoft.EntityFrameworkCore;
@@ -22,10 +23,23 @@ namespace CollegeStatictics.Views
         {
             var navItem = (NavigationViewItem)args.SelectedItem;
 
-            var content = (string)navItem.Content;
+            object? content = navItem.Content;
 
-            ((MainVM)DataContext).CurrentViewHeader = content;
-            ((MainVM)DataContext).CurrentView = MainVM.PageBuilders[content]();
+            IContent view = null!;
+            string title = null!;
+            if (content is string name)
+            {
+                view = MainVM.PageBuilders[name]();
+                title = name;
+            }
+            else
+            {
+                view = (IContent)content;
+                title = view.Title;
+            }
+
+            ((MainVM)DataContext).CurrentViewHeader = title;
+            ((MainVM)DataContext).CurrentView = view;
         }
     }
 }

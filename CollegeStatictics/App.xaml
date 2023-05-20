@@ -332,6 +332,40 @@
                         <ComboBox ItemsSource="{Binding }"/>
                     </DataTemplate>
                     
+                    <DataTemplate x:Key="ReportTemplate">
+                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ui:SimpleStackPanel Spacing="10"
+                                                 Orientation="Horizontal">
+                                
+                                <Button Content="Сформировать"
+                                        Command="{Binding RefreshCommand}"/>
+                                
+                                <ItemsControl ItemsSource="{Binding Selections, Mode=OneWay}"
+                                              ItemTemplate="{StaticResource EntitySelectorBoxTemplate}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ui:SimpleStackPanel Orientation="Horizontal"
+                                                                 Spacing="10"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                
+                                <TextBlock Text="Тут отбор" Grid.Row="0" />
+                            </ui:SimpleStackPanel>
+
+                            <ContentControl Grid.Row="1"
+                                            Content="{Binding View, Mode=OneWay}"/>
+                            
+                        </Grid>
+                        
+                    </DataTemplate>
+                    
                 </ResourceDictionary>
                 
             </ResourceDictionary.MergedDictionaries>

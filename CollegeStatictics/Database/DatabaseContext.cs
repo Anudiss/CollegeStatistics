@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using CollegeStatictics.Database.Models;
+﻿using CollegeStatictics.Database.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace CollegeStatictics.Database;
@@ -10,7 +10,7 @@ public partial class DatabaseContext : DbContext
     {
     }
 
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public DatabaseContext( DbContextOptions<DatabaseContext> options )
         : base(options)
     {
     }
@@ -59,10 +59,10 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=CollegeStatisticsNew;Trusted_Connection=True;Encrypt=False");
+    protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder )
+        => optionsBuilder.UseSqlite(@"Data Source=.\Database.db");
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating( ModelBuilder modelBuilder )
     {
         modelBuilder.Entity<Attendance>(entity =>
         {
@@ -85,6 +85,52 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("DayOfWeek");
 
+            entity.HasData(new[]
+            {
+                new DayOfWeek()
+                {
+                    Id = 0,
+                    Name = "Воскресенье",
+                    Reduction = "Вс"
+                },
+                new DayOfWeek()
+                {
+                    Id = 1,
+                    Name = "Понедельник",
+                    Reduction = "Пн"
+                },
+                new DayOfWeek()
+                {
+                    Id = 2,
+                    Name = "Вторник",
+                    Reduction = "Вт"
+                },
+                new DayOfWeek()
+                {
+                    Id = 3,
+                    Name = "Среда",
+                    Reduction = "Ср"
+                },
+                new DayOfWeek()
+                {
+                    Id = 4,
+                    Name = "Четверг",
+                    Reduction = "Чт"
+                },
+                new DayOfWeek()
+                {
+                    Id = 5,
+                    Name = "Пятница",
+                    Reduction = "Пт"
+                },
+                new DayOfWeek()
+                {
+                    Id = 6,
+                    Name = "Суббота",
+                    Reduction = "Сб"
+                }
+            });
+
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Reduction).HasMaxLength(2);
@@ -100,6 +146,20 @@ public partial class DatabaseContext : DbContext
         modelBuilder.Entity<EducationForm>(entity =>
         {
             entity.ToTable("EducationForm");
+
+            entity.HasData(new[]
+            {
+                new EducationForm()
+                {
+                    Id = 0,
+                    Name = "Бюджет"
+                },
+                new EducationForm()
+                {
+                    Id = 1,
+                    Name = "Коммерция"
+                }
+            });
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -155,6 +215,25 @@ public partial class DatabaseContext : DbContext
         modelBuilder.Entity<HomeworkExecutionStatus>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_ExecutionStatus");
+
+            entity.HasData(new[]
+            {
+                new HomeworkExecutionStatus()
+                {
+                    Id = 1,
+                    Name = "В работе"
+                },
+                new HomeworkExecutionStatus()
+                {
+                    Id = 2,
+                    Name = "Выполнено"
+                },
+                new HomeworkExecutionStatus()
+                {
+                    Id = 3,
+                    Name = "Не выполнено"
+                }
+            });
 
             entity.ToTable("HomeworkExecutionStatus");
 
@@ -227,6 +306,25 @@ public partial class DatabaseContext : DbContext
         modelBuilder.Entity<LessonType>(entity =>
         {
             entity.ToTable("LessonType");
+
+            entity.HasData(new[]
+            {
+                new LessonType()
+                {
+                    Id = 0,
+                    Name = "Лекция"
+                },
+                new LessonType()
+                {
+                    Id = 1,
+                    Name = "Практика"
+                },
+                new LessonType()
+                {
+                    Id = 2,
+                    Name = "Лабораторная работа"
+                }
+            });
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
@@ -374,5 +472,5 @@ public partial class DatabaseContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    partial void OnModelCreatingPartial( ModelBuilder modelBuilder );
 }

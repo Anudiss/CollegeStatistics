@@ -11,6 +11,7 @@ namespace CollegeStatictics.DataTypes.Attributes
         public string Path { get; }
         public string Header { get; }
         public bool IsReadOnly { get; set; } = true;
+        public string StringFormat { get; set; } = "{0}";
 
         public TextColumnAttribute(string path, string header)
         {
@@ -25,6 +26,8 @@ namespace CollegeStatictics.DataTypes.Attributes
                 Binding = new Binding(Path)
                 {
                     Mode = IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                    StringFormat = StringFormat,
+                    ConverterCulture = new System.Globalization.CultureInfo("ru-RU"),
                     TargetNullValue = "Нет"
                 },
 
