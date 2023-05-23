@@ -7,6 +7,7 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:MainVM}">
+    
     <ui:NavigationView Header="{Binding CurrentViewHeader}"
                        IsSettingsVisible="False"
                        SelectionChanged="NavigationView_SelectionChanged"

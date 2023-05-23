@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CollegeStatictics.DataTypes.Interfaces;
 
-public interface IPropertyAccessor<TSource> where TSource : class, new()
+public interface IPropertyAccessor<T>
 {
-    public IEnumerable<PropertyInfo> PropertyChain { get; }
+    public IEnumerable<Type> Parameters { get; }
 
-    public object GetValue(TSource source);
-
-    public void SetValue(TSource source, object value);
+    object? Get( T instance, object?[] index );
 }

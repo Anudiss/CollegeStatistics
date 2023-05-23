@@ -1,14 +1,13 @@
-﻿using CollegeStatictics.Database;
-using CollegeStatictics.DataTypes;
+﻿using CollegeStatictics.DataTypes;
 using CollegeStatictics.ViewModels;
-
-using Microsoft.EntityFrameworkCore;
 
 using ModernWpf.Controls;
 
-using System.Diagnostics;
-using System.Windows;
+using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace CollegeStatictics.Views
 {
@@ -19,7 +18,7 @@ namespace CollegeStatictics.Views
             InitializeComponent();
         }
 
-        private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private void NavigationView_SelectionChanged( NavigationView sender, NavigationViewSelectionChangedEventArgs args )
         {
             var navItem = (NavigationViewItem)args.SelectedItem;
 
@@ -38,8 +37,8 @@ namespace CollegeStatictics.Views
                 title = view.Title;
             }
 
-            ((MainVM)DataContext).CurrentViewHeader = title;
-            ((MainVM)DataContext).CurrentView = view;
+            ( (MainVM)DataContext ).CurrentViewHeader = title;
+            ( (MainVM)DataContext ).CurrentView = view;
         }
     }
 }

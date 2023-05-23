@@ -177,6 +177,7 @@
                                                            Columns="{Binding Path=Columns, Mode=OneWay}"
                                                            SelectionMode="{Binding Path=SelectionMode}"
                                                            SelectedItems="{Binding Path=SelectedItems, Mode=OneWayToSource}"
+                                                           GridLinesVisibility="All"
                                                            x:Name="ItemsContainer"
                                                            SelectionUnit="FullRow"
                                                            IsReadOnly="True"
@@ -259,7 +260,7 @@
                      
                     <DataTemplate x:Key="EntitySelectorBoxTemplate">
                      
-                        <Grid>
+                        <Grid MinWidth="200">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -346,8 +347,7 @@
                                 <Button Content="Сформировать"
                                         Command="{Binding RefreshCommand}"/>
                                 
-                                <ItemsControl ItemsSource="{Binding Selections, Mode=OneWay}"
-                                              ItemTemplate="{StaticResource EntitySelectorBoxTemplate}">
+                                <ItemsControl ItemsSource="{Binding SelectionContainers, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <ui:SimpleStackPanel Orientation="Horizontal"
@@ -356,7 +356,6 @@
                                     </ItemsControl.ItemsPanel>
                                 </ItemsControl>
                                 
-                                <TextBlock Text="Тут отбор" Grid.Row="0" />
                             </ui:SimpleStackPanel>
 
                             <ContentControl Grid.Row="1"
@@ -365,6 +364,11 @@
                         </Grid>
                         
                     </DataTemplate>
+                    
+                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}"
+                           x:Key="FinalRowStyle">
+                        
+                    </Style>
                     
                 </ResourceDictionary>
                 

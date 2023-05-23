@@ -17,7 +17,7 @@ namespace CollegeStatictics.ViewModels
 
         private readonly string _itemContainerName;
 
-        public FilteredEntitySelectorBox( string itemContainerName, ISelection<T> filter )
+        public FilteredEntitySelectorBox( string itemContainerName, ISelection<T>? filter )
         {
             if (!MainVM.PageBuilders.ContainsKey(itemContainerName))
                 throw new ArgumentException($"No itemsContainer with name {itemContainerName}");

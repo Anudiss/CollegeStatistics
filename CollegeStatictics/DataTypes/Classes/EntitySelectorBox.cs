@@ -22,11 +22,18 @@ public abstract partial class EntitySelectorBox<T> : Control, IEntitySelectorBox
     public event SelectedItemChangedEventHandler<T> SelectedItemChanged
     {
         add => AddHandler(SelectedItemChangedEvent, value);
-        remove => AddHandler(SelectedItemChangedEvent, value);
+        remove => RemoveHandler(SelectedItemChangedEvent, value);
     }
 
+    static EntitySelectorBox() =>
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(EntitySelectorBox<T>), new FrameworkPropertyMetadata(typeof(EntitySelectorBox<T>)));
+
+
     [RelayCommand]
-    private void OpenSelectorDialog() => SelectedItem = OpenSelectorItemDialog();
+    private void OpenSelectorDialog()
+    {
+        SelectedItem = OpenSelectorItemDialog();
+    }
 
     public object? SelectedItem
     {

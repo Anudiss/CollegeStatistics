@@ -4,8 +4,11 @@ using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 
 using System;
@@ -147,16 +150,34 @@ namespace CollegeStatictics.ViewModels
 
                                     .Build()
             },
-            { "Остаток по часам", new ReportBuilder<StudyPlanRecord>(DatabaseContext.Entities.StudyPlanRecords.Local)
+            { "Остаток по часам", () => new ReportBuilder<StudyPlanRecord>()
 
                                     .SetTitle("Остаток по часам")
 
-                                    .AddColumn("Выделено", record => record.DurationInLessons)
-                                    .AddColumn("Проведено", record => record.Lessons.Count)
+                                    .AddColumn("Выделено", record => (double)record.DurationInLessons)
+                                    .AddColumn("Проведено", record => (double)record.Lessons.Count)
 
-                                    .AddSelection(record => record.StudyPlan.Subject)
+                                    .AddPropertySelection((record, parameters) => record.StudyPlan)
+                                        .Build()
 
-                                    .Build
+                                    .AddPropertySelection((record, parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
+                                        .Bind(typeof(Teacher))
+                                        .Bind(typeof(Group))
+                                        .Build()
+
+            /*
+             * Пример
+             * AddPropertySelection((StudyPlanRecord record, object?[] parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
+             *                     .Bind(typeof(Teacher))
+             *                     .Bind(typeof(Group))
+             *                     .Build()
+             */
+
+                                    .HasFinalRow()
+
+                                    .SetFinalFunction(FinalFunction.Sum)
+
+                                    .Build()
             }
         };
 
@@ -222,13 +243,31 @@ namespace CollegeStatictics.ViewModels
             CurrentView = PageBuilders.First().Value();
 
             /*WatchTablesLoading();*/
+            LoadAllTables();
         }
+
+        public static string GetViewByType<T>() => GetViewByType(typeof(T));
+
+        public static string GetViewByType( Type type ) =>
+            PageBuilders.FirstOrDefault(builder =>
+            {
+                var content = builder.Value();
+                return content.GetType().GetGenericArguments()[0] == type;
+            }).Key;
 
         private static void WatchTablesLoading()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            LoadAllTables();
+
+            stopWatch.Stop();
+            MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
+        }
+
+        private static void LoadAllTables()
+        {
             DatabaseContext.Entities.Attendances.Load();
             DatabaseContext.Entities.DayOfWeeks.Load();
             DatabaseContext.Entities.Departments.Load();
@@ -251,9 +290,6 @@ namespace CollegeStatictics.ViewModels
             DatabaseContext.Entities.Teachers.Load();
             DatabaseContext.Entities.TimetableRecords.Load();
             DatabaseContext.Entities.Timetables.Load();
-
-            stopWatch.Stop();
-            MessageBox.Show($"Lessons: {stopWatch.ElapsedMilliseconds}");
         }
     }
 }
