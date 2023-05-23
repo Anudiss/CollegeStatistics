@@ -264,17 +264,35 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"
-                                     Margin="0 0 3 0"
+                                     Margin="0 0 4 0"
                                      IsReadOnly="True"
                                      ui:TextBoxHelper.IsDeleteButtonVisible="False"
                                      Style="{StaticResource {x:Type TextBox}}"/>
-                            
+
+                            <Button Content="&#9587;"
+                                    Command="{Binding ClearSelectedItemCommand}"
+                                    Grid.Column="1"
+                                    Margin="0 0 3 0"
+                                    Width="32">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsClearable}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
                             <Button Content="&gt;"
                                     Command="{Binding OpenSelectorDialogCommand}"
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     Width="32"/>
                         </Grid>
                         

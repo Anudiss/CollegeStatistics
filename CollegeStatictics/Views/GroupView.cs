@@ -8,9 +8,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
+    [ViewTitle("Группа")]
     public class GroupView : ItemDialog<Group>
     {
-        [SelectableSubtableFormElement("Студенты")]
+        public Selection<Student> StudentGroupFilter => new(student => student.Group != Item);
+
+        [SelectableSubtableFormElement("Студенты", FilterPropertyName = nameof(StudentGroupFilter))]
         [TextColumn("Id", "Id")]
         [TextColumn("Surname", "Фамилия")]
         [TextColumn("Name", "Имя")]
@@ -27,7 +30,7 @@ namespace CollegeStatictics.ViewModels
         }
 
         [Label("Староста")]
-        [EntitySelectorFormElement("Студенты", FilterPropertyName = nameof(GroupLeaderFilter))]
+        [EntitySelectorFormElement("Студенты", FilterPropertyName = nameof(GroupLeaderFilter), IsClearable = true)]
         public Student? GroupLeader
         {
             get => Item.GroupLeader;
@@ -38,7 +41,7 @@ namespace CollegeStatictics.ViewModels
             }
         }
 
-        public Selection<Student> GroupLeaderFilter => new Selection<Student>(student => student.Group == Item);
+        public Selection<Student> GroupLeaderFilter => new(student => student.Group == Item);
 
         [Required(ErrorMessage = "Поле обязательно")]
         [Label("Куратор")]
@@ -48,9 +51,10 @@ namespace CollegeStatictics.ViewModels
             get => Item.Curator;
             set
             {
+                ValidateProperty(value);
+
                 Item.Curator = value;
                 OnPropertyChanged();
-                ValidateProperty(value);
             }
         }
 
@@ -62,9 +66,10 @@ namespace CollegeStatictics.ViewModels
             get => Item.Speciality;
             set
             {
+                ValidateProperty(value);
+
                 Item.Speciality = value;
                 OnPropertyChanged();
-                ValidateProperty(value);
             }
         }
 
@@ -76,9 +81,10 @@ namespace CollegeStatictics.ViewModels
             get => Item.EducationForm;
             set
             {
+                ValidateProperty(value);
+
                 Item.EducationForm = value;
                 OnPropertyChanged();
-                ValidateProperty(value);
             }
         }
 

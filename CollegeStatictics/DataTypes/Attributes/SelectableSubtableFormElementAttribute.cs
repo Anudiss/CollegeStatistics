@@ -8,6 +8,8 @@ namespace CollegeStatictics.DataTypes.Attributes
     {
         public string? ItemContainerName { get; } = null;
 
+        public string? FilterPropertyName { get; set; } = null;
+
         public SelectableSubtableFormElementAttribute(string itemContainerName)
         {
             ItemContainerName = itemContainerName;

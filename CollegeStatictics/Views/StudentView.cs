@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.ViewModels
 {
+    [ViewTitle("Студент")]
     public class StudentView : ItemDialog<Student>
     {
         [MaxLength(50)]

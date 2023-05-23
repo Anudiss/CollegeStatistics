@@ -7,8 +7,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollegeStatictics.Views;
 
+[ViewTitle("Домашняя работа")]
 public class HomeworkView : ItemDialog<Homework>
 {
+    [Required(ErrorMessage = "Обязательное поле")]
     [TextBoxFormElement(AcceptsReturn = true)]
     [MinHeight(400)]
     [Label("Описание")]
@@ -17,6 +19,8 @@ public class HomeworkView : ItemDialog<Homework>
         get => Item.Text;
         set
         {
+            ValidateProperty(value);
+
             Item.Text = value;
             OnPropertyChanged();
         }

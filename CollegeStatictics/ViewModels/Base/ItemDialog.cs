@@ -2,6 +2,7 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Attributes;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Records;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.Windows;
@@ -35,7 +36,7 @@ namespace CollegeStatictics.ViewModels.Base
         #region [ Commands ]
 
         [RelayCommand(CanExecute = nameof(CanSave))]
-        public void Save()
+        private void Save()
         {
             ValidateAllProperties();
             if (HasErrors)
@@ -46,8 +47,8 @@ namespace CollegeStatictics.ViewModels.Base
 
             DatabaseContext.Entities.SaveChanges();
         }
-        
         private bool CanSave() => !HasErrors;
+
 
         [RelayCommand]
         private void Cancel() => DatabaseContext.CancelChanges();
@@ -78,6 +79,16 @@ namespace CollegeStatictics.ViewModels.Base
 
         protected virtual IEnumerable<FrameworkElement> CreateViewElements()
         {
+            var titleAttribute = GetType().GetCustomAttribute<ViewTitleAttribute>();
+            if (titleAttribute != null)
+            {
+                yield return new TextBlock
+                {
+                    Text = titleAttribute.Title,
+                    FontSize = 22
+                };
+            }
+
             var formElements = GetFormElements();
             foreach (var formElement in formElements)
             {
@@ -689,6 +700,10 @@ namespace CollegeStatictics.ViewModels.Base
 
             var entitySelectorBox = Activator.CreateInstance(filteredEntitySelectorBoxType, new[] { attribute.ItemContainerName, filter });
             var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
+
+            entitySelectorBoxType
+                .GetProperty(nameof(attribute.IsClearable))!
+                .SetValue(entitySelectorBox, attribute.IsClearable);
 
             ((Control)entitySelectorBox!).SetBinding(dp, new Binding(formElement.Property.Name)
             {

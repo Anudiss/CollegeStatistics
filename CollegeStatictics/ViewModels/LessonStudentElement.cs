@@ -21,6 +21,9 @@ public partial class AttendanceElement : ObservableObject
     [ObservableProperty]
     private bool _isAttended;
 
+    [ObservableProperty]
+    public short? _mark;
+
     partial void OnIsAttendedChanged(bool value)
     {
         if (!value)
@@ -44,7 +47,8 @@ public partial class AttendanceElement : ObservableObject
                {
                    Lesson = lesson,
                    Student = student,
-                   _isAttended = !lesson.Attendances.Any(a => a.Student == student)
+                   _isAttended = !lesson.Attendances.Any(a => a.Student == student),
+                   _mark = lesson.Attendances.FirstOrDefault(a => a.Student == student)?.Mark
                };
     }
 }

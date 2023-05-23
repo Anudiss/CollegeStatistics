@@ -5,6 +5,8 @@
         public string ItemContainerName { get; }
 
         public string? FilterPropertyName { get; set; } = null;
+
+        public bool IsClearable { get; set; } = false;
         
         public EntitySelectorFormElementAttribute(string itemContainerName)
         {
