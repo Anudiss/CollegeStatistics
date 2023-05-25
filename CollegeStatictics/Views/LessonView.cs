@@ -153,7 +153,7 @@ namespace CollegeStatictics.Views
             }
         }
 
-        public Selection<Group> GroupFilter => new Selection<Group>(group => group.Speciality == StudyPlanRecord.StudyPlan.Speciality);
+        public Selection<Group> GroupFilter => new Selection<Group>(group => group.Speciality == StudyPlanRecord.StudyPlan.Speciality && StudyPlanRecord.DurationInLessons > StudyPlanRecord.Lessons.Where(g => g.Group == group).Count());
 
         #endregion
 

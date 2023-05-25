@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -110,7 +111,8 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public bool HasFinalColumn { get; } = false;
 
     public IEnumerable<ISelection<T>> Selections { get; }
-    public IEntitySelectorBox[] SelectionElements { get; }
+    public IEnumerable<FrameworkElement> Elements { get; }
+    public IEnumerable<IEntitySelectorBox> SelectionElements { get; }
     public IEnumerable<ContentControl> SelectionContainers { get; }
 
     public IPropertyAccessor<T>[] PropertyAccessors { get; }
@@ -139,7 +141,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         PropertyAccessors = propertyAccessors.ToArray();
 
         Selections = selections;
-        SelectionElements = CreateEntitySelectorBoxes().ToArray();
+        SelectionElements = CreateEntitySelectorBoxes();
         SelectionContainers = SelectionElements.Select(entitySelectorBox => new ContentControl()
         {
             Content = entitySelectorBox,
@@ -235,7 +237,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         {
             rows = filteredValues.GroupBy(Grouping)
                                  .Select(group => {
-                                     var values = columns.ToDictionary(c => c.Header, c => (object?)group.Select(g => c.ValueGetter(g)).OfType<double?>().Max());
+                                     var values = columns.ToDictionary(c => c.Header, c => (object?)FinalFunction(group.Select(g => c.ValueGetter(g)).OfType<double>()));
                                      if (HasFinalColumn)
                                          values["Итого"] = FinalFunction(values.Select(pair => pair.Value).OfType<double>());
                                      return new Row(group.Key, values);
