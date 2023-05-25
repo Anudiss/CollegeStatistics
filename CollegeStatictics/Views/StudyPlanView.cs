@@ -39,7 +39,7 @@ namespace CollegeStatictics.Views
             }
 
             var lessons = item.Lessons.Where(lesson => lesson.IsConducted);
-            if (lessons.GroupBy(l => l.Group).All(g => g.Count() >= item.DurationInLessons))
+            if (lessons.Any() && lessons.GroupBy(l => l.Group).All(g => g.Count() >= item.DurationInLessons))
             {
                 DialogWindow.ShowMessage("Превышено количество пар, выделенных на тему");
 

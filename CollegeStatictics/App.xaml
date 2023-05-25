@@ -365,6 +365,15 @@
                                 <Button Content="Сформировать"
                                         Command="{Binding RefreshCommand}"/>
                                 
+                                <ItemsControl ItemsSource="{Binding DatePickers, Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ui:SimpleStackPanel Orientation="Horizontal"
+                                                                 Spacing="10"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                
                                 <ItemsControl ItemsSource="{Binding SelectionContainers, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

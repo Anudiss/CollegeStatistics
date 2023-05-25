@@ -114,6 +114,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public IEnumerable<FrameworkElement> Elements { get; }
     public IEnumerable<IEntitySelectorBox> SelectionElements { get; }
     public IEnumerable<ContentControl> SelectionContainers { get; }
+    public DatePicker[]? DatePickers { get; }
 
     public IPropertyAccessor<T>[] PropertyAccessors { get; }
 
@@ -123,12 +124,13 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public Func<T, object>? ColumnGetter { get; }
     public Func<T, object>? ValueGetter { get; }
     public Func<T, object>? Grouping { get; }
+    public Func<T, DateTime>? DateGetter { get; }
 
     public FrameworkElement View => Generate();
 
     public DataTemplate ContentTemplate => (DataTemplate)Application.Current.FindResource("ReportTemplate");
 
-    public Report( string? title, IEnumerable<Column> columns, IEnumerable<IPropertyAccessor<T>> propertyAccessors, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double>? finalFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping )
+    public Report( string? title, IEnumerable<Column> columns, IEnumerable<IPropertyAccessor<T>> propertyAccessors, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double>? finalFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping, Func<T, DateTime>? dateGetter )
     {
         Title = title ?? $"Отчёт по {typeof(T).Name}";
         HasFinalRow = hasFinalRow;
@@ -149,11 +151,27 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             MinWidth = 200
         });
         Columns = columns;
+        DateGetter = dateGetter;
+        if (dateGetter is not null)
+        {
+            DatePickers = new DatePicker[2];
+
+            var beginDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DatePickers[0] = new DatePicker()
+            {
+                SelectedDate = beginDate
+            };
+
+            DatePickers[1] = new DatePicker()
+            {
+                SelectedDate = beginDate.AddMonths(1)
+            };
+        }
     }
 
     private IEnumerable<IEntitySelectorBox> CreateEntitySelectorBoxes()
     {
-        foreach (Type type in PropertyAccessors.SelectMany(pair => pair.Parameters.Any() ? pair.Parameters : new[] { pair.GetType().GetGenericArguments()[1] }))
+        foreach (Type type in PropertyAccessors.SelectMany(pair => pair.Parameters.Any() ? pair.Parameters : new[] { pair.GetType().GetGenericArguments()[1] }).Except(new[] { typeof(DateTime) }))
             yield return CreateEntitySelectorBoxFromType(type);
     }
 
@@ -215,7 +233,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         }
 
         // Generating dataGrid
-        foreach (var column in columns)
+        foreach (var column in columns.OrderBy(c => c.Header))
         {
             dataGrid.Columns.Add(new DataGridTextColumn()
             {
@@ -237,7 +255,11 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         {
             rows = filteredValues.GroupBy(Grouping)
                                  .Select(group => {
-                                     var values = columns.ToDictionary(c => c.Header, c => (object?)FinalFunction(group.Select(g => c.ValueGetter(g)).OfType<double>()));
+                                     var values = columns.ToDictionary(c => c.Header, c =>
+                                     {
+                                         double v = FinalFunction(group.Select(g => c.ValueGetter(g)).OfType<double>().DefaultIfEmpty());
+                                         return (object?)(v == 0 ? null : v);
+                                     });
                                      if (HasFinalColumn)
                                          values["Итого"] = FinalFunction(values.Select(pair => pair.Value).OfType<double>());
                                      return new Row(group.Key, values);
@@ -273,6 +295,13 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         {
             if (accessor.Parameters.Any())
                 return (bool)accessor.Get(value, accessor.Parameters.Select(p => FindSelectorBoxByReturnType(p)!.SelectedItem).ToArray())!;
+
+            if (DateGetter is not null)
+            {
+                var date = DateGetter(value);
+                if (date < DatePickers[0].SelectedDate || date > DatePickers[1].SelectedDate)
+                    return false;
+            }
 
             object? selectedItem = FindSelectorBoxByReturnType(accessor.GetType().GetGenericArguments()[1])?.SelectedItem;
             return selectedItem == null || accessor.Get(value, Array.Empty<object>()) == selectedItem;
@@ -314,7 +343,8 @@ public class ReportBuilder<T> where T : class, new()
     private readonly List<IPropertyAccessor<T>>          _propertyAccessors;
     private readonly List<ISelection<T>>                 _selections;
     private          Func<IEnumerable<double>, double>?  _finalFunction = null;
-    private          Func<T, object>                _headerGetter;
+    private          Func<T, object>                     _headerGetter;
+    private          Func<T, DateTime>                   _dateGetter;
     private          Func<T, object>                     _valueGetter;
     private          string?                             _title = null;
     private          Func<T, object>?                    _grouping = null;
@@ -334,8 +364,11 @@ public class ReportBuilder<T> where T : class, new()
         return new ReportBuilder<T>.ReportPropertyAccessorBuilder<TProperty>(( item, parameters ) => (TProperty)columnGetter(item), this);
     }
 
-    public ReportBuilder<T> AddDateSelection( Func<T, DateTime> dateGetter ) =>
-        new ReportBuilder<T>.ReportPropertyAccessorBuilder<DateTime>((item, parameters) => dateGetter(item), this).Build();
+    public ReportBuilder<T> AddDateSelection( Func<T, DateTime> dateGetter )
+    {
+        _dateGetter = dateGetter;
+        return this;
+    }
 
     public ReportBuilder<T> AddSelection( ISelection<T> selection )
     {
@@ -436,7 +469,8 @@ public class ReportBuilder<T> where T : class, new()
             finalFunction: _finalFunction,
             columnHeaderGetter: _headerGetter,
             valueGetter: _valueGetter,
-            grouping: _grouping);
+            grouping: _grouping,
+            _dateGetter);
 }
 public class Column
 {

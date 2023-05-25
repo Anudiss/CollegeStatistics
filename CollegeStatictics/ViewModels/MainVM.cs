@@ -152,7 +152,7 @@ namespace CollegeStatictics.ViewModels
                                     .SetTitle("Остаток по часам")
 
                                     .AddColumn("Выделено", record => (double)record.DurationInLessons)
-                                    .AddColumn("Проведено", record => (double)record.Lessons.Count)
+                                    .AddColumn("Проведено", record => (double)record.Lessons.Count(l => l.IsConducted))
 
                                     .AddPropertySelection((record, parameters) => record.StudyPlan)
                                         .Build()
@@ -180,6 +180,8 @@ namespace CollegeStatictics.ViewModels
                                     .AddPropertySelection((attendance, parameters) => attendance.Student.Group)
                                         .Build()
 
+                                    .AddDateSelection(attendance => attendance.Lesson.Date)
+
                                     .HasFinalColumn()
 
                                     .HasFinalRow()
@@ -189,9 +191,19 @@ namespace CollegeStatictics.ViewModels
 
                                     .Build()
             },
-            { "Отчёт посещаемости", () => new ReportBuilder<Group>()
+            { "Отчёт посещаемости", () => new ReportBuilder<Attendance>()
 
                                 .SetTitle("Отчёт посещаемости")
+
+                                .BindColumnHeader<DateTime>( attendance => $"{attendance.Lesson.Date:dd.MM.yyyy}", attendance => (double?)(attendance.IsAttented ? 1 : 0) )
+                                    .Build()
+
+                                .GroupBy(attendance => attendance.Student.Group)
+
+                                .AddDateSelection(attendance => attendance.Lesson.Date)
+
+                                .AddPropertySelection<Subject>((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
+                                    .Build()
 
                                 .HasFinalColumn()
 
