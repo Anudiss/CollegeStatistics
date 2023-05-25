@@ -7,7 +7,7 @@ public partial class HomeworkStudent
 {
     public int Id { get; set; }
 
-    public int LessonId { get; set; }
+    public int? LessonId { get; set; }
 
     public int StudentId { get; set; }
 
@@ -17,7 +17,7 @@ public partial class HomeworkStudent
 
     public virtual HomeworkExecutionStatus HomeworkExecutionStatus { get; set; } = null!;
 
-    public virtual Lesson Lesson { get; set; } = null!;
+    public virtual Lesson? Lesson { get; set; } = null!;
 
     public virtual Student Student { get; set; } = null!;
 }
