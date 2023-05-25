@@ -2,6 +2,7 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Classes;
+using CollegeStatictics.Utils;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
 

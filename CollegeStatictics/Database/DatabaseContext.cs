@@ -254,7 +254,7 @@ public partial class DatabaseContext : DbContext
 
             entity.HasOne(d => d.Lesson).WithMany(p => p.HomeworkStudents)
                 .HasForeignKey(d => d.LessonId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_HomeworkStudent_Lesson");
 
             entity.HasOne(d => d.Student).WithMany(p => p.HomeworkStudents)
@@ -312,17 +312,17 @@ public partial class DatabaseContext : DbContext
             {
                 new LessonType()
                 {
-                    Id = 0,
+                    Id = 1,
                     Name = "Лекция"
                 },
                 new LessonType()
                 {
-                    Id = 1,
+                    Id = 2,
                     Name = "Практика"
                 },
                 new LessonType()
                 {
-                    Id = 2,
+                    Id = 3,
                     Name = "Лабораторная работа"
                 }
             });
