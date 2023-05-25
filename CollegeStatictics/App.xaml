@@ -68,7 +68,7 @@
                                     xmlns:base="clr-namespace:CollegeStatictics.ViewModels.Base"
                                     xmlns:controls="clr-namespace:CollegeStatictics.Controls.Extensions"
                                    xmlns:ui="http://schemas.modernwpf.com/2019">
-                    
+
                     <DataTemplate x:Key="SelectorItemsContainerTemplate">
                         
                         <Grid>
@@ -201,7 +201,7 @@
                             </Border>
                         
                          </Grid>
-                             
+                        
                     </DataTemplate>
                      
                     <DataTemplate x:Key="ItemDialogTemplate">
@@ -436,6 +436,8 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+
+                    <Style TargetType="ui:AppBarButton" BasedOn="{StaticResource {x:Type ui:AppBarButton}}"/>
                 </ResourceDictionary>
                 
             </ResourceDictionary.MergedDictionaries>
