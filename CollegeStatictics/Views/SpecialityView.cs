@@ -10,7 +10,7 @@ namespace CollegeStatictics.ViewModels
     public class SpecialityView : ItemDialog<Speciality>
     {
         [Required(ErrorMessage = "Поле обязательно")]
-        [Label("Подразделение")]
+        [Label("Отделение")]
         [EntitySelectorFormElement("Отделения")]
         public Department Department
         {
