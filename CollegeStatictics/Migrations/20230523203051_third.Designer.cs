@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeStatictics.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230517054948_first")]
-    partial class first
+    [Migration("20230523203051_third")]
+    partial class third
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,9 @@ namespace CollegeStatictics.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsAttented")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<short?>("Mark")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("LessonId", "StudentId")
@@ -57,6 +60,50 @@ namespace CollegeStatictics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DayOfWeek", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Воскресенье",
+                            Reduction = "Вс"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Понедельник",
+                            Reduction = "Пн"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Вторник",
+                            Reduction = "Вт"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Среда",
+                            Reduction = "Ср"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Четверг",
+                            Reduction = "Чт"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Пятница",
+                            Reduction = "Пт"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Суббота",
+                            Reduction = "Сб"
+                        });
                 });
 
             modelBuilder.Entity("CollegeStatictics.Database.Models.Department", b =>
@@ -92,6 +139,18 @@ namespace CollegeStatictics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EducationForm", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Бюджет"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Коммерция"
+                        });
                 });
 
             modelBuilder.Entity("CollegeStatictics.Database.Models.EmergencySituation", b =>
@@ -187,6 +246,23 @@ namespace CollegeStatictics.Migrations
                         .HasName("PK_ExecutionStatus");
 
                     b.ToTable("HomeworkExecutionStatus", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "В работе"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Выполнено"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Не выполнено"
+                        });
                 });
 
             modelBuilder.Entity("CollegeStatictics.Database.Models.HomeworkStudent", b =>
@@ -289,6 +365,23 @@ namespace CollegeStatictics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LessonType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Лекция"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Практика"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Лабораторная работа"
+                        });
                 });
 
             modelBuilder.Entity("CollegeStatictics.Database.Models.NoteToLesson", b =>
@@ -559,7 +652,7 @@ namespace CollegeStatictics.Migrations
                         .WithMany("Attendances")
                         .HasForeignKey("LessonId")
                         .IsRequired()
-                        .HasConstraintName("FK_Attendance_Lesson");
+                        .HasConstraintName("FK_Attendance_Lesson1");
 
                     b.HasOne("CollegeStatictics.Database.Models.Student", "Student")
                         .WithMany("Attendances")

@@ -386,8 +386,47 @@
                     <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}"
                            x:Key="FinalRowStyle">
                         
+                        <Setter Property="HeaderStyle">
+                            <Setter.Value>
+                                <Style TargetType="{x:Type DataGridRowHeader}" BasedOn="{StaticResource {x:Type DataGridRowHeader}}">
+                                    <Setter Property="Background" Value="LightBlue"/>
+                                </Style>
+                            </Setter.Value>
+                        </Setter>
+                        
+                        <Setter Property="Background" Value="LightBlue"/>
+                        
                     </Style>
                     
+                    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}"
+                           x:Key="DataGridColumnHeaderStyle">
+                        <Setter Property="Background" Value="Transparent"/>
+                        
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="WrapWithOverflow"
+                                               Text="{Binding}"
+                                               FontWeight="Bold"
+                                               Margin="5"
+                                               MaxWidth="150"
+                                               VerticalAlignment="Center"
+                                               TextAlignment="Center"
+                                               HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="270" />
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </ResourceDictionary>
                 
             </ResourceDictionary.MergedDictionaries>

@@ -693,15 +693,12 @@ namespace CollegeStatictics.ViewModels.Base
             var filteredEntitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.FilteredEntitySelectorBox`1")!
                                                          .MakeGenericType(formElement.Property.PropertyType);
 
-            var entitySelectorBoxType = Type.GetType("CollegeStatictics.DataTypes.Classes.EntitySelectorBox`1")!
-                                                 .MakeGenericType(formElement.Property.PropertyType);
-
             var filter = attribute.FilterPropertyName is not null ? GetType().GetProperty(attribute.FilterPropertyName)!.GetValue(this) : null;
 
             var entitySelectorBox = Activator.CreateInstance(filteredEntitySelectorBoxType, new[] { attribute.ItemContainerName, filter });
-            var dp = (DependencyProperty)entitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
+            var dp = (DependencyProperty)filteredEntitySelectorBoxType.GetField("SelectedItemProperty")!.GetValue(entitySelectorBox)!;
 
-            entitySelectorBoxType
+            filteredEntitySelectorBoxType
                 .GetProperty(nameof(attribute.IsClearable))!
                 .SetValue(entitySelectorBox, attribute.IsClearable);
 

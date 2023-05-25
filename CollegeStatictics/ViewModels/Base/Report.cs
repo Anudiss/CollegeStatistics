@@ -1,12 +1,11 @@
 ﻿using CollegeStatictics.Database;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.EntityFrameworkCore;
-
-using ModernWpf.Controls.Primitives;
 
 using System;
 using System.Collections.Generic;
@@ -110,30 +109,38 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
 
     public bool HasFinalColumn { get; } = false;
 
-    public IEntitySelectorBox[] Selections { get; }
+    public IEnumerable<ISelection<T>> Selections { get; }
+    public IEntitySelectorBox[] SelectionElements { get; }
     public IEnumerable<ContentControl> SelectionContainers { get; }
 
     public IPropertyAccessor<T>[] PropertyAccessors { get; }
 
     public IEnumerable<Column> Columns { get; }
 
-    public Func<IEnumerable<T>, Func<T, double>, double> FinalFunction { get; }
+    public Func<IEnumerable<double>, double> FinalFunction { get; }
+    public Func<T, object>? ColumnGetter { get; }
+    public Func<T, object>? ValueGetter { get; }
+    public Func<T, object>? Grouping { get; }
 
     public FrameworkElement View => Generate();
 
     public DataTemplate ContentTemplate => (DataTemplate)Application.Current.FindResource("ReportTemplate");
 
-    public Report( string? title, IEnumerable<Column> columns, IEnumerable<IPropertyAccessor<T>> propertyAccessors, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<T>, Func<T, double>, double>? finalFunction )
+    public Report( string? title, IEnumerable<Column> columns, IEnumerable<IPropertyAccessor<T>> propertyAccessors, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double>? finalFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping )
     {
         Title = title ?? $"Отчёт по {typeof(T).Name}";
         HasFinalRow = hasFinalRow;
         HasFinalColumn = hasFinalColumn;
         FinalFunction = finalFunction;
+        ColumnGetter = columnHeaderGetter;
+        ValueGetter = valueGetter;
+        Grouping = grouping;
 
         PropertyAccessors = propertyAccessors.ToArray();
 
-        Selections = CreateEntitySelectorBoxes().ToArray();
-        SelectionContainers = Selections.Select(entitySelectorBox => new ContentControl()
+        Selections = selections;
+        SelectionElements = CreateEntitySelectorBoxes().ToArray();
+        SelectionContainers = SelectionElements.Select(entitySelectorBox => new ContentControl()
         {
             Content = entitySelectorBox,
             ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate"),
@@ -152,7 +159,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     {
         var entitySelectorBoxType = typeof(FilteredEntitySelectorBox<>).MakeGenericType(type);
         IEntitySelectorBox entitySelectorBoxInstance = (IEntitySelectorBox)Activator.CreateInstance(entitySelectorBoxType, new object?[] { MainVM.GetViewByType(type), null })!;
-        ((Control)entitySelectorBoxInstance).SetValue(TextBoxHelper.IsDeleteButtonProperty, true);
+        ( (dynamic)entitySelectorBoxInstance ).IsClearable = true;
 
         return entitySelectorBoxInstance;
     }
@@ -172,6 +179,8 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             CanUserResizeColumns = false,
             CanUserSortColumns = false,
 
+            ColumnHeaderStyle = (Style)Application.Current.FindResource("DataGridColumnHeaderStyle"),
+
             GridLinesVisibility = DataGridGridLinesVisibility.All,
 
             IsReadOnly = true
@@ -182,25 +191,64 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         var values = DatabaseContext.Entities.Set<T>().Local;
 
         // Filtering it
-        IEnumerable<T> filteredValues = values.Where(FilterReportValue);
+        List<T> filteredValues = values.Where(value => Selections.All(s => s.IsAccepted(value)))
+                                       .Where(FilterReportValue)
+                                       .ToList();
 
-        // Casting to row
-        List<Row> rows = filteredValues.Select(value => Row.CreateRowFromColumns(value, Columns)).ToList();
+
+        var columns = Columns.ToList();
+
+        if (ColumnGetter != null)
+        {
+            var headers = filteredValues.Select(value => ColumnGetter(value)).Distinct();
+
+            headers.ForEach(header => columns.Add(new BindedColumn(header.ToString()!, item => ValueGetter((T)item), item => ColumnGetter((T)item) == header)));
+        }
+
+        if (HasFinalColumn)
+        {
+            var columnsCopy = columns.ToArray();
+            var finalColumn = new Column("Итого", item => FinalFunction(columnsCopy.Select(c => c.ValueGetter(item)).OfType<double>()));
+            columns.Add(finalColumn);
+        }
 
         // Generating dataGrid
-        foreach (var column in Columns)
+        foreach (var column in columns)
+        {
             dataGrid.Columns.Add(new DataGridTextColumn()
             {
                 Header = column.Header,
                 Binding = new Binding($"[{column.Header}]")
                 {
-                    Mode = BindingMode.OneWay
-                }
+                    Mode = BindingMode.OneWay,
+                    StringFormat = "{0:0.##}",
+                    TargetNullValue = "-"
+                },
             });
+        }
+
+        // Casting to row
+        List<Row> rows;
+        if (Grouping == null)
+            rows = filteredValues.Select(value => Row.CreateRowFromColumns(value, columns)).ToList();
+        else
+        {
+            rows = filteredValues.GroupBy(Grouping)
+                                 .Select(group => {
+                                     var values = columns.ToDictionary(c => c.Header, c => (object?)group.Select(g => c.ValueGetter(g)).OfType<double?>().Max());
+                                     if (HasFinalColumn)
+                                         values["Итого"] = FinalFunction(values.Select(pair => pair.Value).OfType<double>());
+                                     return new Row(group.Key, values);
+                                 })
+                                 .ToList();
+        }
+
+        if (!rows.Any())
+            return dataGrid;
 
         if (HasFinalRow)
         {
-            Dictionary<string, object?> finalValues = Columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row.Item).Cast<T>(), item => (double)column.ValueGetter(item)) })
+            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>()) })
                                                              .ToDictionary(value => value.Header, value => (object?)value.Value);
             rows.Add(new Row("Итого", finalValues));
         }
@@ -212,6 +260,9 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
                 Item = row
             });
 
+        if (HasFinalRow)
+            dataGrid.Items.Cast<DataGridRow>().Last().Style = (Style)Application.Current.FindResource("FinalRowStyle");
+
         return dataGrid;
     }
 
@@ -221,12 +272,12 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             if (accessor.Parameters.Any())
                 return (bool)accessor.Get(value, accessor.Parameters.Select(p => FindSelectorBoxByReturnType(p)!.SelectedItem).ToArray())!;
 
-            object? selectedItem = FindSelectorBoxByReturnType(accessor.GetType().GetGenericArguments()[1])!.SelectedItem;
+            object? selectedItem = FindSelectorBoxByReturnType(accessor.GetType().GetGenericArguments()[1])?.SelectedItem;
             return selectedItem == null || accessor.Get(value, Array.Empty<object>()) == selectedItem;
         });
 
     private IEntitySelectorBox? FindSelectorBoxByReturnType( Type type ) =>
-        Selections.FirstOrDefault(s => s.GetType().GetGenericArguments()[0] == type);
+        SelectionElements.FirstOrDefault(s => s.GetType().GetGenericArguments()[0] == type);
 }
 
 public class ReportBuilder<T> where T : class, new()
@@ -257,16 +308,43 @@ public class ReportBuilder<T> where T : class, new()
         }
     }
 
-    private readonly List<Column>                                    _columns;
-    private readonly List<IPropertyAccessor<T>>                      _propertyAccessors;
-    private          Func<IEnumerable<T>, Func<T, double>, double>?  _finalFunction = null;
-    private          string?                                         _title = null;
-    private          bool                                            _hasFinalRow, _hasFinalColumn;
+    private readonly List<Column>                        _columns;
+    private readonly List<IPropertyAccessor<T>>          _propertyAccessors;
+    private readonly List<ISelection<T>>                 _selections;
+    private          Func<IEnumerable<double>, double>?  _finalFunction = null;
+    private          Func<T, object>                _headerGetter;
+    private          Func<T, object>                     _valueGetter;
+    private          string?                             _title = null;
+    private          Func<T, object>?                    _grouping = null;
+    private          bool                                _hasFinalRow, _hasFinalColumn;
 
     public ReportBuilder()
     {
         _propertyAccessors = new();
         _columns = new();
+        _selections = new();
+    }
+
+    public ReportPropertyAccessorBuilder<TProperty> BindColumnHeader<TProperty>( Func<T, object> columnGetter, Func<T, object> valueGetter )
+    {
+        _headerGetter = columnGetter;
+        _valueGetter = valueGetter;
+        return new ReportBuilder<T>.ReportPropertyAccessorBuilder<TProperty>(( item, parameters ) => (TProperty)columnGetter(item), this);
+    }
+
+    public ReportBuilder<T> AddDateSelection( Func<T, DateTime> dateGetter ) =>
+        new ReportBuilder<T>.ReportPropertyAccessorBuilder<DateTime>((item, parameters) => dateGetter(item), this).Build();
+
+    public ReportBuilder<T> AddSelection( ISelection<T> selection )
+    {
+        _selections.Add(selection);
+        return this;
+    }
+
+    public ReportBuilder<T> GroupBy( Func<T, object> grouping )
+    {
+        _grouping = grouping;
+        return this;
     }
 
     public ReportBuilder<T> SetTitle( string title )
@@ -292,10 +370,10 @@ public class ReportBuilder<T> where T : class, new()
     {
         _finalFunction = finalFunction switch
         {
-            FinalFunction.Sum => Enumerable.Sum<T>,
-            FinalFunction.Average => Enumerable.Average<T>,
-            FinalFunction.Min => Enumerable.Min<T>,
-            FinalFunction.Max => Enumerable.Max<T>,
+            FinalFunction.Sum => Enumerable.Sum,
+            FinalFunction.Average => Enumerable.Average,
+            FinalFunction.Min => Enumerable.Min,
+            FinalFunction.Max => Enumerable.Max,
             _ => throw new ArgumentException($"Final function: {finalFunction} doesn't support")
         };
         return this;
@@ -350,11 +428,14 @@ public class ReportBuilder<T> where T : class, new()
             title: _title,
             columns: _columns,
             propertyAccessors: _propertyAccessors,
+            selections: _selections,
             hasFinalRow: _hasFinalRow,
             hasFinalColumn: _hasFinalColumn,
-            finalFunction: _finalFunction);
+            finalFunction: _finalFunction,
+            columnHeaderGetter: _headerGetter,
+            valueGetter: _valueGetter,
+            grouping: _grouping);
 }
-
 public class Column
 {
     public string Header { get; }
@@ -365,6 +446,17 @@ public class Column
     {
         Header = header;
         ValueGetter = valueGetter;
+    }
+}
+
+public class BindedColumn : Column
+{
+    public Func<object, bool> Filter { get; }
+
+    public BindedColumn( string header, Func<object, object?> valueGetter, Func<object, bool> filter )
+        : base(header, item => filter(item) ? valueGetter(item) : null)
+    {
+        Filter = filter;
     }
 }
 
@@ -381,7 +473,16 @@ public class Row
     {
         Item = item;
 
-        columns.ForEach(column => _values.Add(column.Header, column.ValueGetter(item)));
+        columns.ForEach(column =>
+        {
+            if (column is not BindedColumn bindedColumn)
+            {
+                _values.Add(column.Header, column.ValueGetter(item));
+                return;
+            }
+
+
+        });
     }
 
     public Row( object item, Dictionary<string, object?> values )

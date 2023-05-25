@@ -93,7 +93,7 @@ namespace CollegeStatictics.Views
 
         [Label("Преподаватель")]
         [TextBoxFormElement(IsReadOnly = true)]
-        public Teacher Teacher => Item.StudyPlanRecord.StudyPlan.Timetables.SingleOrDefault(t => t.Group == Group)?.Teacher;
+        public Teacher? Teacher => Item.StudyPlanRecord.StudyPlan.Timetables.SingleOrDefault(t => t.Group == Group)?.Teacher;
 
         [Required]
         [Label("Группа")]
@@ -105,10 +105,11 @@ namespace CollegeStatictics.Views
             {
                 Item.Group = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(Attendances));
 
                 RecreateHomeworkStudents();
+                RecreateAttendances();
 
+                OnPropertyChanged(nameof(Attendances));
                 OnPropertyChanged(nameof(HomeworkStudents));
                 OnPropertyChanged(nameof(Teacher));
 
@@ -118,9 +119,9 @@ namespace CollegeStatictics.Views
 
         [EditableSubtableFormElement]
         [TextColumn(nameof(Attendance.Student), "Студент", IsReadOnly = true)]
-        [CheckBoxColumn(nameof(AttendanceElement.IsAttended), "Присутствие", IsReadOnly = false)]
-        [NumberBoxColumn(nameof(AttendanceElement.Mark), "Оценка", 2, 5, IsReadOnly = false)]
-        public IEnumerable<AttendanceElement> Attendances => AttendanceElement.GetFromLesson(Item);
+        [CheckBoxColumn(nameof(Attendance.IsAttented), "Присутствие", IsReadOnly = false)]
+        [NumberBoxColumn(nameof(Attendance.Mark), "Оценка", 2, 5, IsReadOnly = false)]
+        public IEnumerable<Attendance> Attendances => Item.Attendances;
 
         [EditableSubtableFormElement]
         [TextColumn(nameof(HomeworkStudent.Student), "Студент", IsReadOnly = true)]
@@ -174,12 +175,7 @@ namespace CollegeStatictics.Views
 
         #endregion
 
-        //private bool TimetableRecordsFilter(TimetableRecord record) => (record.Timetable?.Group == Group || Group == null) &&
-        //                                                               (record.Timetable?.Teacher == Teacher || Teacher == null) &&
-        //                                                               (record.Timetable?.Subject == Subject || Subject == null);
-
         #region [ Private methods ]
-
 
         #region [ View elements creation ]
 
@@ -361,16 +357,32 @@ namespace CollegeStatictics.Views
 
         private IEnumerable<HomeworkStudent> CreateHomeworkStudents()
         {
-            if (Group == null)
+            if (Group == null || Homework == null)
                 return Enumerable.Empty<HomeworkStudent>();
 
             return from student in Group.Students
                 select new HomeworkStudent()
                 {
+                    Lesson = Item,
                     Student = student,
                     HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
                     Mark = null
                 };
+        }
+
+        private IEnumerable<Attendance> CreateAttendances()
+        {
+            if (Group == null)
+                return Enumerable.Empty<Attendance>();
+
+            return from student in Group.Students
+                   select new Attendance()
+                   {
+                       Lesson = Item,
+                       Student = student,
+                       Mark = null,
+                       IsAttented = true,
+                   };
         }
 
         private FrameworkElement CreateComboBox(string itemPath, string itemsSourcePath)
@@ -455,6 +467,13 @@ namespace CollegeStatictics.Views
 
             homeworkStudents.ForEach(Item.HomeworkStudents.Add);
             //DatabaseContext.Entities.AddRange(homeworkStudents);
+        }
+
+        private void RecreateAttendances()
+        {
+            Item.Attendances.Clear();
+
+            var attendances = CreateAttendances();
         }
 
         private void OpenDialog<T>(ItemDialog<T> view, Expression<Func<LessonView, object?>> property) where T : class, ITable, new()

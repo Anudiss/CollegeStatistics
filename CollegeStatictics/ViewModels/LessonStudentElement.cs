@@ -3,8 +3,6 @@ using CollegeStatictics.Database.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,20 +22,21 @@ public partial class AttendanceElement : ObservableObject
     [ObservableProperty]
     public short? _mark;
 
-    partial void OnIsAttendedChanged(bool value)
+    partial void OnIsAttendedChanged( bool value )
     {
         if (!value)
             DatabaseContext.Entities.Attendances.Local.Add(new Attendance()
             {
                 Lesson = Lesson,
                 Student = Student,
+                Mark = Mark,
                 IsAttented = true
             });
         else
             DatabaseContext.Entities.Attendances.Local.Remove(Lesson.Attendances.First(a => a.Student == Student));
     }
 
-    public static IEnumerable<AttendanceElement> GetFromLesson(Lesson lesson)
+    public static IEnumerable<AttendanceElement> GetFromLesson( Lesson lesson )
     {
         if (lesson.Group == null)
             return Enumerable.Empty<AttendanceElement>();

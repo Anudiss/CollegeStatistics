@@ -4,6 +4,9 @@ using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
 using System;
 using System.Linq;
 using System.Windows;
@@ -12,18 +15,18 @@ using System.Windows.Controls;
 namespace CollegeStatictics.ViewModels
 {
     [ObservableObject]
-    public partial class EntitySelectorBox<T> : Control where T : class, ITable, IDeletable, new()
+    public partial class FilteredEntitySelectorBox<T> : Control, IEntitySelectorBox where T : class, ITable, IDeletable, new()
     {
         #region [ Properties ]
 
-        public T SelectedItem
+        public object? SelectedItem
         {
-            get => (T)GetValue(SelectedItemProperty);
+            get => GetValue(SelectedItemProperty);
             set => SetValue(SelectedItemProperty, value);
         }
 
         public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(EntitySelectorBox<T>));
+            DependencyProperty.Register(nameof(SelectedItem), typeof(T), typeof(FilteredEntitySelectorBox<T>));
 
         public bool IsClearable
         {
@@ -32,7 +35,7 @@ namespace CollegeStatictics.ViewModels
         }
 
         public static readonly DependencyProperty IsClearableProperty =
-            DependencyProperty.Register("IsClearable", typeof(bool), typeof(EntitySelectorBox<T>));
+            DependencyProperty.Register("IsClearable", typeof(bool), typeof(FilteredEntitySelectorBox<T>));
 
         #endregion
 
@@ -41,7 +44,7 @@ namespace CollegeStatictics.ViewModels
         [RelayCommand]
         private void OpenSelectorDialog()
         {
-            SelectedItem = OpenSelectorItemDialog((ItemsContainer<T>)MainVM.PageBuilders[_itemContainerName]());
+            SelectedItem = OpenSelectorItemDialog();
         }
 
         [RelayCommand]
@@ -60,7 +63,7 @@ namespace CollegeStatictics.ViewModels
 
         #endregion
 
-        public EntitySelectorBox(string itemContainerName, ISelection<T> filter)
+        public FilteredEntitySelectorBox( string itemContainerName, ISelection<T> filter )
         {
             if (!MainVM.PageBuilders.ContainsKey(itemContainerName))
                 throw new ArgumentException($"No itemsContainer with name {itemContainerName}");
@@ -72,7 +75,7 @@ namespace CollegeStatictics.ViewModels
         public FilteredEntitySelectorBox( string itemContainerName ) : this(itemContainerName, null)
         { }
 
-        public override T OpenSelectorItemDialog()
+        public object? OpenSelectorItemDialog()
         {
             ItemsContainer<T> itemsContainer = (ItemsContainer<T>)MainVM.PageBuilders[_itemContainerName]();
 
@@ -98,9 +101,11 @@ namespace CollegeStatictics.ViewModels
             contentDialog.Show();
 
             if (contentDialog.Result == DialogResult.Secondary)
-                return (T)SelectedItem;
+                return SelectedItem;
 
-            return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? (T)SelectedItem;
+            return itemsContainer.SelectedItems?.Cast<T>().FirstOrDefault() ?? SelectedItem;
         }
+
+        object? IEntitySelectorBox.OpenSelectorItemDialog() => throw new NotImplementedException();
     }
 }

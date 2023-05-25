@@ -32,6 +32,8 @@
             <ui:NavigationViewItemHeader Content="Отчёты"/>
             
             <ui:NavigationViewItem Content="Остаток по часам"/>
+            <ui:NavigationViewItem Content="Отчёт успеваемости"/>
+            <ui:NavigationViewItem Content="Отчёт посещаемости"/>
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.Content>
             <ContentControl Content="{Binding CurrentView}"

@@ -8,14 +8,11 @@ using CollegeStatictics.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Query;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Windows;
 
 namespace CollegeStatictics.ViewModels
@@ -31,7 +28,7 @@ namespace CollegeStatictics.ViewModels
                                .AddTextBoxColumn(nameof(Teacher.Patronymic), "Отчество")
 
                                .AddSearching(new Searching<Teacher>(teacher => $"{teacher.Surname} {teacher.Name} {teacher.Patronymic}"))
-                               
+
                                .AddFilter(new Selection<Teacher>(teacher => teacher.IsDeleted == false))
 
                                .Build()
@@ -55,35 +52,35 @@ namespace CollegeStatictics.ViewModels
 
                                .AddFilter(new Filter<Speciality, Department>("Подразделение", speciality => speciality.Department))
                                .AddFilter(new Selection<Speciality>(speciality => speciality.IsDeleted == false))
-                    
+
                                .Build()
             },
             { "Отделения", () => new ItemsContainerBuilder<Department, DepartmentView>()
-            
+
                                .AddTextBoxColumn(nameof(Department.Name), "Название")
 
                                .AddSearching(new Searching<Department>(department => department.Name))
-                
+
                                .AddFilter(new Selection<Department>(department => department.IsDeleted == false))
 
                                .Build()
             },
             { "Студенты", () => new ItemsContainerBuilder<Student, StudentView>()
-                                
+
                                 .AddTextBoxColumn(nameof(Student.Surname), "Фамилия")
                                 .AddTextBoxColumn(nameof(Student.Name), "Имя")
                                 .AddTextBoxColumn(nameof(Student.Patronymic), "Отчество")
                                 .AddTextBoxColumn(nameof(Student.Group), "Группа")
 
                                 .AddSearching(new Searching<Student>(student => $"{student.Surname} {student.Name} {student.Patronymic}"))
-                                
+
                                 .AddFilter(new Filter<Student, Group>("Группа", student => student.Group))
                                 .AddFilter(new Selection<Student>(student => student.IsDeleted == false))
 
                                 .Build()
             },
             { "Группы" , () => new ItemsContainerBuilder<Group, GroupView>()
-                               
+
                                .AddTextBoxColumn(nameof(Group.Number), "Номер")
                                .AddTextBoxColumn(nameof(Group.EducationForm), "Форма обучения")
                                .AddTextBoxColumn(nameof(Group.Speciality), "Специальность")
@@ -98,11 +95,11 @@ namespace CollegeStatictics.ViewModels
                                .AddFilter(new Filter<Group, Speciality>("Специальность", group => group.Speciality))
 
                                .AddFilter(new Selection<Group>(group => group.IsDeleted == false))
-            
+
                                .Build()
             },
             { "Расписание", () => new ItemsContainerBuilder<Timetable, TimetableView>()
-                            
+
                                 .AddTextBoxColumn(nameof(Timetable.Teacher), "Преподаватель")
                                 .AddTextBoxColumn(nameof(Timetable.StudyPlan), "Предмет")
                                 .AddTextBoxColumn(nameof(Timetable.Group), "Группа")
@@ -116,7 +113,7 @@ namespace CollegeStatictics.ViewModels
                                 .Build()
             },
             { "Учебный план", () => new ItemsContainerBuilder<StudyPlan, StudyPlanView>()
-                                    
+
                                     .AddTextBoxColumn(nameof(StudyPlan.Course), "Курс")
                                     .AddTextBoxColumn(nameof(StudyPlan.StartDate), "Дата начала", "{0:dd.MM.yyyy}")
                                     .AddTextBoxColumn(nameof(StudyPlan.Speciality), "Специальность")
@@ -165,19 +162,42 @@ namespace CollegeStatictics.ViewModels
                                         .Bind(typeof(Group))
                                         .Build()
 
-            /*
-             * Пример
-             * AddPropertySelection((StudyPlanRecord record, object?[] parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
-             *                     .Bind(typeof(Teacher))
-             *                     .Bind(typeof(Group))
-             *                     .Build()
-             */
-
                                     .HasFinalRow()
 
                                     .SetFinalFunction(FinalFunction.Sum)
 
                                     .Build()
+            },
+            { "Отчёт успеваемости", () => new ReportBuilder<Attendance>()
+                                    .SetTitle("Отчёт успеваемости")
+
+                                    .BindColumnHeader<Subject>( attendance => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject, attendance => (double?)attendance.Mark )
+                                        .Build()
+
+                                    .GroupBy(attendance => attendance.Student)
+
+                                    .AddSelection(new Selection<Attendance>(attendance => attendance.Mark != null))
+                                    .AddPropertySelection((attendance, parameters) => attendance.Student.Group)
+                                        .Build()
+
+                                    .HasFinalColumn()
+
+                                    .HasFinalRow()
+                                    .HasFinalColumn()
+
+                                    .SetFinalFunction(FinalFunction.Average)
+
+                                    .Build()
+            },
+            { "Отчёт посещаемости", () => new ReportBuilder<Group>()
+
+                                .SetTitle("Отчёт посещаемости")
+
+                                .HasFinalColumn()
+
+                                .SetFinalFunction(FinalFunction.Sum)
+
+                                .Build()
             }
         };
 
@@ -225,6 +245,14 @@ namespace CollegeStatictics.ViewModels
             },
             {
                 "Остаток по часам",
+                ""
+            },
+            {
+                "Отчёт успеваемости",
+                ""
+            },
+            {
+                "Отчёт посещаемости",
                 ""
             }
         };

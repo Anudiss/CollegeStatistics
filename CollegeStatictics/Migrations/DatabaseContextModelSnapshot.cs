@@ -100,7 +100,7 @@ namespace CollegeStatictics.Migrations
                             Id = 6,
                             Name = "Суббота",
                             Reduction = "Сб"
-                });
+                        });
                 });
 
             modelBuilder.Entity("CollegeStatictics.Database.Models.Department", b =>
