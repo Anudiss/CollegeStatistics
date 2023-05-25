@@ -376,37 +376,13 @@ namespace CollegeStatictics.Views
                 return Enumerable.Empty<Attendance>();
 
             return from student in Group.Students
-                   select new Attendance()
-                   {
-                       Lesson = Item,
-                       Student = student,
-                       Mark = null,
-                       IsAttented = true,
-                   };
-        }
-
-        private FrameworkElement CreateComboBox(string itemPath, string itemsSourcePath)
-        {
-            var stackPanel = new StackPanel();
-
-            var label = GetType().GetProperty(itemPath)!.GetCustomAttribute<LabelAttribute>()?.Label;
-
-            var comboBox = new ComboBox();
-
-            comboBox.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(itemsSourcePath)
-            {
-                Mode = BindingMode.OneWay
-            });
-            comboBox.SetBinding(Selector.SelectedItemProperty, new Binding(itemPath)
-            {
-                Mode = BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
-
-            stackPanel.Children.Add(new Label() { Content = label });
-            stackPanel.Children.Add(comboBox);
-
-            return stackPanel;
+                select new Attendance()
+                {
+                    Lesson = Item,
+                    Student = student,
+                    Mark = null,
+                    IsAttented = true,
+                };
         }
 
         private FrameworkElement CreateDefaultLessonTimesComboBox()

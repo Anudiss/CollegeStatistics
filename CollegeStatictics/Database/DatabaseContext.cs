@@ -60,7 +60,8 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder )
-        => optionsBuilder.UseSqlite(@"Data Source=C:\Users\meshc\source\repos\CollegeStatistics2\CollegeStatictics\Database.db");
+        //=> optionsBuilder.UseSqlite(@"Data Source=C:\Users\meshc\source\repos\CollegeStatistics2\CollegeStatictics\Database.db");
+        => optionsBuilder.UseSqlite(@"Data Source=C:\Users\Ильназ\source\repos\CollegeStatistics\CollegeStatictics\Database.db");
 
     protected override void OnModelCreating( ModelBuilder modelBuilder )
     {
@@ -253,7 +254,7 @@ public partial class DatabaseContext : DbContext
 
             entity.HasOne(d => d.Lesson).WithMany(p => p.HomeworkStudents)
                 .HasForeignKey(d => d.LessonId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_HomeworkStudent_Lesson");
 
             entity.HasOne(d => d.Student).WithMany(p => p.HomeworkStudents)
