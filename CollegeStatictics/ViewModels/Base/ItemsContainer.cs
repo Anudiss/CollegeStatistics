@@ -15,6 +15,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using ITable = CollegeStatictics.DataTypes.ITable;
 
 namespace CollegeStatictics.ViewModels.Base
@@ -213,6 +214,9 @@ namespace CollegeStatictics.ViewModels.Base
         private readonly ObservableCollection<DataGridColumn> _columns;
         private bool canCreate = true;
 
+        private string extraButtonContent;
+        private ICommand extraButtonCommand;
+
         public ItemsContainerBuilder(ObservableCollection<T> sourceCollection)
         {
             _sourceCollection = sourceCollection;
@@ -309,7 +313,7 @@ namespace CollegeStatictics.ViewModels.Base
         public ItemsContainer<T> Build() =>
             new(new(_sourceCollection, _filters, _searchings, _groupings), _columns, typeof(R))
             {
-                CanCreate = canCreate
+                CanCreate = canCreate,
             };
     }
 

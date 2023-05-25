@@ -513,12 +513,16 @@ namespace CollegeStatictics.ViewModels.Base
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.Base.ItemDialog`1")!
                                             .MakeGenericType(formElement.Property.PropertyType.GetGenericArguments()[0]);
 
+            RefreshSubtable = () =>
+            {
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
+            };
+
             addButton.Click += delegate
             {
                 OpenItemDialog(formElement, null);
-
-                dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
+                RefreshSubtable();
             };
 
             removeButton.Click += delegate
@@ -526,22 +530,9 @@ namespace CollegeStatictics.ViewModels.Base
                 if (dataGrid.SelectedItems?.Count == 0)
                     return;
 
-                var dialogWindow = new DialogWindow
-                {
-                    Content = new Label { Content = "Действительно удалить выбранные элементы?" },
-                    PrimaryButtonText = "Да",
-                    SecondaryButtonText = "Нет"
-                };
-                dialogWindow.Show();
+                DeleteSubtableItems(dataGrid.SelectedItems!);
 
-                if (dialogWindow.Result != DialogResult.Primary)
-                    return;
-
-                foreach (var selectedItem in dataGrid.SelectedItems!)
-                    DatabaseContext.Entities.Remove(selectedItem);
-
-                dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = (dynamic)formElement.Property.GetValue(this)!;
+                RefreshSubtable();
             };
 
             buttonsContainer.Children.Add(removeButton);
@@ -554,6 +545,25 @@ namespace CollegeStatictics.ViewModels.Base
             {
                 Content = stackPanel
             };
+        }
+
+        protected Action RefreshSubtable;
+
+        protected virtual void DeleteSubtableItems(IList items)
+        {
+            var dialogWindow = new DialogWindow
+            {
+                Content = new Label { Content = "Действительно удалить выбранные элементы?" },
+                PrimaryButtonText = "Да",
+                SecondaryButtonText = "Нет"
+            };
+            dialogWindow.Show();
+
+            if (dialogWindow.Result != DialogResult.Primary)
+                return;
+
+            foreach (var selectedItem in items)
+                DatabaseContext.Entities.Remove(selectedItem);
         }
 
         private FrameworkElement CreateSelectableSubtableElement(FormElement formElement)
@@ -602,7 +612,8 @@ namespace CollegeStatictics.ViewModels.Base
                     Header = column.Header,
                     Binding = new Binding(column.Path)
                     {
-                        Mode = BindingMode.OneWay
+                        Mode = BindingMode.OneWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                     }
                 });
 

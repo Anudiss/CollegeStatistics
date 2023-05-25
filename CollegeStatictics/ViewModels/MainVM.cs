@@ -2,6 +2,7 @@
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Classes;
+using CollegeStatictics.Utils;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Views;
 
@@ -45,12 +46,12 @@ namespace CollegeStatictics.ViewModels
             { "Специальности", () => new ItemsContainerBuilder<Speciality, SpecialityView>()
 
                                .AddTextBoxColumn(nameof(Speciality.Name), "Название")
-                               .AddTextBoxColumn(nameof(Speciality.Department), "Подразделение")
+                               .AddTextBoxColumn(nameof(Speciality.Department), "Отделение")
 
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Name))
                                .AddSearching(new Searching<Speciality>(speciality => speciality.Department.Name))
 
-                               .AddFilter(new Filter<Speciality, Department>("Подразделение", speciality => speciality.Department))
+                               .AddFilter(new Filter<Speciality, Department>("Отделение", speciality => speciality.Department))
                                .AddFilter(new Selection<Speciality>(speciality => speciality.IsDeleted == false))
 
                                .Build()
