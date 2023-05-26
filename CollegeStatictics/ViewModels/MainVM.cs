@@ -155,11 +155,14 @@ namespace CollegeStatictics.ViewModels
                                     .AddColumn("Проведено", record => (double)record.Lessons.Count(l => l.IsConducted))
 
                                     .AddPropertySelection((record, parameters) => record.StudyPlan)
+                                        .SetLabel("Учебный план")
                                         .Build()
 
                                     .AddPropertySelection((record, parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
                                         .Bind(typeof(Teacher))
+                                        .SetLabel("Преподаватель")
                                         .Bind(typeof(Group))
+                                        .SetLabel("Группа")
                                         .Build()
 
                                     .HasFinalRow()
@@ -172,12 +175,13 @@ namespace CollegeStatictics.ViewModels
                                     .SetTitle("Отчёт успеваемости")
 
                                     .BindColumnHeader<Subject>( attendance => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject, attendance => (double?)attendance.Mark )
+                                        .SetLabel("Предмет")
                                         .Build()
 
                                     .GroupBy(attendance => attendance.Student)
 
-                                    .AddSelection(new Selection<Attendance>(attendance => attendance.Mark != null))
                                     .AddPropertySelection((attendance, parameters) => attendance.Student.Group)
+                                        .SetLabel("Группа")
                                         .Build()
 
                                     .AddDateSelection(attendance => attendance.Lesson.Date)
@@ -203,6 +207,7 @@ namespace CollegeStatictics.ViewModels
                                 .AddDateSelection(attendance => attendance.Lesson.Date)
 
                                 .AddPropertySelection<Subject>((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
+                                    .SetLabel("Предмет")
                                     .Build()
 
                                 .HasFinalColumn()
