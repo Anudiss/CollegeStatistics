@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -121,6 +120,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public IEnumerable<Column> Columns { get; }
 
     public Func<IEnumerable<double>, double> FinalFunction { get; }
+    public Func<IEnumerable<double>, double> UnionFunction { get; }
     public Func<T, object>? ColumnGetter { get; }
     public Func<T, object?>? ValueGetter { get; }
     public Func<T, object>? Grouping { get; }
@@ -130,12 +130,13 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
 
     public DataTemplate ContentTemplate => (DataTemplate)Application.Current.FindResource("ReportTemplate");
 
-    public Report( string? title, IEnumerable<Column> columns, List<IPropertyAccessor<T>> propertyAccessors, Dictionary<Type, string> labels,  IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double> finalFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping, Func<T, DateTime>? dateGetter )
+    public Report( string? title, IEnumerable<Column> columns, List<IPropertyAccessor<T>> propertyAccessors, Dictionary<Type, string> labels, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double> finalFunction, Func<IEnumerable<double>, double>? unionFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping, Func<T, DateTime>? dateGetter )
     {
         Title = title ?? $"Отчёт по {typeof(T).Name}";
         HasFinalRow = hasFinalRow;
         HasFinalColumn = hasFinalColumn;
         FinalFunction = finalFunction;
+        UnionFunction = unionFunction ?? finalFunction;
         ColumnGetter = columnHeaderGetter;
         ValueGetter = valueGetter;
         Grouping = grouping;
@@ -292,10 +293,11 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         else
         {
             rows = filteredValues.GroupBy(Grouping)
-                                 .Select(group => {
+                                 .Select(group =>
+                                 {
                                      var values = columns.ToDictionary(c => c.Header, c =>
                                      {
-                                         double v = FinalFunction(group.Select(g => (double?)c.ValueGetter(g)).Where(e => e != 0 && e is not null).Cast<double>().DefaultIfEmpty());
+                                         double v = UnionFunction(group.Select(g => (double?)c.ValueGetter(g)).Where(e => e is not 0 and not null).Cast<double>().DefaultIfEmpty());
                                          return (object?)(v == 0 ? null : v);
                                      });
                                      if (HasFinalColumn)
@@ -342,7 +344,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             if (DateGetter is not null)
             {
                 var date = DateGetter(value);
-                if (date < DatePickers[0].SelectedDate || date > DatePickers[1].SelectedDate)
+                if (date <= DatePickers[0].SelectedDate || date >= DatePickers[1].SelectedDate)
                     return false;
             }
 
@@ -377,7 +379,7 @@ public class ReportBuilder<T> where T : class, new()
             return this;
         }
 
-        public ReportPropertyAccessorBuilder<TProperty> SetLabel(string label)
+        public ReportPropertyAccessorBuilder<TProperty> SetLabel( string label )
         {
             if (_parameters.Any())
                 _reportBuilder._labels.Add(_parameters.Last(), label);
@@ -401,6 +403,7 @@ public class ReportBuilder<T> where T : class, new()
     private          Func<T, object>                     _headerGetter;
     private          Func<T, DateTime>                   _dateGetter;
     private          Func<T, object>                     _valueGetter;
+    private          Func<IEnumerable<double>, double>?  _unionFunction = null;
     private          string?                             _title = null;
     private          Func<T, object>?                    _grouping = null;
     private          bool                                _hasFinalRow, _hasFinalColumn;
@@ -438,7 +441,7 @@ public class ReportBuilder<T> where T : class, new()
         return this;
     }
 
-    public ReportBuilder<T> BindLabel(Type type, string label)
+    public ReportBuilder<T> BindLabel( Type type, string label )
     {
         _labels.Add(type, label);
         return this;
@@ -466,6 +469,19 @@ public class ReportBuilder<T> where T : class, new()
     public ReportBuilder<T> SetFinalFunction( FinalFunction finalFunction )
     {
         _finalFunction = finalFunction switch
+        {
+            FinalFunction.Sum => Enumerable.Sum,
+            FinalFunction.Average => Enumerable.Average,
+            FinalFunction.Min => Enumerable.Min,
+            FinalFunction.Max => Enumerable.Max,
+            _ => throw new ArgumentException($"Final function: {finalFunction} doesn't support")
+        };
+        return this;
+    }
+
+    public ReportBuilder<T> SetUnionFunction( FinalFunction finalFunction )
+    {
+        _unionFunction = finalFunction switch
         {
             FinalFunction.Sum => Enumerable.Sum,
             FinalFunction.Average => Enumerable.Average,
@@ -530,6 +546,7 @@ public class ReportBuilder<T> where T : class, new()
             hasFinalRow: _hasFinalRow,
             hasFinalColumn: _hasFinalColumn,
             finalFunction: _finalFunction,
+            unionFunction: _unionFunction,
             columnHeaderGetter: _headerGetter,
             valueGetter: _valueGetter,
             grouping: _grouping,

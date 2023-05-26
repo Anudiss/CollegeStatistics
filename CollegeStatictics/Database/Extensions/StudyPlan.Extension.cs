@@ -1,7 +1,6 @@
 ﻿using CollegeStatictics.DataTypes;
 using CollegeStatictics.DataTypes.Interfaces;
 
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CollegeStatictics.Database.Models
@@ -16,8 +15,8 @@ namespace CollegeStatictics.Database.Models
                 DatabaseContext.Entities.StudyPlanRecords.Remove(record);
         }
 
-        public bool this[Teacher? teacher, Group? group] => Timetables.Where(t => t.Teacher == teacher || teacher == null)
-                                                                      .Where(t => t.Group == group || group == null)
+        public bool this[Teacher? teacher, Group? group] => Timetables.Where(t => teacher == null || t.Teacher == teacher)
+                                                                      .Where(t => group == null || t.Group == group)
                                                                       .Any();
     }
 }

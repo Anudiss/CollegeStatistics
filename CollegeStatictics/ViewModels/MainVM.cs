@@ -147,27 +147,39 @@ namespace CollegeStatictics.ViewModels
 
                                     .Build()
             },
-            { "Остаток по часам", () => new ReportBuilder<StudyPlanRecord>()
+            { "Остаток по часам", () => new ReportBuilder<Lesson>()
 
                                     .SetTitle("Остаток по часам")
 
-                                    .AddColumn("Выделено", record => (double)record.DurationInLessons)
-                                    .AddColumn("Проведено", record => (double)record.Lessons.Count(l => l.IsConducted))
-
-                                    .AddPropertySelection((record, parameters) => record.StudyPlan)
-                                        .SetLabel("Учебный план")
+                                    .BindColumnHeader<Subject>(lesson => lesson.StudyPlanRecord.StudyPlan.Subject, lesson => (double?)(lesson.StudyPlanRecord.DurationInLessons - lesson.StudyPlanRecord.Lessons.Count(l => l.IsConducted && l.Group == lesson.Group)))
+                                        .SetLabel("Предмет")
                                         .Build()
 
-                                    .AddPropertySelection((record, parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
-                                        .Bind(typeof(Teacher))
-                                        .SetLabel("Преподаватель")
-                                        .Bind(typeof(Group))
+                                    .GroupBy(lesson => lesson.Group)
+
+                                    .AddPropertySelection((lesson, parameters) => lesson.Group)
                                         .SetLabel("Группа")
                                         .Build()
 
+                                    //.AddColumn("Выделено", record => (double)record.DurationInLessons)
+                                    //.AddColumn("Проведено", record => (double)record.Lessons.Count(l => l.IsConducted))
+
+                                    //.AddPropertySelection((record, parameters) => record.StudyPlan)
+                                    //    .SetLabel("Учебный план")
+                                    //    .Build()
+
+                                    //.AddPropertySelection((record, parameters) => record.StudyPlan[parameters[0] as Teacher, parameters[1] as Group])
+                                    //    .Bind(typeof(Teacher))
+                                    //    .SetLabel("Преподаватель")
+                                    //    .Bind(typeof(Group))
+                                    //    .SetLabel("Группа")
+                                    //    .Build()
+
                                     .HasFinalRow()
+                                    .HasFinalColumn()
 
                                     .SetFinalFunction(FinalFunction.Sum)
+                                    .SetUnionFunction(FinalFunction.Max)
 
                                     .Build()
             },
@@ -202,12 +214,17 @@ namespace CollegeStatictics.ViewModels
                                 .BindColumnHeader<DateTime>( attendance => $"{attendance.Lesson.Date:dd.MM.yyyy}", attendance => (double?)(attendance.IsAttented ? 1 : 0) )
                                     .Build()
 
-                                .GroupBy(attendance => attendance.Student.Group)
+                                .GroupBy(attendance => attendance.Student)
 
                                 .AddDateSelection(attendance => attendance.Lesson.Date)
 
-                                .AddPropertySelection<Subject>((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
+                                .AddPropertySelection((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
                                     .SetLabel("Предмет")
+                                    .Build()
+
+                                .AddPropertySelection((attendance, parameters) => attendance.Student?.Group == (parameters[0] as Group))
+                                    .Bind(typeof(Group))
+                                    .SetLabel("Группа")
                                     .Build()
 
                                 .HasFinalColumn()

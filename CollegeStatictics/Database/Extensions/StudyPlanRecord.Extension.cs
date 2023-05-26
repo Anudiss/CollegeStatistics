@@ -2,6 +2,7 @@
 using CollegeStatictics.DataTypes.Interfaces;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace CollegeStatictics.Database.Models
 {
