@@ -107,7 +107,6 @@ namespace CollegeStatictics.Views
         {
             var openFileDialog = new OpenFileDialog
             {
-                FileName = "Шаблон КТП",
                 DefaultExt = ".xlsx",
                 Filter = "Книга excel (*.xlsx)|*.xlsx",
                 CheckFileExists = true,
@@ -177,7 +176,7 @@ namespace CollegeStatictics.Views
             }
 
             newLessonTypes.ForEach(DatabaseContext.Entities.LessonTypes.Local.Add);
-            newStudyPlanRecords.ForEach(Item.StudyPlanRecords.Add);
+            newStudyPlanRecords.ForEach(DatabaseContext.Entities.StudyPlanRecords.Local.Add);
             DatabaseContext.Entities.SaveChanges();
 
             RefreshSubtable();
@@ -199,7 +198,7 @@ namespace CollegeStatictics.Views
             {
                 var filePathToSave = dlg.FileName;
 
-                var ctpTemplate = new Uri("Resources/Шаблон КТП.csv", UriKind.Relative);
+                var ctpTemplate = new Uri("/Resources/ctp_template.xlsx", UriKind.Relative);
                 var ctpTemplateFileStream = Application.GetResourceStream(ctpTemplate).Stream;
                 ctpTemplateFileStream.CopyToAsync(new FileStream(filePathToSave, FileMode.OpenOrCreate));
             }
@@ -209,7 +208,7 @@ namespace CollegeStatictics.Views
         {
             var studyPlanRecords = DatabaseContext.Entities.StudyPlanRecords.Local;
             var areThereLinkedStudyPlanRecords =
-                studyPlanRecords.Any(sp => sp.Lessons.Any());
+                studyPlanRecords.Any(sp => sp.StudyPlan == Item && sp.Lessons.Any());
             if (areThereLinkedStudyPlanRecords)
             {
                 DialogWindow.ShowMessage("Нельзя удалить запись, с которой связаны проведенные пары");
