@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -113,7 +112,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public IEnumerable<ISelection<T>> Selections { get; }
     public IEnumerable<FrameworkElement> Elements { get; }
     public IEnumerable<IEntitySelectorBox> SelectionElements { get; }
-    public IEnumerable<ContentControl> SelectionContainers { get; }
+    public IEnumerable<FrameworkElement> SelectionContainers { get; }
     public DatePicker[]? DatePickers { get; }
 
     public IPropertyAccessor<T>[] PropertyAccessors { get; }
@@ -121,21 +120,23 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     public IEnumerable<Column> Columns { get; }
 
     public Func<IEnumerable<double>, double> FinalFunction { get; }
+    public Func<IEnumerable<double>, double> UnionFunction { get; }
     public Func<T, object>? ColumnGetter { get; }
-    public Func<T, object>? ValueGetter { get; }
+    public Func<T, object?>? ValueGetter { get; }
     public Func<T, object>? Grouping { get; }
     public Func<T, DateTime>? DateGetter { get; }
 
-    public FrameworkElement View => Generate();
+    public FrameworkElement View { get; private set; }
 
     public DataTemplate ContentTemplate => (DataTemplate)Application.Current.FindResource("ReportTemplate");
 
-    public Report( string? title, IEnumerable<Column> columns, IEnumerable<IPropertyAccessor<T>> propertyAccessors, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double>? finalFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping, Func<T, DateTime>? dateGetter )
+    public Report( string? title, IEnumerable<Column> columns, List<IPropertyAccessor<T>> propertyAccessors, Dictionary<Type, string> labels, IEnumerable<ISelection<T>> selections, bool hasFinalRow, bool hasFinalColumn, Func<IEnumerable<double>, double> finalFunction, Func<IEnumerable<double>, double>? unionFunction, Func<T, object>? columnHeaderGetter, Func<T, object?>? valueGetter, Func<T, object>? grouping, Func<T, DateTime>? dateGetter )
     {
         Title = title ?? $"Отчёт по {typeof(T).Name}";
         HasFinalRow = hasFinalRow;
         HasFinalColumn = hasFinalColumn;
         FinalFunction = finalFunction;
+        UnionFunction = unionFunction ?? finalFunction;
         ColumnGetter = columnHeaderGetter;
         ValueGetter = valueGetter;
         Grouping = grouping;
@@ -143,13 +144,36 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         PropertyAccessors = propertyAccessors.ToArray();
 
         Selections = selections;
-        SelectionElements = CreateEntitySelectorBoxes();
-        SelectionContainers = SelectionElements.Select(entitySelectorBox => new ContentControl()
+        SelectionElements = CreateEntitySelectorBoxes().ToArray();
+        SelectionContainers = SelectionElements.Select(entitySelectorBox =>
         {
-            Content = entitySelectorBox,
-            ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate"),
-            MinWidth = 200
+            var stackPanel = new StackPanel()
+            {
+                Orientation = Orientation.Vertical
+            };
+
+            var contentControl = new ContentControl()
+            {
+                Content = entitySelectorBox,
+                ContentTemplate = (DataTemplate)Application.Current.FindResource("EntitySelectorBoxTemplate"),
+                MinWidth = 200
+            };
+
+            if (labels.TryGetValue(entitySelectorBox.GetType().GetGenericArguments()[0], out string? label))
+                stackPanel.Children.Add(new Label()
+                {
+                    Content = label,
+                    FontSize = 12,
+                    FontWeight = FontWeights.Medium,
+                    Margin = new Thickness(0, 0, 0, 5),
+                    Target = contentControl,
+                });
+
+            stackPanel.Children.Add(contentControl);
+
+            return stackPanel;
         });
+
         Columns = columns;
         DateGetter = dateGetter;
         if (dateGetter is not null)
@@ -185,7 +209,11 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
     }
 
     [RelayCommand]
-    public void Refresh() => OnPropertyChanged(nameof(IReport.View));
+    public void Refresh()
+    {
+        View = Generate();
+        OnPropertyChanged(nameof(View));
+    }
 
     public FrameworkElement Generate()
     {
@@ -225,13 +253,6 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             headers.ForEach(header => columns.Add(new BindedColumn(header.ToString()!, item => ValueGetter((T)item), item => ColumnGetter((T)item) == header)));
         }
 
-        if (HasFinalColumn)
-        {
-            var columnsCopy = columns.ToArray();
-            var finalColumn = new Column("Итого", item => FinalFunction(columnsCopy.Select(c => c.ValueGetter(item)).OfType<double>()));
-            columns.Add(finalColumn);
-        }
-
         // Generating dataGrid
         foreach (var column in columns.OrderBy(c => c.Header))
         {
@@ -247,6 +268,24 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             });
         }
 
+        if (HasFinalColumn)
+        {
+            var columnsCopy = columns.ToArray();
+            var finalColumn = new Column("Итого", item => FinalFunction(columnsCopy.Select(c => c.ValueGetter(item)).OfType<double>()));
+            columns.Add(finalColumn);
+
+            dataGrid.Columns.Add(new DataGridTextColumn()
+            {
+                Header = finalColumn.Header,
+                Binding = new Binding($"[{finalColumn.Header}]")
+                {
+                    Mode = BindingMode.OneWay,
+                    StringFormat = "{0:0.##}",
+                    TargetNullValue = "-"
+                }
+            });
+        }
+
         // Casting to row
         List<Row> rows;
         if (Grouping == null)
@@ -254,10 +293,11 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         else
         {
             rows = filteredValues.GroupBy(Grouping)
-                                 .Select(group => {
+                                 .Select(group =>
+                                 {
                                      var values = columns.ToDictionary(c => c.Header, c =>
                                      {
-                                         double v = FinalFunction(group.Select(g => c.ValueGetter(g)).OfType<double>().DefaultIfEmpty());
+                                         double v = UnionFunction(group.Select(g => (double?)c.ValueGetter(g)).Where(e => e is not 0 and not null).Cast<double>().DefaultIfEmpty());
                                          return (object?)(v == 0 ? null : v);
                                      });
                                      if (HasFinalColumn)
@@ -270,14 +310,8 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         if (!rows.Any())
             return dataGrid;
 
-        if (HasFinalRow)
-        {
-            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>()) })
-                                                             .ToDictionary(value => value.Header, value => (object?)value.Value);
-            rows.Add(new Row("Итого", finalValues));
-        }
 
-        foreach (var row in rows)
+        foreach (var row in rows.OrderBy(r => r.Item.ToString()))
             dataGrid.Items.Add(new DataGridRow()
             {
                 Header = row.Item,
@@ -285,7 +319,18 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             });
 
         if (HasFinalRow)
-            dataGrid.Items.Cast<DataGridRow>().Last().Style = (Style)Application.Current.FindResource("FinalRowStyle");
+        {
+            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>()) })
+                                                             .ToDictionary(value => value.Header, value => (object?)value.Value);
+
+            var finalRow = new Row("Итого", finalValues);
+            dataGrid.Items.Add(new DataGridRow()
+            {
+                Header = finalRow.Item,
+                Item = finalRow,
+                Style = (Style)Application.Current.FindResource("FinalRowStyle")
+            });
+        }
 
         return dataGrid;
     }
@@ -299,7 +344,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             if (DateGetter is not null)
             {
                 var date = DateGetter(value);
-                if (date < DatePickers[0].SelectedDate || date > DatePickers[1].SelectedDate)
+                if (date <= DatePickers[0].SelectedDate || date >= DatePickers[1].SelectedDate)
                     return false;
             }
 
@@ -315,6 +360,7 @@ public class ReportBuilder<T> where T : class, new()
 {
     public class ReportPropertyAccessorBuilder<TProperty>
     {
+        private readonly Dictionary<Type, string> _labels;
         private readonly ReportBuilder<T> _reportBuilder;
         private readonly Func<T, object?[], TProperty?> _getter;
         private readonly List<Type> _parameters;
@@ -322,6 +368,7 @@ public class ReportBuilder<T> where T : class, new()
         public ReportPropertyAccessorBuilder( Func<T, object?[], TProperty?> getter, ReportBuilder<T> reportBuilder )
         {
             _getter = getter;
+            _labels = new();
             _parameters = new();
             _reportBuilder = reportBuilder;
         }
@@ -329,6 +376,15 @@ public class ReportBuilder<T> where T : class, new()
         public ReportPropertyAccessorBuilder<TProperty> Bind( Type type )
         {
             _parameters.Add(type);
+            return this;
+        }
+
+        public ReportPropertyAccessorBuilder<TProperty> SetLabel( string label )
+        {
+            if (_parameters.Any())
+                _reportBuilder._labels.Add(_parameters.Last(), label);
+            else
+                _reportBuilder._labels.Add(typeof(TProperty), label);
             return this;
         }
 
@@ -341,11 +397,13 @@ public class ReportBuilder<T> where T : class, new()
 
     private readonly List<Column>                        _columns;
     private readonly List<IPropertyAccessor<T>>          _propertyAccessors;
+    private readonly Dictionary<Type, string>            _labels;
     private readonly List<ISelection<T>>                 _selections;
     private          Func<IEnumerable<double>, double>?  _finalFunction = null;
     private          Func<T, object>                     _headerGetter;
     private          Func<T, DateTime>                   _dateGetter;
     private          Func<T, object>                     _valueGetter;
+    private          Func<IEnumerable<double>, double>?  _unionFunction = null;
     private          string?                             _title = null;
     private          Func<T, object>?                    _grouping = null;
     private          bool                                _hasFinalRow, _hasFinalColumn;
@@ -353,6 +411,7 @@ public class ReportBuilder<T> where T : class, new()
     public ReportBuilder()
     {
         _propertyAccessors = new();
+        _labels = new();
         _columns = new();
         _selections = new();
     }
@@ -382,6 +441,12 @@ public class ReportBuilder<T> where T : class, new()
         return this;
     }
 
+    public ReportBuilder<T> BindLabel( Type type, string label )
+    {
+        _labels.Add(type, label);
+        return this;
+    }
+
     public ReportBuilder<T> SetTitle( string title )
     {
         _title = title;
@@ -404,6 +469,19 @@ public class ReportBuilder<T> where T : class, new()
     public ReportBuilder<T> SetFinalFunction( FinalFunction finalFunction )
     {
         _finalFunction = finalFunction switch
+        {
+            FinalFunction.Sum => Enumerable.Sum,
+            FinalFunction.Average => Enumerable.Average,
+            FinalFunction.Min => Enumerable.Min,
+            FinalFunction.Max => Enumerable.Max,
+            _ => throw new ArgumentException($"Final function: {finalFunction} doesn't support")
+        };
+        return this;
+    }
+
+    public ReportBuilder<T> SetUnionFunction( FinalFunction finalFunction )
+    {
+        _unionFunction = finalFunction switch
         {
             FinalFunction.Sum => Enumerable.Sum,
             FinalFunction.Average => Enumerable.Average,
@@ -463,10 +541,12 @@ public class ReportBuilder<T> where T : class, new()
             title: _title,
             columns: _columns,
             propertyAccessors: _propertyAccessors,
+            labels: _labels,
             selections: _selections,
             hasFinalRow: _hasFinalRow,
             hasFinalColumn: _hasFinalColumn,
             finalFunction: _finalFunction,
+            unionFunction: _unionFunction,
             columnHeaderGetter: _headerGetter,
             valueGetter: _valueGetter,
             grouping: _grouping,

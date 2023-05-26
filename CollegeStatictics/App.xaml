@@ -270,8 +270,7 @@
                             <TextBox Text="{Binding Path=SelectedItem, Mode=OneWay}"
                                      Margin="0 0 4 0"
                                      IsReadOnly="True"
-                                     ui:TextBoxHelper.IsDeleteButtonVisible="False"
-                                     Style="{StaticResource {x:Type TextBox}}"/>
+                                     ui:TextBoxHelper.IsDeleteButtonVisible="False"/>
 
                             <Button Content="&#9587;"
                                     Command="{Binding ClearSelectedItemCommand}"
@@ -363,9 +362,11 @@
                                                  Orientation="Horizontal">
                                 
                                 <Button Content="Сформировать"
-                                        Command="{Binding RefreshCommand}"/>
+                                        Command="{Binding RefreshCommand}"
+                                        VerticalAlignment="Bottom"/>
                                 
-                                <ItemsControl ItemsSource="{Binding DatePickers, Mode=OneWay}">
+                                <ItemsControl ItemsSource="{Binding DatePickers, Mode=OneWay}"
+                                              VerticalAlignment="Bottom">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <ui:SimpleStackPanel Orientation="Horizontal"
