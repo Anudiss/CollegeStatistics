@@ -368,7 +368,6 @@ namespace CollegeStatictics.ViewModels.Base
             return dataGrid;
         }
 
-
         private FrameworkElement CreateTimetableElement(FormElement formElement)
         {
             var dataGrid = new DataGrid()
@@ -441,7 +440,7 @@ namespace CollegeStatictics.ViewModels.Base
                 CanUserDeleteRows = false,
                 CanUserResizeColumns = false,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Height = 160
+                Height = 300
             };
 
             var openItemDialogCommand = new RelayCommand<object>(item =>
@@ -641,12 +640,14 @@ namespace CollegeStatictics.ViewModels.Base
 
             SelectableSubtableFormElementAttribute attribute = (SelectableSubtableFormElementAttribute)formElement.Attribute;
 
+            var filter = attribute.FilterPropertyName is not null ? GetType().GetProperty(attribute.FilterPropertyName)!.GetValue(this) : null;
+
             var entitySelectorBoxType = Type.GetType("CollegeStatictics.ViewModels.EntitiesGrid`1")!
                                             .MakeGenericType(formElement.Property.PropertyType.GetGenericArguments()[0]);
 
             addButton.Click += delegate
             {
-                dynamic entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName })!;
+                dynamic entitySelectorBox = Activator.CreateInstance(entitySelectorBoxType, new[] { attribute.ItemContainerName, filter })!;
                 entitySelectorBox.OpenSelectorDialog();
 
                 var addMethod = formElement.Property.PropertyType.GetMethod("Add");
@@ -663,7 +664,7 @@ namespace CollegeStatictics.ViewModels.Base
 
             removeButton.Click += delegate
             {
-                if (dataGrid.SelectedItems == null)
+                if (dataGrid.SelectedItems == null || dataGrid.SelectedItems.Count == 0)
                     return;
 
                 var dialogWindow = new DialogWindow

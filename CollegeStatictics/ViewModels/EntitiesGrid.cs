@@ -1,4 +1,5 @@
 ﻿using CollegeStatictics.DataTypes;
+using CollegeStatictics.DataTypes.Classes;
 using CollegeStatictics.DataTypes.Interfaces;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
@@ -30,16 +31,25 @@ namespace CollegeStatictics.ViewModels
 
         private string _itemContainerName;
 
-        public EntitiesGrid(string itemContainerName)
+        private ISelection<T>? _filter;
+
+        public EntitiesGrid(string itemContainerName, ISelection<T>? filter = null)
         {
             if (!MainVM.PageBuilders.ContainsKey(itemContainerName))
                 throw new ArgumentException($"No itemsContainer with name {itemContainerName}");
 
             _itemContainerName = itemContainerName;
+            _filter = filter;
         }
 
         public ICollection<T> OpenSelectorItemDialog(ItemsContainer<T> itemsContainer)
         {
+            if (_filter is not null)
+            {
+                itemsContainer.Items.Selections.Add(_filter);
+                itemsContainer.Items.Refresh();
+            }
+
             var contentDialog = new DialogWindow()
             {
                 Content = itemsContainer,

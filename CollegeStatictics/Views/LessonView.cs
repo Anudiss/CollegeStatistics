@@ -140,6 +140,7 @@ namespace CollegeStatictics.Views
                 RecreateHomeworkStudents();
 
                 OnPropertyChanged(nameof(HomeworkStudents));
+                ApplySpellToRefreshHomeworkStudents();
             }
         }
 
@@ -157,13 +158,7 @@ namespace CollegeStatictics.Views
 
         #endregion
 
-        #region [ Fields ]
-
         private readonly IEnumerable<FormElement> _formElements;
-
-        #endregion
-
-        #region [ Setup ]
 
         public LessonView(Lesson? item) : base(item)
         {
@@ -171,9 +166,8 @@ namespace CollegeStatictics.Views
             _formElements = GetFormElements();
 
             Time = Time == default ? LessonTimeUtils.GetLessonTimeNearestTo(DateTime.Now.TimeOfDay) : Time;
+            RecreateAttendances();
         }
-
-        #endregion
 
         #region [ Private methods ]
 
@@ -213,8 +207,17 @@ namespace CollegeStatictics.Views
             });
             #endregion
 
+            _tabControl = tabControl;
+
             yield return panel;
             #endregion
+        }
+
+        private TabControl _tabControl;
+        private void ApplySpellToRefreshHomeworkStudents()
+        {
+            _tabControl.SelectedIndex = 0;
+            _tabControl.SelectedIndex = 1;
         }
 
         private FrameworkElement CreateHeaderPanel()
@@ -450,6 +453,7 @@ namespace CollegeStatictics.Views
             Item.Attendances.Clear();
 
             var attendances = CreateAttendances();
+            attendances.ForEach(Item.Attendances.Add);
         }
 
         private void OpenDialog<T>(ItemDialog<T> view, Expression<Func<LessonView, object?>> property) where T : class, ITable, new()

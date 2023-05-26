@@ -15,6 +15,6 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         WindowStartupLocation="CenterScreen">
 
-    <ContentControl Content="{Binding .}"/>
+    <ContentControl Content="{Binding}"/>
     
 </Window>
