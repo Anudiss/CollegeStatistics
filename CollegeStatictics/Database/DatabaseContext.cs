@@ -327,7 +327,6 @@ public partial class DatabaseContext : DbContext
                 }
             });
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 

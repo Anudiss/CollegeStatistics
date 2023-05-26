@@ -103,12 +103,15 @@ namespace CollegeStatictics.Views
         }
 
         [RelayCommand]
-        private void ImportCalendarAndThematicPlanning()
+        private void ImportCtp()
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "All supported files (*.xlsc, *.csv)|*.xlsx;*.csv|Excel files (*.xlsx)|*.xlsx|CSV files (*.csv)|*.csv",
-                CheckFileExists = true
+                FileName = "Шаблон КТП",
+                DefaultExt = ".xlsx",
+                Filter = "Книга excel (*.xlsx)|*.xlsx",
+                CheckFileExists = true,
+                Title = "Выберите файл для импорта данных"
             };
 
             if (openFileDialog.ShowDialog() != true)
@@ -123,17 +126,16 @@ namespace CollegeStatictics.Views
 
             // Init reader
             reader.Read();
-            // Skip column headers row
-            reader.Read();
 
             int lessonTypeCol = 0,
                 durationInLessonsCol = 1,
                 topicCol = 2,
                 contentCol = 3;
 
+            var newLessonTypes = new List<LessonType>();
             var newStudyPlanRecords = new List<StudyPlanRecord>();
 
-            while (true)
+            while (reader.Read())
             {
                 // End of data stream
                 if (string.IsNullOrWhiteSpace(reader.GetString(0)))
@@ -142,7 +144,13 @@ namespace CollegeStatictics.Views
                 var lessonTypeName = reader.GetString(lessonTypeCol).Trim().ToLower();
                 var lessonType =
                     DatabaseContext.Entities.LessonTypes.Local
-                        .First(lt => lt.Name.ToLower() == lessonTypeName);
+                        .FirstOrDefault(lt => lt.Name.ToLower() == lessonTypeName);
+
+                if (lessonType is null)
+                {
+                    lessonType = new LessonType { Name = lessonTypeName.ToUpperFirstLetter() };
+                    newLessonTypes.Add(lessonType);
+                }
 
                 var durationInLessons = (int)reader.GetDouble(durationInLessonsCol);
 
@@ -157,34 +165,44 @@ namespace CollegeStatictics.Views
 
                 if (isStudyPlanRecordExist == false)
                 {
-                    var studyPlanRecord = new StudyPlanRecord
+                    newStudyPlanRecords.Add(new StudyPlanRecord
                     {
                         StudyPlan = Item,
                         LessonType = lessonType,
                         DurationInLessons = durationInLessons,
                         Topic = topic.ToUpperFirstLetter(),
                         Content = content
-                    };
-                    newStudyPlanRecords.Add(studyPlanRecord);
+                    });
                 }
-
-                reader.Read();
             }
 
+            newLessonTypes.ForEach(DatabaseContext.Entities.LessonTypes.Local.Add);
             newStudyPlanRecords.ForEach(Item.StudyPlanRecords.Add);
-            OnPropertyChanged(nameof(Records));
-
             DatabaseContext.Entities.SaveChanges();
 
-            string messageText;
-            if (newStudyPlanRecords.Count > 0)
-                messageText = "Записи импортированы";
-            else
-                messageText = "Не было добавлено ни одной записи";
-
             RefreshSubtable();
+        }
 
-            DialogWindow.ShowMessage(messageText);
+        [RelayCommand]
+        private void DownloadCtpTemplate()
+        {
+            var dlg = new SaveFileDialog
+            {
+                FileName = "Шаблон КТП",
+                DefaultExt = ".xlsx",
+                Filter = "Книга excel (*.xlsx)|*.xlsx",
+                Title = "Выберите место для сохранения"
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                var filePathToSave = dlg.FileName;
+
+                var ctpTemplate = new Uri("Resources/Шаблон КТП.csv", UriKind.Relative);
+                var ctpTemplateFileStream = Application.GetResourceStream(ctpTemplate).Stream;
+                ctpTemplateFileStream.CopyToAsync(new FileStream(filePathToSave, FileMode.OpenOrCreate));
+            }
         }
 
         protected override void DeleteSubtableItems(IList items)
@@ -214,7 +232,8 @@ namespace CollegeStatictics.Views
         }
 
         [Label("Записи")]
-        [SubtableButtonFormElement("Импорт КТП", nameof(ImportCalendarAndThematicPlanning))]
+        [SubtableButtonFormElement("Скачать Шаблон КТП", nameof(DownloadCtpTemplate))]
+        [SubtableButtonFormElement("Импорт КТП", nameof(ImportCtp))]
         [SubtableButtonFormElement("Провести пару", nameof(ConductLession))]
         [SubtableFormElement(typeof(StudyPlanRecordView))]
         [TextColumn("Topic", "Тема")]
