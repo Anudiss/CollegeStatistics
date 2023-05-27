@@ -152,7 +152,7 @@ namespace CollegeStatictics.ViewModels
 
                                     .SetTitle("Остаток по часам")
 
-                                    .BindColumnHeader<Subject>(lesson => lesson.StudyPlanRecord.StudyPlan.Subject, lesson => (double?)(1))
+                                    .BindColumnHeader<Subject>(lesson => lesson.StudyPlanRecord.StudyPlan.Subject, lesson => (double?)(lesson.StudyPlanRecord.StudyPlan.StudyPlanRecords.Sum(r => r.DurationInLessons - r.Lessons.Count(l => l.IsConducted && l.Group == lesson.Group))))
                                         .SetLabel("Предмет")
                                         .Build()
 
@@ -167,6 +167,7 @@ namespace CollegeStatictics.ViewModels
                                     .HasFinalColumn()
 
                                     .SetFinalFunction(FinalFunction.Sum)
+                                    .SetUnionFunction(FinalFunction.Max)
 
                                     .Build()
             },
@@ -199,17 +200,14 @@ namespace CollegeStatictics.ViewModels
 
                                 .SetTitle("Посещаемость студентов")
 
-                                .BindColumnHeader<DateTime>( attendance => $"{attendance.Lesson.Date:dd.MM.yyyy}", attendance => (double?)(attendance.Mark) )
+                                .BindColumnHeader<Subject>( attendance => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject, attendance => (double?)(attendance.IsAttented ? null : 1) )
+                                    .SetLabel("Предмет")
                                     .Build()
 
                                 .GroupBy(attendance => attendance.Student)
 
                                 .AddSelection(new Selection<Attendance>(attendance => attendance.Lesson.IsConducted))
                                 .AddDateSelection(attendance => attendance.Lesson.Date)
-
-                                .AddPropertySelection((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
-                                    .SetLabel("Предмет")
-                                    .Build()
 
                                 .AddPropertySelection((attendance, parameters) => attendance.Student?.Group)
                                     .SetLabel("Группа")

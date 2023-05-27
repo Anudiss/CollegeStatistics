@@ -250,7 +250,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         {
             var headers = filteredValues.Select(value => ColumnGetter(value)).Distinct();
 
-            headers.ForEach(header => columns.Add(new BindedColumn(header.ToString()!, item => ValueGetter((T)item), item => ColumnGetter((T)item) == header)));
+            headers.ForEach(header => columns.Add(new BindedColumn(header, item => ValueGetter((T)item), item => ColumnGetter((T)item).Equals(header))));
         }
 
         // Generating dataGrid
@@ -258,9 +258,10 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         {
             dataGrid.Columns.Add(new DataGridTextColumn()
             {
-                Header = column.Header,
-                Binding = new Binding($"[{column.Header}]")
+                Header = column.Header is DateTime date ? $"{date:dd.MM.yyyy}" : column.Header,
+                Binding = new Binding()
                 {
+                    Path = new PropertyPath("[(0)]", column.Header),
                     Mode = BindingMode.OneWay,
                     StringFormat = "{0:0.##}",
                     TargetNullValue = "-"
@@ -277,8 +278,9 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
             dataGrid.Columns.Add(new DataGridTextColumn()
             {
                 Header = finalColumn.Header,
-                Binding = new Binding($"[{finalColumn.Header}]")
+                Binding = new Binding()
                 {
+                    Path = new PropertyPath("[(0)]", finalColumn.Header),
                     Mode = BindingMode.OneWay,
                     StringFormat = "{0:0.##}",
                     TargetNullValue = "-"
@@ -298,10 +300,10 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
                                      var values = columns.ToDictionary(c => c.Header, c =>
                                      {
                                          double v = UnionFunction(group.Select(g => (double?)c.ValueGetter(g)).Where(e => e is not 0 and not null).Cast<double>().DefaultIfEmpty());
-                                         return (object?)(v == 0 ? null : v);
+                                         return (object?)( v == 0 ? null : v );
                                      });
                                      if (HasFinalColumn)
-                                         values["Итого"] = FinalFunction(values.Take(values.Count - 1).Select(pair => pair.Value).Where(e => e is not 0 and not null).Cast<double>().DefaultIfEmpty());
+                                         values["Итого"] = FinalFunction(values.Take(values.Count - 1).Select(pair => pair.Value).Where(e => e is not null).Cast<double>().DefaultIfEmpty());
                                      return new Row(group.Key, values);
                                  })
                                  .ToList();
@@ -320,7 +322,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
 
         if (HasFinalRow)
         {
-            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>().DefaultIfEmpty()) })
+            Dictionary<object, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>().DefaultIfEmpty()) })
                                                              .ToDictionary(value => value.Header, value => (object?)value.Value);
 
             var finalRow = new Row("Итого", finalValues);
@@ -528,7 +530,7 @@ public class ReportBuilder<T> where T : class, new()
     public ReportPropertyAccessorBuilder<TProperty> AddPropertySelection<TProperty>( Func<T, object?[], TProperty> propertyExpression ) =>
         new(propertyExpression, this);
 
-    public ReportBuilder<T> AddColumn( string header, Func<T, object> getter )
+    public ReportBuilder<T> AddColumn( object header, Func<T, object> getter )
     {
         _columns.Add(new Column(header, item => getter((T)item)));
         return this;
@@ -552,11 +554,11 @@ public class ReportBuilder<T> where T : class, new()
 }
 public class Column
 {
-    public string Header { get; }
+    public object Header { get; }
 
     public Func<object, object?> ValueGetter { get; }
 
-    public Column( string header, Func<object, object?> valueGetter )
+    public Column( object header, Func<object, object?> valueGetter )
     {
         Header = header;
         ValueGetter = valueGetter;
@@ -567,7 +569,7 @@ public class BindedColumn : Column
 {
     public Func<object, bool> Filter { get; }
 
-    public BindedColumn( string header, Func<object, object?> valueGetter, Func<object, bool> filter )
+    public BindedColumn( object header, Func<object, object?> valueGetter, Func<object, bool> filter )
         : base(header, item => filter(item) ? valueGetter(item) : null)
     {
         Filter = filter;
@@ -578,10 +580,10 @@ public class Row
 {
     public object Item { get; }
 
-    private Dictionary<string, object?> _values { get; } = new();
+    private Dictionary<object, object?> _values { get; } = new();
 
     [IndexerName("Value")]
-    public object? this[string header] => _values[header];
+    public object? this[object header] => _values[header];
 
     public Row( object item, IEnumerable<Column> columns )
     {
@@ -597,7 +599,7 @@ public class Row
         });
     }
 
-    public Row( object item, Dictionary<string, object?> values )
+    public Row( object item, Dictionary<object, object?> values )
     {
         Item = item;
         _values = values;
