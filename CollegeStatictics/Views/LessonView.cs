@@ -133,6 +133,8 @@ namespace CollegeStatictics.Views
         [NumberBoxColumn(nameof(HomeworkStudent.Mark), "Оценка", 2, 5, IsReadOnly = false)]
         public IEnumerable<HomeworkStudent> HomeworkStudents => Item.HomeworkStudents;
 
+        public bool IsConducted => Item.IsConducted;
+
         public LessonHomework? Homework
         {
             get => Item.LessonHomework;
