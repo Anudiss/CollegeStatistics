@@ -17,6 +17,11 @@ namespace CollegeStatictics
         #region [Event handlers]
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            //AppDomain.CurrentDomain.UnhandledException += (_, e) => { };
+            //Dispatcher.UnhandledException += (_, e) => { e.Handled = true; };
+            //Current.DispatcherUnhandledException += (_, e) => { e.Handled = true; };
+            //TaskScheduler.UnobservedTaskException += (_, e) => { e.SetObserved(); };
+
             AppDomain.CurrentDomain.UnhandledException += (_, e) => MessageBox.Show($"{e.ExceptionObject}", "Произошла ошибка");
             Dispatcher.UnhandledException += (_, e) => { e.Handled = true; MessageBox.Show($"{e.Exception.Message}", "Произошла ошибка"); };
             Current.DispatcherUnhandledException += (_, e) => { e.Handled = true; MessageBox.Show($"{e.Exception.Message}", "Произошла ошибка"); };

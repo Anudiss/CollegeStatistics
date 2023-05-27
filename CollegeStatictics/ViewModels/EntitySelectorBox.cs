@@ -37,6 +37,8 @@ namespace CollegeStatictics.ViewModels
         public static readonly DependencyProperty IsClearableProperty =
             DependencyProperty.Register("IsClearable", typeof(bool), typeof(FilteredEntitySelectorBox<T>));
 
+        public Func<bool>? OpenDialogAcceptor { get; set; }
+
         #endregion
 
         #region [ Commands ]
@@ -44,6 +46,8 @@ namespace CollegeStatictics.ViewModels
         [RelayCommand]
         private void OpenSelectorDialog()
         {
+            if (OpenDialogAcceptor?.Invoke() == false)
+                return;
             SelectedItem = OpenSelectorItemDialog();
         }
 

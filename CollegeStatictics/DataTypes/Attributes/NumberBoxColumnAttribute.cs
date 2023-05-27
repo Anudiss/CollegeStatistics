@@ -34,9 +34,11 @@ public class NumberBoxColumnAttribute : TextColumnAttribute
 
         editingCellFactory.SetValue(NumberBox.SpinButtonPlacementModeProperty, NumberBoxSpinButtonPlacementMode.Compact);
 
-        var cellFactory = new FrameworkElementFactory(typeof(TextBlock));
+        var cellFactory = new FrameworkElementFactory(typeof(Label));
+        cellFactory.SetValue(Label.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+        cellFactory.SetValue(Label.MarginProperty, new Thickness(0, 6.5, 0, 0));
 
-        cellFactory.SetBinding(TextBox.TextProperty, new Binding(Path)
+        cellFactory.SetBinding(Label.ContentProperty, new Binding(Path)
         {
             Mode = IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
             UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
@@ -49,7 +51,7 @@ public class NumberBoxColumnAttribute : TextColumnAttribute
             
             CellTemplate = new DataTemplate()
             {
-                VisualTree = cellFactory
+                VisualTree = cellFactory,
             },
 
             CellEditingTemplate = new DataTemplate()

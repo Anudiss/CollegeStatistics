@@ -109,11 +109,14 @@ namespace CollegeStatictics.Views
                 RecreateHomeworkStudents();
                 RecreateAttendances();
 
-                OnPropertyChanged(nameof(Attendances));
-                OnPropertyChanged(nameof(HomeworkStudents));
-                OnPropertyChanged(nameof(Teacher));
+                RefreshSubtables();
+                //OnPropertyChanged(nameof(Attendances));
+                //OnPropertyChanged(nameof(HomeworkStudents));
+                //OnPropertyChanged(nameof(Teacher));
 
                 ValidateProperty(value);
+
+                CastSpellToRefreshAttendances();
             }
         }
 
@@ -140,7 +143,7 @@ namespace CollegeStatictics.Views
                 RecreateHomeworkStudents();
 
                 OnPropertyChanged(nameof(HomeworkStudents));
-                ApplySpellToRefreshHomeworkStudents();
+                CastSpellToRefreshHomeworkStudents();
             }
         }
 
@@ -214,10 +217,16 @@ namespace CollegeStatictics.Views
         }
 
         private TabControl _tabControl;
-        private void ApplySpellToRefreshHomeworkStudents()
+        private void CastSpellToRefreshHomeworkStudents()
         {
             _tabControl.SelectedIndex = 0;
             _tabControl.SelectedIndex = 1;
+        }
+
+        private void CastSpellToRefreshAttendances()
+        {
+            _tabControl.SelectedIndex = 1;
+            _tabControl.SelectedIndex = 0;
         }
 
         private FrameworkElement CreateHeaderPanel()
@@ -349,8 +358,27 @@ namespace CollegeStatictics.Views
             panel.Children.Add(topicTextBox);
             topicTextBox.Margin = new(0, 0, 10, 0);
 
-            var groupSelectorBox = CreateViewElementFor(nameof(Group));
-            panel.Children.Add(groupSelectorBox);
+            var groupSelectorBoxContainer = CreateViewElementFor(nameof(Group));
+            panel.Children.Add(groupSelectorBoxContainer);
+
+            var entitySelectorBox =
+                (FilteredEntitySelectorBox<Group>)
+                    ((((StackPanel)groupSelectorBoxContainer).Children)
+                        .OfType<ContentControl>().Last().Content);
+
+            entitySelectorBox.OpenDialogAcceptor += () =>
+            {
+                var dialogWindow = new DialogWindow
+                {
+                    Title = "",
+                    Content = "При изменении группы текущие данные посещаемости будут потеряны. Продолжить?",
+                    PrimaryButtonText = "Да",
+                    SecondaryButtonText = "Нет"
+                };
+                dialogWindow.Show();
+
+                return dialogWindow.Result == DialogResult.Primary;
+            };
 
             return panel;
         }

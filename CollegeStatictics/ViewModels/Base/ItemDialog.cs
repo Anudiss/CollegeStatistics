@@ -365,8 +365,14 @@ namespace CollegeStatictics.ViewModels.Base
             foreach (var column in columns)
                 dataGrid.Columns.Add(column.ToDataGridColumn());
 
+            _subtableRefreshRequired += dataGrid.Items.Refresh;
+
             return dataGrid;
         }
+
+        private event Action? _subtableRefreshRequired;
+
+        protected void RefreshSubtables() => _subtableRefreshRequired?.Invoke();
 
         private FrameworkElement CreateTimetableElement(FormElement formElement)
         {
