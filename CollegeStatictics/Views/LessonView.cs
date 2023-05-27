@@ -364,13 +364,14 @@ namespace CollegeStatictics.Views
                 return Enumerable.Empty<HomeworkStudent>();
 
             return from student in Group.Students
-                select new HomeworkStudent()
-                {
-                    Lesson = Item,
-                    Student = student,
-                    HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
-                    Mark = null
-                };
+                   where !Item.HomeworkStudents.Any(h => h.Student == student)
+                   select new HomeworkStudent()
+                   {
+                       Lesson = Item,
+                       Student = student,
+                       HomeworkExecutionStatus = DatabaseContext.Entities.HomeworkExecutionStatuses.Local.First(),
+                       Mark = null
+                   };
         }
 
         private IEnumerable<Attendance> CreateAttendances()
@@ -379,13 +380,14 @@ namespace CollegeStatictics.Views
                 return Enumerable.Empty<Attendance>();
 
             return from student in Group.Students
-                select new Attendance()
-                {
-                    Lesson = Item,
-                    Student = student,
-                    Mark = null,
-                    IsAttented = true,
-                };
+                   where !Item.Attendances.Any(a => a.Student == student)
+                   select new Attendance()
+                   {
+                       Lesson = Item,
+                       Student = student,
+                       Mark = null,
+                       IsAttented = true,
+                   };
         }
 
         private FrameworkElement CreateDefaultLessonTimesComboBox()
@@ -440,17 +442,20 @@ namespace CollegeStatictics.Views
 
         private void RecreateHomeworkStudents()
         {
-            Item.HomeworkStudents.Clear();
+            var shouldRecreate = Item.HomeworkStudents.Where(h => h.Student.Group != Group).ToList();
+
+            shouldRecreate.ForEach(a => Item.HomeworkStudents.Remove(a));
 
             var homeworkStudents = CreateHomeworkStudents();
-
             homeworkStudents.ForEach(Item.HomeworkStudents.Add);
             //DatabaseContext.Entities.AddRange(homeworkStudents);
         }
 
         private void RecreateAttendances()
         {
-            Item.Attendances.Clear();
+            var shouldRecreate = Item.Attendances.Where(a => a.Student.Group != Group).ToList();
+            
+            shouldRecreate.ForEach(a => Item.Attendances.Remove(a));
 
             var attendances = CreateAttendances();
             attendances.ForEach(Item.Attendances.Add);

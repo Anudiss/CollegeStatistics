@@ -271,7 +271,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
         if (HasFinalColumn)
         {
             var columnsCopy = columns.ToArray();
-            var finalColumn = new Column("Итого", item => FinalFunction(columnsCopy.Select(c => c.ValueGetter(item)).OfType<double>()));
+            var finalColumn = new Column("Итого", item => FinalFunction(columnsCopy.Select(c => c.ValueGetter(item)).OfType<double>().DefaultIfEmpty()));
             columns.Add(finalColumn);
 
             dataGrid.Columns.Add(new DataGridTextColumn()
@@ -301,7 +301,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
                                          return (object?)(v == 0 ? null : v);
                                      });
                                      if (HasFinalColumn)
-                                         values["Итого"] = FinalFunction(values.Select(pair => pair.Value).OfType<double>());
+                                         values["Итого"] = FinalFunction(values.Take(values.Count - 1).Select(pair => pair.Value).Where(e => e is not 0 and not null).Cast<double>().DefaultIfEmpty());
                                      return new Row(group.Key, values);
                                  })
                                  .ToList();
@@ -320,7 +320,7 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
 
         if (HasFinalRow)
         {
-            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>()) })
+            Dictionary<string, object?> finalValues = columns.Select(column => new { column.Header, Value = FinalFunction(rows.Select(row => row[column.Header]).OfType<double>().DefaultIfEmpty()) })
                                                              .ToDictionary(value => value.Header, value => (object?)value.Value);
 
             var finalRow = new Row("Итого", finalValues);
@@ -343,8 +343,8 @@ public partial class Report<T> : ObservableValidator, IReport where T : class, n
 
             if (DateGetter is not null)
             {
-                var date = DateGetter(value);
-                if (date <= DatePickers[0].SelectedDate || date >= DatePickers[1].SelectedDate)
+                var date = DateGetter(value).Date;
+                if (date <= DatePickers![0].SelectedDate!.Value.Date || date >= DatePickers![1].SelectedDate!.Value.Date)
                     return false;
             }
 
@@ -360,7 +360,6 @@ public class ReportBuilder<T> where T : class, new()
 {
     public class ReportPropertyAccessorBuilder<TProperty>
     {
-        private readonly Dictionary<Type, string> _labels;
         private readonly ReportBuilder<T> _reportBuilder;
         private readonly Func<T, object?[], TProperty?> _getter;
         private readonly List<Type> _parameters;
@@ -368,7 +367,6 @@ public class ReportBuilder<T> where T : class, new()
         public ReportPropertyAccessorBuilder( Func<T, object?[], TProperty?> getter, ReportBuilder<T> reportBuilder )
         {
             _getter = getter;
-            _labels = new();
             _parameters = new();
             _reportBuilder = reportBuilder;
         }
@@ -596,8 +594,6 @@ public class Row
                 _values.Add(column.Header, column.ValueGetter(item));
                 return;
             }
-
-
         });
     }
 

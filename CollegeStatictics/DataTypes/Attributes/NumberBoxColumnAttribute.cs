@@ -2,6 +2,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 
 namespace CollegeStatictics.DataTypes.Attributes;
@@ -19,26 +20,41 @@ public class NumberBoxColumnAttribute : TextColumnAttribute
 
     public override DataGridColumn ToDataGridColumn()
     {
-        var factory = new FrameworkElementFactory(typeof(NumberBox));
+        var editingCellFactory = new FrameworkElementFactory(typeof(NumberBox));
 
-        factory.SetBinding(NumberBox.ValueProperty, new Binding(Path)
+        editingCellFactory.SetBinding(NumberBox.TextProperty, new Binding(Path)
+        {
+            Mode = BindingMode.TwoWay,
+            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+            TargetNullValue = "-",
+        });
+
+        editingCellFactory.SetValue(NumberBox.MinimumProperty, Min);
+        editingCellFactory.SetValue(NumberBox.MaximumProperty, Max);
+
+        editingCellFactory.SetValue(NumberBox.SpinButtonPlacementModeProperty, NumberBoxSpinButtonPlacementMode.Compact);
+
+        var cellFactory = new FrameworkElementFactory(typeof(TextBlock));
+
+        cellFactory.SetBinding(TextBox.TextProperty, new Binding(Path)
         {
             Mode = IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
             UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+            TargetNullValue = "-",
         });
-
-        factory.SetValue(NumberBox.MinimumProperty, Min);
-        factory.SetValue(NumberBox.MaximumProperty, Max);
-
-        factory.SetValue(NumberBox.SpinButtonPlacementModeProperty, NumberBoxSpinButtonPlacementMode.Compact);
 
         return new DataGridTemplateColumn()
         {
             Header = Header,
-
+            
             CellTemplate = new DataTemplate()
             {
-                VisualTree = factory
+                VisualTree = cellFactory
+            },
+
+            CellEditingTemplate = new DataTemplate()
+            {
+                VisualTree = editingCellFactory
             },
 
             IsReadOnly = IsReadOnly
