@@ -13,7 +13,7 @@
                        SelectionChanged="NavigationView_SelectionChanged"
                        IsPaneToggleButtonVisible="False"
                        IsBackButtonVisible="Collapsed"
-                       OpenPaneLength="200"
+                       OpenPaneLength="230"
                        PaneDisplayMode="Left">
         <ui:NavigationView.MenuItems>
             <ui:NavigationViewItemHeader Content="Справочники"/>
@@ -34,7 +34,8 @@
             
             <ui:NavigationViewItem Content="Остаток по часам"/>
             <ui:NavigationViewItem Content="Отчёт успеваемости"/>
-            <ui:NavigationViewItem Content="Отчёт посещаемости"/>
+            <ui:NavigationViewItem Content="Общая посещаемость"/>
+            <ui:NavigationViewItem Content="Посещаемость по датам"/>
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.Content>
             <ContentControl Content="{Binding CurrentView}"

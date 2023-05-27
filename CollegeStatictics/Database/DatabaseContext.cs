@@ -60,8 +60,8 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<TimetableRecord> TimetableRecords { get; set; }
 
     protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder )
-        //=> optionsBuilder.UseSqlite(@"Data Source=C:\Users\meshc\source\repos\CollegeStatistics2\CollegeStatictics\Database.db");
-        => optionsBuilder.UseSqlite(@"Data Source=C:\Users\Ильназ\source\repos\CollegeStatistics\CollegeStatictics\Database.db");
+        => optionsBuilder.UseSqlite(@"Data Source=C:\Users\meshc\source\repos\CollegeStatistics2\CollegeStatictics\Database.db");
+    //=> optionsBuilder.UseSqlite(@"Data Source=C:\Users\Ильназ\source\repos\CollegeStatistics\CollegeStatictics\Database.db");
 
     protected override void OnModelCreating( ModelBuilder modelBuilder )
     {

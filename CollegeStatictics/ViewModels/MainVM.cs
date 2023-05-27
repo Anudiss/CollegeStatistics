@@ -138,6 +138,9 @@ namespace CollegeStatictics.ViewModels
 
                                    .AddFilter(new Selection<Lesson>(lesson => lesson.IsDeleted == false))
 
+                                    .AddFilter(new Filter<Lesson, Subject>("Предмет", lesson => lesson.StudyPlanRecord.StudyPlan.Subject))
+                                    .AddFilter(new Filter<Lesson, Speciality>("Специальность", lesson => lesson.StudyPlanRecord.StudyPlan.Speciality))
+
                                    .BanCreate()
 
                                    .Build()
@@ -196,9 +199,9 @@ namespace CollegeStatictics.ViewModels
 
                                     .Build()
             },
-            { "Отчёт посещаемости", () => new ReportBuilder<Attendance>()
+            { "Общая посещаемость", () => new ReportBuilder<Attendance>()
 
-                                .SetTitle("Посещаемость студентов")
+                                .SetTitle("Общая посещаемость студентов")
 
                                 .BindColumnHeader<Subject>( attendance => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject, attendance => (double?)(attendance.IsAttented ? null : 1) )
                                     .SetLabel("Предмет")
@@ -211,6 +214,32 @@ namespace CollegeStatictics.ViewModels
 
                                 .AddPropertySelection((attendance, parameters) => attendance.Student?.Group)
                                     .SetLabel("Группа")
+                                    .Build()
+
+                                .HasFinalColumn()
+
+                                .SetFinalFunction(FinalFunction.Sum)
+
+                                .Build()
+            },
+            { "Посещаемость по датам", () => new ReportBuilder<Attendance>()
+
+                                .SetTitle("Посещаемость студентов")
+
+                                .BindColumnHeader<DateTime>( attendance => attendance.Lesson.Date.Date, attendance => (double?)(attendance.IsAttented ? null : 1) )
+                                    .Build()
+
+                                .GroupBy(attendance => attendance.Student)
+
+                                .AddSelection(new Selection<Attendance>(attendance => attendance.Lesson.IsConducted))
+                                .AddDateSelection(attendance => attendance.Lesson.Date)
+
+                                .AddPropertySelection((attendance, parameters) => attendance.Student?.Group)
+                                    .SetLabel("Группа")
+                                    .Build()
+
+                                .AddPropertySelection((attendance, parameters) => attendance.Lesson.StudyPlanRecord.StudyPlan.Subject)
+                                    .SetLabel("Предмет")
                                     .Build()
 
                                 .HasFinalColumn()
@@ -272,7 +301,11 @@ namespace CollegeStatictics.ViewModels
                 "M32.5 58.3C35.3 43.1 48.5 32 64 32H256c17.7 0 32 14.3 32 32s-14.3 32-32 32H90.7L70.3 208H184c75.1 0 136 60.9 136 136s-60.9 136-136 136H100.5c-39.4 0-75.4-22.3-93-57.5l-4.1-8.2c-7.9-15.8-1.5-35 14.3-42.9s35-1.5 42.9 14.3l4.1 8.2c6.8 13.6 20.6 22.1 35.8 22.1H184c39.8 0 72-32.2 72-72s-32.2-72-72-72H32c-9.5 0-18.5-4.2-24.6-11.5s-8.6-16.9-6.9-26.2l32-176z"
             },
             {
-                "Отчёт посещаемости",
+                "Посещаемость по датам",
+                ""
+            },
+            {
+                "Общая посещаемость",
                 "M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l44.9 74.7c-16.1 17.6-28.6 38.5-36.6 61.5c-1.9-1.8-3.5-3.9-4.9-6.3L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152zm136 16a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm211.3-43.3c-6.2-6.2-16.4-6.2-22.6 0L416 385.4l-28.7-28.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l40 40c6.2 6.2 16.4 6.2 22.6 0l72-72c6.2-6.2 6.2-16.4 0-22.6z"
             }
         };
