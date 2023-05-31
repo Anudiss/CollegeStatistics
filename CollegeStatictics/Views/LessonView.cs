@@ -8,8 +8,11 @@ using CollegeStatictics.ViewModels;
 using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
+
 using Microsoft.EntityFrameworkCore;
+
 using ModernWpf.Controls;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -107,8 +110,8 @@ namespace CollegeStatictics.Views
                 RecreateAttendances();
 
                 RefreshSubtables();
-                OnPropertyChanged(nameof(HomeworkStudents));
                 //OnPropertyChanged(nameof(Attendances));
+                //OnPropertyChanged(nameof(HomeworkStudents));
                 //OnPropertyChanged(nameof(Teacher));
 
                 ValidateProperty(value);
@@ -129,6 +132,8 @@ namespace CollegeStatictics.Views
         [ComboBoxColumn(nameof(HomeworkStudent.HomeworkExecutionStatus), "Статус", nameof(HomeworkStudent.ExecutionStatuses))]
         [NumberBoxColumn(nameof(HomeworkStudent.Mark), "Оценка", 2, 5, IsReadOnly = false)]
         public IEnumerable<HomeworkStudent> HomeworkStudents => Item.HomeworkStudents;
+
+        public bool IsConducted => Item.IsConducted;
 
         public LessonHomework? Homework
         {
@@ -300,8 +305,6 @@ namespace CollegeStatictics.Views
             headerPanel.Children.Add(attachEmergencySitutationButton);
             #endregion
 
-
-
             return headerPanel;
         }
 
@@ -367,9 +370,6 @@ namespace CollegeStatictics.Views
 
             entitySelectorBox.OpenDialogAcceptor += () =>
             {
-                if (Item.Attendances.Count == 0)
-                    return true;
-
                 var dialogWindow = new DialogWindow
                 {
                     Title = "",
