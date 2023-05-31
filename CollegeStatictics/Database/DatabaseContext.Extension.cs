@@ -136,7 +136,7 @@ namespace CollegeStatictics.Database
             }
         }
 
-        public static void CancelChanges<T>(T item) where T : class
+        public static void CancelChanges<TEntity>(TEntity item) where TEntity : class
         {
             var entry = Entities.Entry(item);
 
@@ -155,13 +155,13 @@ namespace CollegeStatictics.Database
             }
         }
 
-        public void SaveChanges<TEntity>(TEntity entity)
+        public void SaveChanges<TEntity>(TEntity entity) where TEntity : class
         {
             var entry = Entities.Entry(entity);
             entry.OriginalValues.SetValues(entry.CurrentValues);
         }
 
-        public static bool HasChanges<T>(T item) where T : class
+        public static bool HasChanges<TEntity>(TEntity item) where TEntity : class
         {
             var entry = Entities.Entry(item);
             return new[] { EntityState.Modified, EntityState.Deleted, EntityState.Added }.Contains(entry.State);
