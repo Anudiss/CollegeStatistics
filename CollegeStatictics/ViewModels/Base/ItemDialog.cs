@@ -363,7 +363,12 @@ namespace CollegeStatictics.ViewModels.Base
             var columns = formElement.Property.GetCustomAttributes<TextColumnAttribute>();
 
             foreach (var column in columns)
+            {
+                if (column is ButtonColumnAttribute buttonColumnAttribute)
+                    buttonColumnAttribute.CommandContext = this;
+
                 dataGrid.Columns.Add(column.ToDataGridColumn());
+            }
 
             _subtableRefreshRequired += dataGrid.Items.Refresh;
 

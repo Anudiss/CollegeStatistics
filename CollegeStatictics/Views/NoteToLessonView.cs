@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows;
 using CollegeStatictics.Database.Models;
 using CollegeStatictics.DataTypes.Attributes;
 using CollegeStatictics.ViewModels.Attributes;
@@ -13,18 +16,18 @@ using ModernWpf.Controls.Primitives;
 namespace CollegeStatictics.Views;
 
 [MaxHeight(600)]
-[ViewTitle("Нештатная ситуация")]
-public partial class EmergencySituationView : ItemDialog<EmergencySituation>
+[ViewTitle("Заметка к занятию")]
+public partial class NoteToLessonView : ItemDialog<NoteToLesson>
 {
     [MinHeight(200)]
     [Label("Описание")]
     [TextBoxFormElement(AcceptsReturn = true)]
     public string Description
     {
-        get => Item.Description;
+        get => Item.Text;
         set
         {
-            Item.Description = value;
+            Item.Text = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsReadOnly));
         }
@@ -35,12 +38,12 @@ public partial class EmergencySituationView : ItemDialog<EmergencySituation>
 
     private Lesson _ownerLesson;
 
-    public EmergencySituationView(EmergencySituation? item) : base(item)
+    public NoteToLessonView(NoteToLesson? item) : base(item)
     {
         _ownerLesson = Item.Lesson;
 
         if (Description == string.Empty)
-            _ownerLesson.EmergencySituation = null;
+            _ownerLesson.NoteToLesson = null;
 
         AddCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
@@ -49,29 +52,29 @@ public partial class EmergencySituationView : ItemDialog<EmergencySituation>
     [RelayCommand(CanExecute = nameof(CanAdd))]
     private void Add()
     {
-        _ownerLesson.EmergencySituation = Item;
+        _ownerLesson.NoteToLesson = Item;
         IsReadOnly = false;
         AddCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
     }
-    private bool CanAdd() => _ownerLesson.EmergencySituation == null;
+    private bool CanAdd() => _ownerLesson.NoteToLesson == null;
 
     [RelayCommand(CanExecute = nameof(CanRemove))]
     private void Remove()
     {
-        _ownerLesson.EmergencySituation = null;
+        _ownerLesson.NoteToLesson = null;
         Description = "";
         IsReadOnly = true;
         AddCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
     }
-    private bool CanRemove() => _ownerLesson.EmergencySituation != null;
+    private bool CanRemove() => _ownerLesson.NoteToLesson != null;
 
     protected override IEnumerable<FrameworkElement> CreateViewElements()
     {
         var header = new TextBlock
         {
-            Text = "Нештатная ситуация",
+            Text = "Заметка к занятию",
             FontSize = 22
         };
         yield return header;

@@ -37,6 +37,8 @@ using CollegeStatictics.ViewModels.Attributes;
 using CollegeStatictics.ViewModels.Base;
 using CollegeStatictics.Windows;
 using Microsoft.EntityFrameworkCore;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CollegeStatictics.Views
 {
@@ -46,7 +48,6 @@ namespace CollegeStatictics.Views
     public partial class LessonView : ItemDialog<Lesson>
     {
         #region [ Properties ]
-
         [Label("Дата")]
         [DatePickerFormElement]
         public DateTime Date
@@ -124,6 +125,7 @@ namespace CollegeStatictics.Views
         [TextColumn(nameof(Attendance.Student), "Студент", IsReadOnly = true)]
         [CheckBoxColumn(nameof(Attendance.IsAttented), "Присутствие", IsReadOnly = false)]
         [NumberBoxColumn(nameof(Attendance.Mark), "Оценка", 2, 5, IsReadOnly = false)]
+        [ButtonColumn(nameof(Attendance.Student), "Заметка", nameof(OpenNoteToStudentCommand))]
         public IEnumerable<Attendance> Attendances => Item.Attendances;
 
         [EditableSubtableFormElement]
@@ -159,9 +161,42 @@ namespace CollegeStatictics.Views
             }
         }
 
-        public Selection<Group> GroupFilter => new Selection<Group>(group => group.Speciality == StudyPlanRecord.StudyPlan.Speciality && StudyPlanRecord.DurationInLessons > StudyPlanRecord.Lessons.Where(g => g.IsConducted && g.Group == group).Count());
+        public NoteToLesson? NoteToLesson
+        {
+            get => Item.NoteToLesson;
+            set
+            {
+                Item.NoteToLesson = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public Selection<Group> GroupFilter => new Selection<Group>(group => group.Speciality == StudyPlanRecord.StudyPlan.Speciality && StudyPlanRecord.DurationInLessons > StudyPlanRecord.Lessons.Where(g => g.IsConducted && g.Group == group).Count());
         #endregion
+
+        [RelayCommand]
+        private void OpenNoteToStudent(Student student)
+        {
+            var noteToStudent = DatabaseContext.Entities.NoteToStudents.Local
+                .FirstOrDefault(n => n.Lesson == Item && n.Student == student)
+                ?? new NoteToStudent()
+                    {
+                        Lesson = Item,
+                        Student = student
+                    };
+
+            var dialogWindow = new DialogWindow()
+            {
+                Content = new NoteToStudentView(noteToStudent),
+                ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
+                PrimaryButtonText = "Сохранить",
+                SecondaryButtonText = "Отменить"
+            };
+            dialogWindow.Show();
+
+            if (dialogWindow.Result == DialogResult.Primary && student.NoteToStudents.Any(n => n == noteToStudent) == false)
+                student.NoteToStudents.Add(noteToStudent);
+        }
 
         private readonly IEnumerable<FormElement> _formElements;
 
@@ -282,7 +317,7 @@ namespace CollegeStatictics.Views
             headerPanel.Children.Add(homeworkButton);
             #endregion
 
-            #region [ Emeergency situtation button ]
+            #region [ Emergency situtation button ]
             var attachEmergencySitutationButton = new Button
             {
                 DataContext = Item,
@@ -291,7 +326,6 @@ namespace CollegeStatictics.Views
                 Content = "Нештатная ситуация"
             };
             attachEmergencySitutationButton.SetValue(DockPanel.DockProperty, Dock.Right);
-
             attachEmergencySitutationButton.Click += (_, _) =>
             {
                 OpenDialog(new EmergencySituationView(Item.EmergencySituation ?? new EmergencySituation()
@@ -303,6 +337,28 @@ namespace CollegeStatictics.Views
             };
 
             headerPanel.Children.Add(attachEmergencySitutationButton);
+            #endregion
+
+            #region [ Note to lesson button ]
+            var attachNoteToLessonButton = new Button
+            {
+                DataContext = Item,
+                Margin = new(0, 0, 10, 0),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Content = "Заметка к занятию"
+            };
+            attachNoteToLessonButton.SetValue(DockPanel.DockProperty, Dock.Right);
+            attachNoteToLessonButton.Click += (_, _) =>
+            {
+                OpenDialog(new NoteToLessonView(Item.NoteToLesson ?? new NoteToLesson()
+                {
+                    Lesson = Item,
+                }), l => l.NoteToLesson);
+
+                OnPropertyChanged(nameof(EmergencySituation));
+            };
+
+            headerPanel.Children.Add(attachNoteToLessonButton);
             #endregion
 
             return headerPanel;

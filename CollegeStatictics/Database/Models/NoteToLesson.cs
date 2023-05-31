@@ -9,5 +9,5 @@ public partial class NoteToLesson
 
     public string Text { get; set; } = null!;
 
-    public virtual Lesson Lesson { get; set; } = null!;
+    public virtual Lesson? Lesson { get; set; } = null!;
 }
