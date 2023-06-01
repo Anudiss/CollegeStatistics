@@ -555,7 +555,6 @@ namespace CollegeStatictics.Views
                 ContentTemplate = (DataTemplate)Application.Current.FindResource("ItemDialogTemplate"),
 
                 PrimaryButtonText = "Сохранить",
-
                 SecondaryButtonText = "Отменить"
             };
 
@@ -563,6 +562,8 @@ namespace CollegeStatictics.Views
 
             if (dialogWindow.Result == DialogResult.Primary)
                 ((PropertyInfo)((MemberExpression)property.Body).Member).SetValue(this, view.Item);
+            else
+                DatabaseContext.CancelChanges(view.Item);
         }
 
         #endregion

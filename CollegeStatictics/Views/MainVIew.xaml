@@ -24,6 +24,10 @@
             <ui:NavigationViewItem Content="Отделения"/>
             <ui:NavigationViewItem Content="Студенты"/>
             <ui:NavigationViewItem Content="Группы"/>
+
+            <ui:NavigationViewItemSeparator/>
+            <ui:NavigationViewItemHeader Content="Документы"/>
+
             <ui:NavigationViewItem Content="Расписание"/>
             <ui:NavigationViewItem Content="Учебный план"/>
             <ui:NavigationViewItem Content="Занятия"/>
