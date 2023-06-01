@@ -21,6 +21,7 @@
 
                     <DataTemplate DataType="{x:Type vm:MainVM}">
                         <views:MainView/>
+                   
                     </DataTemplate>
                 </ResourceDictionary>
 
